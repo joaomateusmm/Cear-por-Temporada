@@ -1,4 +1,3 @@
-import { drizzle } from "drizzle-orm/postgres-js";
 import * as fs from "fs";
 import * as path from "path";
 import postgres from "postgres";

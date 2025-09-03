@@ -183,6 +183,8 @@ export async function getAdminUser(adminId: string) {
 }
 
 // Função para buscar propriedades de um admin
+// NOTA: Atualmente retorna todas as propriedades pois não há campo createdBy na tabela
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function getPropertiesByAdmin(adminId: string) {
   try {
     const properties = await db

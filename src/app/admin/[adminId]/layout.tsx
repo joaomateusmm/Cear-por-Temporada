@@ -1,8 +1,8 @@
 interface AdminLayoutProps {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     adminId: string;
-  };
+  }>;
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {

@@ -5,7 +5,7 @@ import { ArrowLeft, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -84,10 +84,11 @@ const propertyFormSchema = z.object({
 type PropertyFormValues = z.infer<typeof propertyFormSchema>;
 
 interface AddPropertyPageProps {
-  params: { adminId: string };
+  params: Promise<{ adminId: string }>;
 }
 
 export default function AddPropertyPage({ params }: AddPropertyPageProps) {
+  const { adminId } = use(params);
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
@@ -196,7 +197,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
       if (result.success) {
         toast.success("Imóvel criado com sucesso!");
-        router.push(`/admin/${params.adminId}/properties`);
+        router.push(`/admin/${adminId}/properties`);
       } else {
         toast.error("Erro ao criar imóvel: " + result.error);
       }
@@ -254,7 +255,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-8 pb-16">
         <div className="mb-8 flex items-center gap-4">
-          <Link href={`/admin/${params.adminId}/properties`}>
+          <Link href={`/admin/${adminId}/properties`}>
             <Button
               variant="outline"
               size="sm"

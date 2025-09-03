@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/card";
 
 interface AdminDashboardProps {
-  params: {
+  params: Promise<{
     adminId: string;
-  };
+  }>;
 }
 
 async function getAdminUser(adminId: string) {

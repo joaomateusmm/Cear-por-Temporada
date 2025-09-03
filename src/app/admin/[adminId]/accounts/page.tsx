@@ -2,7 +2,7 @@
 
 import { Eye, EyeOff, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,12 +24,13 @@ type AdminUserList = {
 };
 
 interface AdminAccountsPageProps {
-  params: {
+  params: Promise<{
     adminId: string;
-  };
+  }>;
 }
 
 export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
+  const { adminId } = use(params);
   const [users, setUsers] = useState<AdminUserList[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -80,7 +81,7 @@ export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
             Gerencie as contas que podem cadastrar imóveis na plataforma
           </p>
         </div>
-        <Link href={`/admin/${params.adminId}/accounts/create`}>
+        <Link href={`/admin/${adminId}/accounts/create`}>
           <Button>
             <UserPlus className="mr-2 h-4 w-4" />
             Nova Conta
@@ -148,7 +149,7 @@ export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
                 Comece criando uma nova conta de administrador.
               </p>
               <div className="mt-6">
-                <Link href={`/admin/${params.adminId}/accounts/create`}>
+                <Link href={`/admin/${adminId}/accounts/create`}>
                   <Button>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Criar Primeira Conta
@@ -216,7 +217,7 @@ export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
 
       {/* Voltar para o Dashboard */}
       <div className="flex justify-center">
-        <Link href={`/admin/${params.adminId}`}>
+        <Link href={`/admin/${adminId}`}>
           <Button variant="outline">Voltar para o Dashboard</Button>
         </Link>
       </div>

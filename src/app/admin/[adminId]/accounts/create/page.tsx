@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle, Loader2, UserPlus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -51,12 +51,13 @@ const createAccountSchema = z.object({
 type CreateAccountForm = z.infer<typeof createAccountSchema>;
 
 interface CreateAccountPageProps {
-  params: {
+  params: Promise<{
     adminId: string;
-  };
+  }>;
 }
 
 export default function CreateAccountPage({ params }: CreateAccountPageProps) {
+  const { adminId } = use(params);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [createdUser, setCreatedUser] = useState<{
@@ -135,7 +136,7 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
             </div>
 
             <div className="space-y-2">
-              <Link href={`/admin/${params.adminId}/accounts`}>
+              <Link href={`/admin/${adminId}/accounts`}>
                 <Button className="w-full">Ver Todas as Contas</Button>
               </Link>
 
@@ -261,7 +262,7 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
           </Form>
 
           <div className="mt-4 text-center">
-            <Link href={`/admin/${params.adminId}/accounts`}>
+            <Link href={`/admin/${adminId}/accounts`}>
               <Button variant="ghost" size="sm">
                 Voltar para Contas
               </Button>

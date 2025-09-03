@@ -23,7 +23,7 @@ export async function getPropertyWithDetails(
   propertyId: number,
 ): Promise<PropertyWithDetails | null> {
   const result = await db.query.propertiesTable.findFirst({
-    where: eq(propertiesTable.id, propertyId),
+    where: eq(propertiesTable.id, propertyId.toString()),
     with: {
       pricing: true,
       location: true,
@@ -121,7 +121,7 @@ export async function checkPropertyAvailability(
     .from(reservationsTable)
     .where(
       and(
-        eq(reservationsTable.propertyId, propertyId),
+        eq(reservationsTable.propertyId, propertyId.toString()),
         eq(reservationsTable.status, "confirmed"),
         lte(reservationsTable.checkInDate, endDate),
         gte(reservationsTable.checkOutDate, startDate),
@@ -215,7 +215,7 @@ export async function getPropertyImages(propertyId: number) {
   return await db
     .select()
     .from(propertyImagesTable)
-    .where(eq(propertyImagesTable.propertyId, propertyId))
+    .where(eq(propertyImagesTable.propertyId, propertyId.toString()))
     .orderBy(asc(propertyImagesTable.displayOrder));
 }
 
@@ -234,6 +234,6 @@ export async function getPropertyAmenities(propertyId: number) {
       amenitiesTable,
       eq(propertyAmenitiesTable.amenityId, amenitiesTable.id),
     )
-    .where(eq(propertyAmenitiesTable.propertyId, propertyId))
+    .where(eq(propertyAmenitiesTable.propertyId, propertyId.toString()))
     .orderBy(amenitiesTable.category, amenitiesTable.name);
 }
