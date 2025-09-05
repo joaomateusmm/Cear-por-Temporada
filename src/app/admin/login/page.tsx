@@ -98,11 +98,11 @@ export default function AdminLogin() {
   // Tela de carregamento durante verificação de sessão
   if (isCheckingSession) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-        <Card className="w-full max-w-md">
+      <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
+        <Card className="w-full max-w-md border-slate-700 bg-slate-800">
           <CardContent className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-600" />
-            <p className="text-sm text-gray-600">Verificando sessão...</p>
+            <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-400" />
+            <p className="text-sm text-slate-300">Verificando sessão...</p>
           </CardContent>
         </Card>
       </div>
@@ -110,11 +110,13 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
+      <Card className="w-full max-w-md border-slate-700 bg-slate-800">
         <CardHeader className="space-y-2 text-start">
-          <CardTitle>Entrar na Área Administrativa</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-slate-100">
+            Entrar na Área Administrativa
+          </CardTitle>
+          <CardDescription className="text-slate-400">
             Faça login para acessar o painel de gerenciamento de imóveis do
             Ceará por Temporada.
           </CardDescription>
@@ -127,11 +129,12 @@ export default function AdminLogin() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-slate-200">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
                         placeholder="Digite seu email..."
+                        className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                         {...field}
                         disabled={isLoading}
                       />
@@ -146,11 +149,12 @@ export default function AdminLogin() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Senha</FormLabel>
+                    <FormLabel className="text-slate-200">Senha</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         placeholder="••••••••"
+                        className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                         {...field}
                         disabled={isLoading}
                       />
@@ -160,7 +164,11 @@ export default function AdminLogin() {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={isLoading}
+              >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -177,11 +185,11 @@ export default function AdminLogin() {
           </Form>
 
           {/* Informações para teste */}
-          <div className="mt-6 rounded-lg border border-blue-200 bg-blue-50 p-3">
-            <h4 className="mb-2 text-sm font-medium text-blue-800">
+          <div className="mt-6 rounded-lg border border-blue-800 bg-blue-900/30 p-3">
+            <h4 className="mb-2 text-sm font-medium text-blue-300">
               Conta de Teste:
             </h4>
-            <p className="text-sm text-blue-700">
+            <p className="text-sm text-blue-200">
               <strong>Email:</strong> test1@gmail.com
               <br />
               <strong>Senha:</strong> 13IAmb13

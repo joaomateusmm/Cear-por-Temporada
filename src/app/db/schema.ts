@@ -109,6 +109,15 @@ export const amenitiesTable = pgTable("amenities", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Tabela de classes de imóveis (master)
+export const propertyClassesTable = pgTable("property_classes", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 100 }).notNull().unique(),
+  description: text("description"),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Tabela de relacionamento N:N entre imóveis e comodidades
 export const propertyAmenitiesTable = pgTable(
   "property_amenities",
@@ -123,6 +132,23 @@ export const propertyAmenitiesTable = pgTable(
   },
   (table) => ({
     pk: primaryKey({ columns: [table.propertyId, table.amenityId] }),
+  }),
+);
+
+// Tabela de relacionamento N:N entre imóveis e classes
+export const propertyPropertyClassesTable = pgTable(
+  "property_property_classes",
+  {
+    propertyId: varchar("property_id", { length: 21 })
+      .notNull()
+      .references(() => propertiesTable.id, { onDelete: "cascade" }),
+    classId: integer("class_id")
+      .notNull()
+      .references(() => propertyClassesTable.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.propertyId, table.classId] }),
   }),
 );
 
@@ -190,6 +216,7 @@ export const propertiesRelations = relations(
     location: one(propertyLocationTable),
     images: many(propertyImagesTable),
     amenities: many(propertyAmenitiesTable),
+    classes: many(propertyPropertyClassesTable),
     availability: many(propertyAvailabilityTable),
     reservations: many(reservationsTable),
   }),
@@ -242,6 +269,27 @@ export const propertyAmenitiesRelations = relations(
 export const amenitiesRelations = relations(amenitiesTable, ({ many }) => ({
   properties: many(propertyAmenitiesTable),
 }));
+
+export const propertyClassesRelations = relations(
+  propertyClassesTable,
+  ({ many }) => ({
+    properties: many(propertyPropertyClassesTable),
+  }),
+);
+
+export const propertyPropertyClassesRelations = relations(
+  propertyPropertyClassesTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyPropertyClassesTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+    class: one(propertyClassesTable, {
+      fields: [propertyPropertyClassesTable.classId],
+      references: [propertyClassesTable.id],
+    }),
+  }),
+);
 
 export const propertyAvailabilityRelations = relations(
   propertyAvailabilityTable,

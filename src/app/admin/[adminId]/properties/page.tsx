@@ -1,6 +1,6 @@
 "use client";
 
-import { Edit, MapPin, Plus } from "lucide-react";
+import { ArrowLeft, Edit, MapPin, Plus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -97,10 +97,10 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="mt-30 flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Carregando propriedades...</p>
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-slate-400"></div>
+          <p className="mt-2 text-slate-300">Carregando propriedades...</p>
         </div>
       </div>
     );
@@ -111,72 +111,90 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="mt-32 space-y-6">
       {/* Header da página */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="mb-4 text-2xl font-bold text-slate-100">
             Gestão de Imóveis
           </h1>
-          <p className="text-gray-600">
-            Gerencie todos os imóveis cadastrados na plataforma
-          </p>
+          <div className="mt-1 flex items-center gap-8">
+            <Link href={`/admin/${adminId}`}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar
+              </Button>
+            </Link>
+            <p className="text-slate-300">
+              Gerencie todos os imóveis cadastrados na plataforma
+            </p>
+          </div>
         </div>
         <Link href={`/admin/${adminId}/properties/add`}>
-          <Button>
+          <Button className="bg-blue-600 hover:bg-blue-700">
             <Plus className="mr-2 h-4 w-4" />
-            Novo Imóvel
+            Adicionar Imóvel
           </Button>
         </Link>
       </div>
 
       {/* Estatísticas */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-        <Card>
+        <Card className="border-slate-700 bg-slate-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-slate-300">
               Total de Imóveis
             </CardTitle>
-            <Plus className="text-muted-foreground h-4 w-4" />
+            <Plus className="h-4 w-4 text-slate-400" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{properties.length}</div>
+            <div className="text-2xl font-bold text-slate-100">
+              {properties.length}
+            </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-slate-700 bg-slate-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Ativos
+            </CardTitle>
             <div className="h-4 w-4 rounded-full bg-green-500"></div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-green-400">
               {properties.filter((p) => p.status === "active").length}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-slate-700 bg-slate-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-300">
+              Inativos
+            </CardTitle>
             <div className="h-4 w-4 rounded-full bg-red-500"></div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-red-400">
               {properties.filter((p) => p.status !== "active").length}
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-slate-700 bg-slate-800">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-sm font-medium text-slate-300">
               Valor Médio/Diária
             </CardTitle>
-            <span className="text-muted-foreground text-xs">R$</span>
+            <span className="text-xs text-slate-400">R$</span>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-slate-100">
               {properties.length > 0
                 ? (
                     properties
@@ -191,26 +209,26 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
       </div>
 
       {/* Lista de imóveis */}
-      <Card>
+      <Card className="border-slate-700 bg-slate-800">
         <CardHeader>
-          <CardTitle>Imóveis Cadastrados</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-slate-100">Imóveis Cadastrados</CardTitle>
+          <CardDescription className="text-slate-400">
             Lista de todos os imóveis cadastrados no sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
           {properties.length === 0 ? (
             <div className="py-8 text-center">
-              <Plus className="mx-auto h-12 w-12 text-gray-400" />
-              <h3 className="mt-2 text-sm font-medium text-gray-900">
+              <Plus className="mx-auto h-12 w-12 text-slate-400" />
+              <h3 className="mt-2 text-sm font-medium text-slate-200">
                 Nenhum imóvel encontrado
               </h3>
-              <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-slate-400">
                 Comece adicionando seu primeiro imóvel à plataforma.
               </p>
               <div className="mt-6">
                 <Link href={`/admin/${adminId}/properties/add`}>
-                  <Button>
+                  <Button className="bg-blue-600 hover:bg-blue-700">
                     <Plus className="mr-2 h-4 w-4" />
                     Adicionar Primeiro Imóvel
                   </Button>
@@ -221,29 +239,38 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Título</TableHead>
-                    <TableHead>Localização</TableHead>
-                    <TableHead>Diária</TableHead>
-                    <TableHead>Capacidade</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                  <TableRow className="border-slate-700">
+                    <TableHead className="text-slate-300">ID</TableHead>
+                    <TableHead className="text-slate-300">Título</TableHead>
+                    <TableHead className="text-slate-300">
+                      Localização
+                    </TableHead>
+                    <TableHead className="text-slate-300">Diária</TableHead>
+                    <TableHead className="text-slate-300">Capacidade</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-right text-slate-300">
+                      Ações
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {properties.map((property) => (
-                    <TableRow key={property.id}>
-                      <TableCell className="font-medium">
+                    <TableRow
+                      key={property.id}
+                      className="border-slate-700 hover:bg-slate-700/50"
+                    >
+                      <TableCell className="font-medium text-slate-200">
                         #{property.id}
                       </TableCell>
                       <TableCell>
-                        <div className="font-medium">{property.title}</div>
+                        <div className="font-medium text-slate-200">
+                          {property.title}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3 text-gray-400" />
-                          <span className="text-sm">
+                          <MapPin className="h-3 w-3 text-slate-400" />
+                          <span className="text-sm text-slate-300">
                             {property.neighborhood &&
                             property.city &&
                             property.state
@@ -254,7 +281,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="font-medium">
+                        <span className="font-medium text-slate-200">
                           R${" "}
                           {property.dailyRate
                             ? Number(property.dailyRate).toFixed(2)
@@ -262,7 +289,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                         </span>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm">
+                        <span className="text-sm text-slate-300">
                           {property.maxGuests} pessoas
                         </span>
                       </TableCell>
@@ -270,8 +297,8 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                         <span
                           className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
                             property.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-red-100 text-red-800"
+                              ? "border border-green-700 bg-green-900/30 text-green-400"
+                              : "border border-red-700 bg-red-900/30 text-red-400"
                           }`}
                         >
                           {property.status === "active" ? "Ativo" : "Inativo"}
@@ -282,7 +309,11 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                           <Link
                             href={`/admin/${adminId}/properties/${property.id}`}
                           >
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+                            >
                               <Edit className="h-3 w-3" />
                             </Button>
                           </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, X } from "lucide-react";
+import { ArrowLeft, Loader, Plus, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -33,6 +33,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   createProperty,
   getAmenities,
+  getPropertyClasses,
   type PropertyFormData,
 } from "@/lib/property-actions";
 
@@ -50,7 +51,9 @@ const propertyFormSchema = z.object({
   areaM2: z.number().optional(),
   allowsPets: z.boolean(),
   propertyStyle: z.string().min(1, "Selecione o tipo do imóvel"),
-  propertyClass: z.string().min(1, "Selecione a classe do imóvel"),
+  propertyClasses: z
+    .array(z.string())
+    .min(1, "Selecione pelo menos uma classe"),
   minimumStay: z.number().min(1, "Estadia mínima deve ser pelo menos 1 noite"),
   checkInTime: z.string().optional(),
   checkOutTime: z.string().optional(),
@@ -97,6 +100,9 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
   const [amenities, setAmenities] = useState<
     Array<{ id: number; name: string; category: string }>
   >([]);
+  const [propertyClassesList, setPropertyClassesList] = useState<
+    Array<{ id: number; name: string; description: string | null }>
+  >([]);
 
   const form = useForm<PropertyFormValues>({
     resolver: zodResolver(propertyFormSchema),
@@ -106,7 +112,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
       minimumStay: 1,
       checkInTime: "15:00",
       checkOutTime: "11:00",
-      propertyClass: "Normal",
+      propertyClasses: [],
       includesKitchenUtensils: false,
       includesFurniture: false,
       includesElectricity: false,
@@ -120,9 +126,10 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     },
   });
 
-  // Carregar comodidades quando o componente monta
+  // Carregar comodidades e classes quando o componente monta
   useEffect(() => {
     getAmenities().then(setAmenities);
+    getPropertyClasses().then(setPropertyClassesList);
   }, []);
 
   const handleImageUpload = async (
@@ -220,13 +227,6 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     "Loft",
   ];
 
-  const propertyClasses = [
-    "Normal",
-    "Imóvel em Destaque",
-    "Destaque em Casas",
-    "Destaque em Apartamentos",
-  ];
-
   // Agrupar comodidades por categoria
   const amenitiesByCategory = amenities.reduce(
     (acc, amenity) => {
@@ -240,15 +240,9 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
   );
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative mt-26 min-h-screen">
       {/* Background Image - Fixed */}
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url('/assets/hero-background.jpg')",
-          backgroundAttachment: "fixed",
-        }}
-      >
+      <div className="fixed inset-0 bg-cover bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-black/60"></div>
       </div>
 
@@ -257,19 +251,18 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
         <div className="mb-8 flex items-center gap-4">
           <Link href={`/admin/${adminId}/properties`}>
             <Button
-              variant="outline"
               size="sm"
-              className="border-blue-400/30 bg-blue-500/10 text-blue-300 backdrop-blur-sm transition-all duration-200 hover:border-blue-400 hover:bg-blue-500/20"
+              className="border border-blue-400/10 bg-[#182334] text-gray-200 backdrop-blur-sm transition-all duration-200 hover:bg-[#182334] hover:brightness-105"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar
             </Button>
           </Link>
-          <div>
-            <h1 className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-4xl font-bold text-transparent">
+          <div className="ml-10">
+            <h1 className="text-4xl font-bold text-gray-100">
               Adicionar Novo Imóvel
             </h1>
-            <p className="mt-2 text-slate-400">
+            <p className="mt-2 text-gray-200">
               Preencha as informações para cadastrar um novo imóvel
             </p>
           </div>
@@ -282,18 +275,23 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
           >
             {/* Dados Básicos */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-blue-600/10 to-cyan-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  📋 Informações Básicas
+                  Informações Básicas
                 </CardTitle>
+
+                <span className="text-sm text-gray-200">
+                  Adicione aqui as informações principais do imóvel, como
+                  título, descrição, capacidade, tipo, classe, entre outros.
+                </span>
               </CardHeader>
               <CardContent className="space-y-6 p-6">
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <FormField
                     control={form.control}
                     name="title"
                     render={({ field }) => (
-                      <FormItem className="md:col-span-2">
+                      <FormItem>
                         <FormLabel className="text-sm font-medium text-slate-200">
                           Título do Anúncio
                         </FormLabel>
@@ -342,41 +340,64 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       </FormItem>
                     )}
                   />
-
-                  <FormField
-                    control={form.control}
-                    name="propertyClass"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-slate-200">
-                          Classe do Imóvel
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors focus:border-blue-400 focus:ring-blue-400/20">
-                              <SelectValue placeholder="Selecione a classe" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="border-slate-600 bg-slate-800">
-                            {propertyClasses.map((propertyClass) => (
-                              <SelectItem
-                                key={propertyClass}
-                                value={propertyClass}
-                                className="text-slate-100 focus:bg-slate-700"
-                              >
-                                {propertyClass}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="propertyClasses"
+                  render={() => (
+                    <FormItem>
+                      <div className="mb-4">
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Classes do Imóvel (selecione pelo menos 1)
+                        </FormLabel>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                        {propertyClassesList.map((item) => (
+                          <FormField
+                            key={item.id}
+                            control={form.control}
+                            name="propertyClasses"
+                            render={({ field }) => {
+                              return (
+                                <FormItem
+                                  key={item.id}
+                                  className="flex flex-row items-start space-y-0 space-x-3"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(
+                                        item.id.toString(),
+                                      )}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([
+                                              ...field.value,
+                                              item.id.toString(),
+                                            ])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) =>
+                                                  value !== item.id.toString(),
+                                              ),
+                                            );
+                                      }}
+                                      className="border-slate-600 bg-slate-700/50 text-blue-400 focus:ring-blue-400/20"
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="text-sm font-normal text-slate-200">
+                                    {item.name}
+                                  </FormLabel>
+                                </FormItem>
+                              );
+                            }}
+                          />
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -391,7 +412,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                           {...field}
                           className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                           rows={3}
-                          placeholder="Descreva brevemente o imóvel..."
+                          placeholder="Essa descrição aparecerá em cards menores de visualização do seu imóvel..."
                         />
                       </FormControl>
                       <FormMessage />
@@ -412,7 +433,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                           {...field}
                           className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                           rows={5}
-                          placeholder="Descreva detalhadamente o imóvel, suas características e diferenciais..."
+                          placeholder="Essa descrição aparecerá na página individual do imóvel"
                         />
                       </FormControl>
                       <FormMessage />
@@ -598,10 +619,13 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
             {/* Preços */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-green-600/10 to-emerald-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  💰 Preços e Taxas
+                  Preços e Taxas
                 </CardTitle>
+                <span className="text-sm text-gray-200">
+                  Adicione aqui as informações sobre preços e taxas do imóvel.
+                </span>
               </CardHeader>
               <CardContent className="space-y-6 p-6">
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -778,10 +802,14 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
             {/* Serviços Inclusos */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-purple-600/10 to-violet-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  ✨ Serviços Inclusos
+                  Serviços Inclusos
                 </CardTitle>
+                <span className="text-sm text-gray-200">
+                  Seleciones alguns serviços que já estão inclusos no valor do
+                  imóvel.
+                </span>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
@@ -822,10 +850,13 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
             {/* Localização */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-orange-600/10 to-red-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  📍 Localização
+                  Localização
                 </CardTitle>
+                <span className="text-sm text-gray-200">
+                  Adicione aqui a localização do imóvel.
+                </span>
               </CardHeader>
               <CardContent className="space-y-6 p-6">
                 <FormField
@@ -936,10 +967,15 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
             {/* Imagens */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-pink-600/10 to-rose-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  📷 Imagens do Imóvel
+                  Imagens do Imóvel
                 </CardTitle>
+                <span className="text-sm text-gray-200">
+                  Adicione imagens do imóvel em alta qualidade. Recomendamos
+                  imagens com resolução de 1200x800px, máximo 5MB cada, nos
+                  formatos JPG, PNG ou WEBP para melhor visualização.
+                </span>
               </CardHeader>
               <CardContent className="space-y-4 p-6">
                 <div className="space-y-4">
@@ -1007,10 +1043,13 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
             {/* Comodidades */}
             <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-              <CardHeader className="border-b border-slate-700/50 bg-gradient-to-r from-teal-600/10 to-cyan-600/10">
+              <CardHeader>
                 <CardTitle className="text-2xl font-semibold text-slate-100">
-                  🏠 Comodidades
+                  Comodidades
                 </CardTitle>
+                <span className="text-sm text-gray-200">
+                  Selecione aqui as comodidades disponíveis para o imóvel.
+                </span>
               </CardHeader>
               <CardContent className="p-6">
                 {Object.entries(amenitiesByCategory).map(
@@ -1052,16 +1091,19 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="transform rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-12 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-blue-700 hover:to-cyan-700 hover:shadow-2xl disabled:transform-none disabled:opacity-50"
+                className="transform rounded-lg bg-[#182334] px-12 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-blue-700 hover:to-cyan-700 hover:shadow-2xl disabled:transform-none disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
-                    <div className="mr-3 h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
-                    Criando Imóvel...
+                    <div className="mx-auto mr-3 h-5 w-5 animate-spin text-center">
+                      <Loader />
+                    </div>
                   </>
                 ) : (
                   <>
-                    <span className="mr-2">🏠</span>
+                    <span className="mr-2">
+                      <Plus />
+                    </span>
                     Criar Imóvel
                   </>
                 )}

@@ -5,9 +5,11 @@ import { and, eq, ilike } from "drizzle-orm";
 import { db } from "@/app/db";
 import {
   propertiesTable,
+  propertyClassesTable,
   propertyImagesTable,
   propertyLocationTable,
   propertyPricingTable,
+  propertyPropertyClassesTable,
 } from "@/app/db/schema";
 
 export interface PropertyWithDetails {
@@ -321,6 +323,7 @@ export async function getPropertiesByClass(
       }
     };
 
+    // Buscar propriedades que tenham a classe especificada na nova estrutura
     const properties = await db
       .select({
         // Dados da propriedade
@@ -332,7 +335,6 @@ export async function getPropertiesByClass(
         bathrooms: propertiesTable.bathrooms,
         allowsPets: propertiesTable.allowsPets,
         propertyStyle: propertiesTable.propertyStyle,
-        propertyClass: propertiesTable.propertyClass,
         status: propertiesTable.status,
         // Dados de localização
         fullAddress: propertyLocationTable.fullAddress,
@@ -352,27 +354,36 @@ export async function getPropertiesByClass(
         propertyPricingTable,
         eq(propertiesTable.id, propertyPricingTable.propertyId),
       )
+      .innerJoin(
+        propertyPropertyClassesTable,
+        eq(propertiesTable.id, propertyPropertyClassesTable.propertyId),
+      )
+      .innerJoin(
+        propertyClassesTable,
+        eq(propertyPropertyClassesTable.classId, propertyClassesTable.id),
+      )
       .where(
         and(
           eq(propertiesTable.status, "active"),
-          ilike(propertiesTable.propertyClass, `%${propertyClass}%`),
+          eq(propertyClassesTable.name, propertyClass),
         ),
-      );
+      )
+      .orderBy(propertiesTable.createdAt);
 
+    // Buscar imagens para cada propriedade
     const propertiesWithImages: PropertyWithDetails[] = [];
 
     for (const property of properties) {
       // Buscar imagens para cada propriedade
       const images = await db
         .select({
-          id: propertyImagesTable.id,
           imageUrl: propertyImagesTable.imageUrl,
           altText: propertyImagesTable.altText,
           isMain: propertyImagesTable.isMain,
-          displayOrder: propertyImagesTable.displayOrder,
         })
         .from(propertyImagesTable)
-        .where(eq(propertyImagesTable.propertyId, property.id));
+        .where(eq(propertyImagesTable.propertyId, property.id))
+        .orderBy(propertyImagesTable.displayOrder);
 
       // Filtrar e validar imagens
       const validImages = images.filter((img) => isValidImageUrl(img.imageUrl));

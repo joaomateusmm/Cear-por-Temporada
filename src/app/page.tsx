@@ -1,7 +1,19 @@
-import { Dog, MapPin, Search, Star, Users, Utensils, Wifi } from "lucide-react";
+import {
+  BedDouble,
+  Bookmark,
+  Instagram,
+  MapPin,
+  Search,
+  Share2,
+  Toilet,
+  Users,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import AutoCarousel from "@/components/AutoCarousel";
+import ScrollingHeader from "@/components/ScrollingHeader";
+import { TikTokIcon, WhatsAppIcon } from "@/components/SocialIcons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -69,20 +81,22 @@ function PropertySection({
                       className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3"
                     >
                       <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-xl">
-                        <div className="relative h-64">
-                          <Image
-                            src={imageUrl}
-                            alt={property.title}
-                            fill
-                            className="object-cover"
-                          />
-                          <div className="absolute top-4 right-4">
-                            <Badge
-                              variant="secondary"
-                              className="bg-white/90 text-gray-900"
-                            >
-                              R$ {dailyPrice.toFixed(0)}/noite
-                            </Badge>
+                        <div className="relative h-64 px-6 pb-0">
+                          <div className="relative h-full overflow-hidden rounded-md">
+                            <Image
+                              src={imageUrl}
+                              alt={property.title}
+                              fill
+                              className="object-cover shadow-md"
+                            />
+                            <div className="absolute top-4 right-4">
+                              <Badge
+                                variant="secondary"
+                                className="bg-white/90 text-gray-900"
+                              >
+                                R$ {dailyPrice.toFixed(0)}/noite
+                              </Badge>
+                            </div>
                           </div>
                         </div>
 
@@ -104,44 +118,75 @@ function PropertySection({
                             {property.shortDescription}
                           </p>
 
-                          <div className="mb-4 flex items-center gap-4 text-sm text-gray-600">
+                          <div className="mb-4 flex items-center gap-5 text-sm text-gray-600">
                             <div className="flex items-center gap-1">
-                              <Users className="h-4 w-4" />
-                              <span>{property.maxGuests} hóspedes</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>{property.bedrooms} quartos</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span>{property.bathrooms} banheiros</span>
-                            </div>
-                          </div>
-
-                          <div className="mb-4 flex items-center gap-2">
-                            <div className="flex items-center gap-1 text-gray-500">
-                              <Wifi className="h-4 w-4" />
-                            </div>
-                            {property.allowsPets && (
-                              <div className="flex items-center gap-1 text-gray-500">
-                                <Dog className="h-4 w-4" />
-                              </div>
-                            )}
-                            <div className="flex items-center gap-1 text-gray-500">
-                              <Utensils className="h-4 w-4" />
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="font-medium">4.8</span>
-                              <span className="text-sm text-gray-500">
-                                (Novo)
+                              <span className="flex items-center gap-1">
+                                {property.maxGuests}{" "}
+                                <Users className="h-4 w-4" />
                               </span>
                             </div>
-                            <Button size="sm" variant="outline">
+                            <div className="flex items-center gap-1">
+                              <span className="flex items-center gap-1">
+                                {property.bedrooms}{" "}
+                                <BedDouble className="h-4 w-4" />
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="flex items-center gap-1">
+                                {property.bathrooms}{" "}
+                                <Toilet className="h-4 w-4" />
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* <div className="mb-4 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1 text-gray-500">
+                                <Wifi className="h-4 w-4" />
+                              </div>
+                              {property.allowsPets && (
+                                <div className="flex items-center gap-1 text-gray-500">
+                                  <Dog className="h-4 w-4" />
+                                </div>
+                              )}
+                              <div className="flex items-center gap-1 text-gray-500">
+                                <Utensils className="h-4 w-4" />
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm text-gray-600">
+                                (Nota)
+                              </span>
+                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                              <span className="font-medium">4.8</span>
+                              <span className="text-sm text-gray-500"></span>
+                            </div>
+                          </div> ADICIONAR AVALIAÇOES NO FUTURO */}
+
+                          <div className="-mb-7 flex items-center justify-between">
+                            <Button
+                              className="bg-[#101828] px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
+                              size="sm"
+                              variant="outline"
+                            >
                               Ver Detalhes
                             </Button>
+                            <div className="space-x-2">
+                              <Button
+                                className="bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
+                                size="sm"
+                                variant="outline"
+                              >
+                                <Share2 />
+                              </Button>
+                              <Button
+                                className="bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
+                                size="sm"
+                                variant="outline"
+                              >
+                                <Bookmark />
+                              </Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -180,96 +225,41 @@ export default async function Home() {
   const apartments = await getPropertiesByType("Apartamento");
   const houses = await getPropertiesByType("Casa");
 
+  // Buscar imóveis em destaque por tipo específico
+  const featuredHouses = await getPropertiesByClass("Destaque em Casas");
+  const featuredApartments = await getPropertiesByClass(
+    "Destaque em Apartamentos",
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Banner Principal com Header integrado */}
-      <section
-        className="relative bg-cover bg-center bg-no-repeat text-white"
-        style={{
-          backgroundImage: "url('/assets/hero-background.jpg')",
-        }}
-      >
-        {/* Overlay escuro */}
-        <div className="absolute inset-0 bg-black/50"></div>
+      {/* Header fixo que aparece/desaparece no scroll */}
+      <ScrollingHeader />
 
-        {/* Header */}
-        <header className="relative z-10 border-b border-gray-50/10 bg-black/5 backdrop-blur-md">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-24 items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="text-2xl font-bold text-white">Logo</div>
-              </div>
-              <nav className="hidden items-center gap-6 font-medium md:flex">
-                <Link
-                  href="/"
-                  className="text-white/90 transition-colors hover:text-white"
-                >
-                  Início
-                </Link>
-                <a
-                  href="#"
-                  className="text-white/90 transition-colors hover:text-white"
-                >
-                  Destinos
-                </a>
-                <a
-                  href="#"
-                  className="text-white/90 transition-colors hover:text-white"
-                >
-                  Sobre
-                </a>
-                <a
-                  href="#"
-                  className="text-white/90 transition-colors hover:text-white"
-                >
-                  Contato
-                </a>
-              </nav>
-              <div className="flex items-center">
-                <Button className="rounded-3xl bg-gray-300/20 p-6 px-8 backdrop-blur-md duration-500 hover:bg-gray-300/40">
-                  Começar
-                </Button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Conteúdo do Banner */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-32 text-start sm:px-6 lg:px-8">
-          <h1 className="mb-6 text-4xl font-bold md:text-6xl">
-            Descubra o Ceará
-          </h1>
-          <p className="mb-8 max-w-2xl text-xl text-gray-300 md:text-lg">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo
-            consequatur sapiente necessitatibus magnam possimus, minus
-            consectetur cumque corrupti alias, dignissimos, dicta molestiae
-            nulla rem obcaecati. Est recusandae iste quisquam aspernatur.
-          </p>
-          <Button className="h-15 w-[30%] rounded-full border border-gray-300/40 bg-gray-300/20 backdrop-blur-sm hover:bg-gray-300/30">
-            Saiba Mais
-          </Button>
-        </div>
+      {/* Banner Principal com Carrossel */}
+      <section className="relative min-h-[60vh] overflow-hidden pt-16 text-white">
+        <AutoCarousel />
       </section>
 
       {/* Área de Pesquisa */}
-      <section className="relative z-20 -mt-16 mb-4">
+      <section className="relative z-20 -mt-22 mb-4">
         <div className="mx-auto max-w-[70%] px-4 sm:px-6 lg:px-8">
           <Card className="rounded-full border-0 bg-white/95 shadow-lg backdrop-blur-sm">
             <CardContent className="p-8">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Localização
+                    Onde vc quer morar?
                   </label>
                   <Input
                     type="text"
-                    placeholder="Onde você quer ficar?"
+                    placeholder="Procure por cidades, bairros..."
                     className="h-12 w-full"
                   />
                 </div>
                 <div>
                   <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Check-in
+                    Por quanto tempo?
                   </label>
                   <Input type="date" className="h-12 w-full" />
                 </div>
@@ -282,7 +272,7 @@ export default async function Home() {
                 <div className="flex items-end">
                   <Button
                     size="lg"
-                    className="h-12 w-full bg-blue-600 hover:bg-blue-700"
+                    className="hover:bg-brightness-105 h-12 w-full bg-[#101828]"
                   >
                     <Search className="mr-2 h-5 w-5" />
                     Buscar
@@ -295,54 +285,197 @@ export default async function Home() {
       </section>
 
       {/* Seções de Imóveis por Tipo */}
-      <PropertySection
-        title="Imóveis em Destaque"
-        description="Selecionamos as melhores opções para tornar sua viagem inesquecível"
-        properties={featuredProperties}
-      />
+      <section id="imoveis-destaque">
+        <PropertySection
+          title="Imóveis em Destaque"
+          description="Selecionamos as melhores opções para tornar sua viagem inesquecível."
+          properties={featuredProperties}
+        />
+      </section>
 
-      <PropertySection
-        title="Apartamentos"
-        description="Apartamentos modernos e confortáveis em localização privilegiada"
-        properties={apartments}
-      />
+      <section id="apartamentos">
+        <PropertySection
+          title="Apartamentos"
+          description=" Todos os nossos apartamentos modernos e confortáveis em localização privilegiada"
+          properties={apartments}
+        />
+      </section>
 
-      <PropertySection
-        title="Casas"
-        description="Casas espaçosas para você e sua família desfrutarem com total privacidade"
-        properties={houses}
-      />
+      <section id="casas">
+        <PropertySection
+          title="Casas"
+          description="Todas as nossas casas espaçosas para você e sua família desfrutarem com total privacidade"
+          properties={houses}
+        />
+      </section>
+
+      {/* Seção de Destinos */}
+      <section id="destinos" className="bg-[#101828] py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-50 md:text-4xl">
+              Destinos Populares
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-400">
+              Explore os destinos mais procurados pelos nossos hóspedes no Ceará
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {/* Linha 1 */}
+            <Link
+              href="#fortaleza"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://i.pinimg.com/1200x/ea/a9/41/eaa9412926e807479d07745b6de1bb7b.jpg')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">Fortaleza</h3>
+              </div>
+            </Link>
+
+            <Link
+              href="#jericoacoara"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://media-cdn.tripadvisor.com/media/attractions-splice-spp-720x480/07/ba/0b/99.jpg')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">Jericoacoara</h3>
+              </div>
+            </Link>
+
+            <Link
+              href="#canoa-quebrada"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/09/ab/43/3d/praia-de-canoa-quebrada.jpg?w=1200&h=-1&s=1')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">
+                  Canoa Quebrada
+                </h3>
+              </div>
+            </Link>
+
+            {/* Linha 2 */}
+            <Link
+              href="#cumbuco"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://turismodenatureza.com.br/wp-content/webp-express/webp-images/uploads/2024/07/O_que_Fazer_na_Praia_do_Cumbuco-1199x630.jpg.webp')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">Cumbuco</h3>
+              </div>
+            </Link>
+
+            <Link
+              href="#beach-park"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://beachpark.com.br/app/uploads/2025/05/Ajuste-Banner-Site-Institucional-1920-x-770.webp')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">Beach Park</h3>
+              </div>
+            </Link>
+
+            <Link
+              href="#outros"
+              className="group relative h-64 overflow-hidden rounded-lg shadow-md transition-transform duration-500 hover:scale-[1.02]"
+            >
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{
+                  backgroundImage:
+                    "url('https://blog.blablacar.com.br/wp-content/uploads/2024/02/praia-de-iracema-fortaleza.webp')",
+                }}
+              />
+              <div className="absolute inset-0 bg-black/40 transition-colors duration-300 group-hover:bg-black/30" />
+              <div className="relative flex h-full items-center justify-center">
+                <h3 className="text-2xl font-bold text-white">Outros</h3>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Novas Seções de Destaques por Tipo */}
+      <section id="casas-destaque">
+        <PropertySection
+          title="Destaque em: Casas"
+          description="Nossos imóveis mais procurados pelos clientes em sua categoria"
+          properties={featuredHouses}
+        />
+      </section>
+
+      <section id="apartamentos-destaque">
+        <PropertySection
+          title="Destaque em: Apartamentos"
+          description="Nossos imóveis mais procurados pelos clientes em sua categoria"
+          properties={featuredApartments}
+        />
+      </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 py-16 text-white">
+      <footer id="footer" className="bg-gray-900 py-16 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
-            <div className="md:col-span-2">
-              <div className="mb-4 text-2xl font-bold">
-                🏖️ Ceará por Temporada
-              </div>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="md:col-span-2 lg:col-span-1">
+              <div className="mb-4 text-2xl font-bold">Logo</div>
               <p className="mb-4 max-w-md text-gray-300">
                 A plataforma líder em aluguel de imóveis por temporada no Ceará.
                 Conectamos viajantes aos melhores destinos do estado.
               </p>
               <div className="flex gap-4">
                 <a
-                  href="#"
+                  href="https://www.tiktok.com/@cearaportemporada?ug_source=op.auth&ug_term=Linktr.ee&utm_source=awyc6vc625ejxp86&utm_campaign=tt4d_profile_link&_r=1"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
-                  Facebook
+                  <TikTokIcon className="h-6 w-6" />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/cearaportemporada/"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
-                  Instagram
+                  <Instagram className="h-6 w-6" />
                 </a>
                 <a
-                  href="#"
+                  href="https://api.whatsapp.com/send/?phone=5585992718222&text&type=phone_number&app_absent=0"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
-                  WhatsApp
+                  <WhatsAppIcon className="h-6 w-6" />
                 </a>
               </div>
             </div>
@@ -389,6 +522,26 @@ export default async function Home() {
                 <li>
                   <a href="#" className="transition-colors hover:text-white">
                     Termos de Uso
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="mb-4 font-semibold">Proprietário</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Adicione seu Imóvel
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Como funciona?
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="transition-colors hover:text-white">
+                    Tira dúvidas
                   </a>
                 </li>
                 <li>

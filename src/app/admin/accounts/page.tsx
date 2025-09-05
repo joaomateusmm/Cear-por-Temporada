@@ -53,10 +53,10 @@ export default function AdminAccountsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center mask-t-from-30% py-12">
         <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-gray-600">Carregando contas...</p>
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-300"></div>
+          <p className="mt-2 text-gray-200">Carregando contas...</p>
         </div>
       </div>
     );

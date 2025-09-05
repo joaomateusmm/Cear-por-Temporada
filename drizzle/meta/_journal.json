@@ -15,6 +15,13 @@
       "when": 1756914085878,
       "tag": "0001_mute_titanium_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757014760791,
+      "tag": "0002_fancy_vertigo",
+      "breakpoints": true
     }
   ]
 }

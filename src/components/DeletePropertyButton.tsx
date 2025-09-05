@@ -59,22 +59,28 @@ export function DeletePropertyButton({
           variant="outline"
           size="sm"
           disabled={isDeleting}
-          className="text-red-600 hover:text-red-700 disabled:opacity-50"
+          className="border-slate-600 bg-slate-800 text-red-400 hover:border-red-600 hover:bg-red-900/20 hover:text-red-300 disabled:opacity-50"
         >
           <Trash2 className="h-3 w-3" />
           {isDeleting && <span className="ml-1 text-xs">Excluindo...</span>}
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="border-slate-700 bg-slate-800">
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir Imóvel</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-slate-100">
+            Excluir Imóvel
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-slate-300">
             Tem certeza que deseja excluir o imóvel{" "}
-            <strong>&quot;{propertyTitle}&quot;</strong>?
+            <strong className="text-slate-100">
+              &quot;{propertyTitle}&quot;
+            </strong>
+            ?
             <br />
             <br />
-            Esta ação é <strong>IRREVERSÍVEL</strong> e irá remover:
-            <ul className="mt-2 list-inside list-disc space-y-1">
+            Esta ação é <strong className="text-red-400">IRREVERSÍVEL</strong> e
+            irá remover:
+            <ul className="mt-2 list-inside list-disc space-y-1 text-slate-400">
               <li>Todas as fotos e imagens</li>
               <li>Todas as comodidades</li>
               <li>Todos os preços e taxas</li>
@@ -86,10 +92,12 @@ export function DeletePropertyButton({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel className="border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600">
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            className="bg-red-600 hover:bg-red-700"
+            className="bg-red-600 text-white hover:bg-red-700"
             disabled={isDeleting}
           >
             {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}

@@ -56,7 +56,7 @@ export default async function AdminDashboard({ params }: AdminDashboardProps) {
     <div>
       {/* Main Content */}
       <div>
-        <div className="space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mt-26 space-y-8 px-4 py-8 sm:px-6 lg:px-8">
           {/* Welcome Section */}
           <div className="rounded-lg border border-slate-700 bg-slate-800 p-8 text-center shadow-lg">
             <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-700">
