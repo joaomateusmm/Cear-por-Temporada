@@ -140,7 +140,7 @@ export default function ScrollingHeader() {
               Contato
             </a>
             <a href="#" className="text-[#101828]">
-              Proprietários
+              Proprietário
             </a>
           </nav>
           <div className="flex items-center gap-2">

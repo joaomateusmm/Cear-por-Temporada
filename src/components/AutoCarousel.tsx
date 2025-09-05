@@ -44,23 +44,18 @@ export default function AutoCarousel() {
   const [beachParkProperty, setBeachParkProperty] =
     useState<PropertyData | null>(null);
   const [aDoisProperty, setADoisProperty] = useState<PropertyData | null>(null);
-  const [paracuruProperty, setParacuruProperty] = useState<PropertyData | null>(
-    null,
-  );
 
   // Carregar imóveis por classe
   useEffect(() => {
     async function loadBannerProperties() {
       try {
-        const [beachPark, aDois, paracuru] = await Promise.all([
+        const [beachPark, aDois] = await Promise.all([
           getPropertiesByClass("Imovel Banner Beach Park"),
           getPropertiesByClass("Imovel Banner a Dois"),
-          getPropertiesByClass("Imovel Banner Paracuru"),
         ]);
 
         setBeachParkProperty(beachPark);
         setADoisProperty(aDois);
-        setParacuruProperty(paracuru);
       } catch (error) {
         console.error("Erro ao carregar imóveis dos banners:", error);
       }
@@ -380,49 +375,6 @@ export default function AutoCarousel() {
                     "Apartamento moderno com vista panorâmica do mar, perfeito para casais românticos.",
                     "R$ 280/noite",
                     "Fortaleza, Ceará",
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </CarouselItem>
-
-        {/* Slide 3 - paracuru */}
-        <CarouselItem className="relative min-h-[70vh]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/banners/paracuru.jpeg')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center">
-                {/* Texto à esquerda */}
-                <div className="space-y-4 text-left">
-                  <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
-                    Paracuru
-                  </h1>
-                  <p className="max-w-2xl text-lg text-white/90 md:text-xl">
-                    Descubra a tranquilidade de Paracuru. Imóveis exclusivos em
-                    uma das praias mais preservadas do Ceará, perfeita para quem
-                    busca paz e contato com a natureza.
-                  </p>
-                  <Button className="rounded-full border border-gray-500/20 bg-[#101828]/90 px-12 py-6 text-lg backdrop-blur-md duration-300 hover:bg-[#101828]">
-                    Saiba Mais
-                  </Button>
-                </div>
-
-                {/* Card do imóvel à direita */}
-                <div className="hidden lg:block">
-                  {renderPropertyCard(
-                    paracuruProperty,
-                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-                    "Casa de Praia Paracuru",
-                    "Casa charmosa com vista para o mar em uma das praias mais tranquilas do Ceará.",
-                    "R$ 320/noite",
-                    "Paracuru, Ceará",
                   )}
                 </div>
               </div>

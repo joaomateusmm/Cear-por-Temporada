@@ -3,7 +3,6 @@ import {
   Bookmark,
   Instagram,
   MapPin,
-  Search,
   Share2,
   Toilet,
   Users,
@@ -11,6 +10,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
+import { AdvancedSearch } from "@/components/AdvancedSearch";
 import AutoCarousel from "@/components/AutoCarousel";
 import ScrollingHeader from "@/components/ScrollingHeader";
 import { TikTokIcon, WhatsAppIcon } from "@/components/SocialIcons";
@@ -24,7 +24,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Input } from "@/components/ui/input";
 import {
   getPropertiesByClass,
   getPropertiesByType,
@@ -241,44 +240,20 @@ export default async function Home() {
         <AutoCarousel />
       </section>
 
-      {/* Área de Pesquisa */}
+      {/* Área de Pesquisa Avançada */}
       <section className="relative z-20 -mt-22 mb-4">
         <div className="mx-auto max-w-[70%] px-4 sm:px-6 lg:px-8">
-          <Card className="rounded-full border-0 bg-white/95 shadow-lg backdrop-blur-sm">
+          <Card className="rounded-lg border-0 bg-white/95 shadow-lg backdrop-blur-sm">
             <CardContent className="p-8">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
-                <div className="md:col-span-2">
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Onde vc quer morar?
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Procure por cidades, bairros..."
-                    className="h-12 w-full"
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Por quanto tempo?
-                  </label>
-                  <Input type="date" className="h-12 w-full" />
-                </div>
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-700">
-                    Check-out
-                  </label>
-                  <Input type="date" className="h-12 w-full" />
-                </div>
-                <div className="flex items-end">
-                  <Button
-                    size="lg"
-                    className="hover:bg-brightness-105 h-12 w-full bg-[#101828]"
-                  >
-                    <Search className="mr-2 h-5 w-5" />
-                    Buscar
-                  </Button>
-                </div>
+              <div className="mb-4 text-center">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Faça sua reserva online
+                </h2>
+                <p className="text-gray-600">
+                  Encontre o imóvel perfeito para sua estadia
+                </p>
               </div>
+              <AdvancedSearch />
             </CardContent>
           </Card>
         </div>

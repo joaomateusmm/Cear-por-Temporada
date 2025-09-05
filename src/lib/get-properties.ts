@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, ilike } from "drizzle-orm";
+import { and, eq, gte, ilike, lte } from "drizzle-orm";
 
 import { db } from "@/app/db";
 import {
@@ -418,6 +418,105 @@ export async function getPropertiesByClass(
       `Erro ao buscar propriedades da classe ${propertyClass}:`,
       error,
     );
+    return [];
+  }
+}
+
+// Função para buscar imóveis com filtros de busca
+export async function searchProperties({
+  checkIn,
+  checkOut,
+  maxGuests,
+}: {
+  checkIn: Date;
+  checkOut: Date;
+  maxGuests: number;
+}): Promise<PropertyWithDetails[]> {
+  try {
+    // Calcular número mínimo de dias
+    const numberOfDays = Math.ceil(
+      (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    // Buscar imóveis que atendem aos critérios
+    const properties = await db
+      .select({
+        id: propertiesTable.id,
+        title: propertiesTable.title,
+        shortDescription: propertiesTable.shortDescription,
+        maxGuests: propertiesTable.maxGuests,
+        bedrooms: propertiesTable.bedrooms,
+        bathrooms: propertiesTable.bathrooms,
+        allowsPets: propertiesTable.allowsPets,
+        propertyStyle: propertiesTable.propertyStyle,
+        status: propertiesTable.status,
+        minimumStay: propertiesTable.minimumStay,
+        // Dados de localização
+        fullAddress: propertyLocationTable.fullAddress,
+        neighborhood: propertyLocationTable.neighborhood,
+        city: propertyLocationTable.city,
+        state: propertyLocationTable.state,
+        // Dados de preço
+        dailyRate: propertyPricingTable.dailyRate,
+        monthlyRent: propertyPricingTable.monthlyRent,
+      })
+      .from(propertiesTable)
+      .leftJoin(
+        propertyLocationTable,
+        eq(propertiesTable.id, propertyLocationTable.propertyId),
+      )
+      .leftJoin(
+        propertyPricingTable,
+        eq(propertiesTable.id, propertyPricingTable.propertyId),
+      )
+      .where(
+        and(
+          eq(propertiesTable.status, "active"),
+          // Imóvel deve suportar pelo menos o número de hóspedes solicitado
+          gte(propertiesTable.maxGuests, maxGuests),
+          // Imóvel deve permitir o número mínimo de dias
+          lte(propertiesTable.minimumStay, numberOfDays),
+        ),
+      );
+
+    // Buscar imagens para cada propriedade
+    const propertiesWithImages: PropertyWithDetails[] = [];
+
+    for (const property of properties) {
+      const images = await db
+        .select()
+        .from(propertyImagesTable)
+        .where(eq(propertyImagesTable.propertyId, property.id));
+
+      const validImages = images.filter((img) => img.imageUrl);
+
+      propertiesWithImages.push({
+        id: property.id,
+        title: property.title,
+        shortDescription: property.shortDescription,
+        maxGuests: property.maxGuests,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        allowsPets: property.allowsPets,
+        propertyStyle: property.propertyStyle || "",
+        status: property.status,
+        location: {
+          fullAddress: property.fullAddress || "",
+          neighborhood: property.neighborhood || "",
+          city: property.city || "",
+          state: property.state || "",
+        },
+        pricing: {
+          dailyRate: property.dailyRate || "0",
+          monthlyRent: property.monthlyRent || "0",
+        },
+        images: validImages,
+      });
+    }
+
+    return propertiesWithImages;
+  } catch (error) {
+    console.error("Erro ao buscar propriedades com filtros:", error);
     return [];
   }
 }

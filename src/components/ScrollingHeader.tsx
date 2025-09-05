@@ -87,11 +87,6 @@ export default function ScrollingHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem className="text-white hover:bg-gray-700/50">
                   <Link href="#" className="w-full">
-                    Paracuru
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                  <Link href="#" className="w-full">
                     Praia de Picos
                   </Link>
                 </DropdownMenuItem>
@@ -170,7 +165,7 @@ export default function ScrollingHeader() {
               Contato
             </a>
             <a href="#footer" className="text-[#101828]">
-              Proprietários
+              Proprietário
             </a>
           </nav>
           <div className="flex items-center gap-2">
