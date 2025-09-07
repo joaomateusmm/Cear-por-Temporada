@@ -280,140 +280,145 @@ export default function AutoCarousel() {
 
     const interval = setInterval(() => {
       api.scrollNext();
-    }, 600000000); // 6 segundos
+    }, 6000); // 6 segundos
 
     return () => clearInterval(interval);
   }, [api, resetTimer]); // Dependência do resetTimer faz o timer reiniciar
 
   return (
-    <Carousel
-      setApi={setApi}
-      opts={{
-        align: "start",
-        loop: true,
-      }}
-      className="h-full w-full"
-    >
-      <CarouselContent className="h-full">
-        {/* Slide 1 - Beach Park */}
-        <CarouselItem className="relative min-h-[80vh]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/banners/park.png')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 gap-18 lg:grid-cols-2 lg:items-center">
-                {/* Texto à esquerda */}
-                <div className="space-y-6 text-left">
-                  <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
-                    Beach Park
-                  </h1>
-                  <p className="max-w-2xl text-lg text-white/90 md:text-xl">
-                    Hospede-se pertinho do maior parque aquático da América
-                    Latina. Temos imóveis exclusivos a poucos minutos do Beach
-                    Park para você aproveitar ao máximo sua diversão em família.
-                  </p>
-                  <Button className="rounded-full border border-gray-500/20 bg-[#101828]/90 px-12 py-6 text-lg backdrop-blur-md duration-300 hover:bg-[#101828]">
-                    Saiba Mais
-                  </Button>
-                </div>
+    <div className="relative h-full w-full overflow-hidden">
+      <Carousel
+        setApi={setApi}
+        opts={{
+          align: "center",
+          loop: true,
+          containScroll: "trimSnaps",
+          dragFree: false,
+        }}
+        className="h-full w-full"
+      >
+        <CarouselContent className="-ml-0 h-full">
+          {/* Slide 1 - Beach Park */}
+          <CarouselItem className="relative min-h-[80vh] w-full flex-[0_0_100%]">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/banners/park.png')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative z-10 flex h-full items-center">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-18 lg:grid-cols-2 lg:items-center">
+                  {/* Texto à esquerda - Oculto no mobile */}
+                  <div className="hidden space-y-6 text-left lg:block">
+                    <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
+                      Beach Park
+                    </h1>
+                    <p className="max-w-2xl text-lg text-white/90 md:text-xl">
+                      Hospede-se pertinho do maior parque aquático da América
+                      Latina. Temos imóveis exclusivos a poucos minutos do Beach
+                      Park para você aproveitar ao máximo sua diversão em
+                      família.
+                    </p>
+                    <Button className="rounded-full border border-gray-500/20 bg-[#101828]/90 px-12 py-6 text-lg backdrop-blur-md duration-300 hover:bg-[#101828]">
+                      Saiba Mais
+                    </Button>
+                  </div>
 
-                {/* Card do imóvel à direita */}
-                <div className="hidden max-w-[400px] lg:block">
-                  {renderPropertyCard(
-                    beachParkProperty,
-                    "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop",
-                    "Casa de Praia Moderna",
-                    "Casa moderna com piscina privativa e vista para o mar, perfeita para famílias.",
-                    "R$ 350/noite",
-                    "Aquiraz, Ceará",
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </CarouselItem>
-
-        {/* Slide 2 - Casal */}
-        <CarouselItem className="relative min-h-[70vh]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/banners/quatro.jpg')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center">
-                {/* Texto à esquerda */}
-                <div className="space-y-4 text-left">
-                  <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
-                    Experiência a Dois
-                  </h1>
-                  <p className="max-w-2xl text-lg text-white/90 md:text-xl">
-                    Criem memórias inesquecíveis juntos. Nossos imóveis
-                    românticos oferecem o cenário perfeito para sua escapada
-                    romântica, com vista para o mar e toda privacidade que vocês
-                    merecem.
-                  </p>
-                  <Button className="rounded-full border border-gray-500/20 bg-[#101828]/90 px-12 py-6 text-lg backdrop-blur-md duration-300 hover:bg-[#101828]">
-                    Saiba Mais
-                  </Button>
-                </div>
-
-                {/* Card do imóvel à direita */}
-                <div className="hidden max-w-[400px] lg:block">
-                  {renderPropertyCard(
-                    aDoisProperty,
-                    "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop",
-                    "Apartamento Vista Mar",
-                    "Apartamento moderno com vista panorâmica do mar, perfeito para casais românticos.",
-                    "R$ 280/noite",
-                    "Fortaleza, Ceará",
-                  )}
+                  {/* Card do imóvel à direita */}
+                  <div className="hidden max-w-[400px] lg:block">
+                    {renderPropertyCard(
+                      beachParkProperty,
+                      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop",
+                      "Casa de Praia Moderna",
+                      "Casa moderna com piscina privativa e vista para o mar, perfeita para famílias.",
+                      "R$ 350/noite",
+                      "Aquiraz, Ceará",
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </CarouselItem>
+          </CarouselItem>
 
-        {/* Slide 4 - Praia bonita */}
-        <CarouselItem className="relative min-h-[70vh]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/banners/tres.jpg')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl"></div>
-            </div>
-          </div>
-        </CarouselItem>
+          {/* Slide 2 - Casal */}
+          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/banners/quatro.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/25" />
+            <div className="relative z-10 flex h-full items-center">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center">
+                  {/* Texto à esquerda - Oculto no mobile */}
+                  <div className="hidden space-y-4 text-left lg:block">
+                    <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
+                      Experiência a Dois
+                    </h1>
+                    <p className="max-w-2xl text-lg text-white/90 md:text-xl">
+                      Criem memórias inesquecíveis juntos. Nossos imóveis
+                      românticos oferecem o cenário perfeito para sua escapada
+                      romântica, com vista para o mar e toda privacidade que
+                      vocês merecem.
+                    </p>
+                    <Button className="rounded-full border border-gray-500/20 bg-[#101828]/90 px-12 py-6 text-lg backdrop-blur-md duration-300 hover:bg-[#101828]">
+                      Saiba Mais
+                    </Button>
+                  </div>
 
-        {/* Slide 5 - Praia bonita 2 */}
-        <CarouselItem className="relative min-h-[70vh]">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: "url('/banners/dois.jpg')",
-            }}
-          />
-          <div className="absolute inset-0 bg-black/25" />
-          <div className="relative z-10 flex h-full items-center">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <div className="max-w-4xl"></div>
+                  {/* Card do imóvel à direita */}
+                  <div className="hidden max-w-[400px] lg:block">
+                    {renderPropertyCard(
+                      aDoisProperty,
+                      "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop",
+                      "Apartamento Vista Mar",
+                      "Apartamento moderno com vista panorâmica do mar, perfeito para casais românticos.",
+                      "R$ 280/noite",
+                      "Fortaleza, Ceará",
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </CarouselItem>
-      </CarouselContent>
-    </Carousel>
+          </CarouselItem>
+
+          {/* Slide 4 - Praia bonita */}
+          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/banners/tres.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/25" />
+            <div className="relative z-10 flex h-full items-center">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl"></div>
+              </div>
+            </div>
+          </CarouselItem>
+
+          {/* Slide 5 - Praia bonita 2 */}
+          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/banners/dois.jpg')",
+              }}
+            />
+            <div className="absolute inset-0 bg-black/25" />
+            <div className="relative z-10 flex h-full items-center">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="max-w-4xl"></div>
+              </div>
+            </div>
+          </CarouselItem>
+        </CarouselContent>
+      </Carousel>
+    </div>
   );
 }

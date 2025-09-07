@@ -42,6 +42,7 @@ export const propertiesTable = pgTable("properties", {
     .notNull(),
   bedTypes: text("bed_types"), // JSON string ou texto livre
   minimumStay: integer("minimum_stay").notNull(), // em noites
+  maximumStay: integer("maximum_stay"), // em dias (opcional)
   checkInTime: varchar("check_in_time", { length: 10 }), // ex: "15:00"
   checkOutTime: varchar("check_out_time", { length: 10 }), // ex: "11:00"
   petPolicy: text("pet_policy"),
@@ -89,6 +90,7 @@ export const propertyLocationTable = pgTable("property_location", {
     .references(() => propertiesTable.id, { onDelete: "cascade" }),
   fullAddress: text("full_address").notNull(),
   neighborhood: varchar("neighborhood", { length: 100 }).notNull(),
+  municipality: varchar("municipality", { length: 100 }).notNull(),
   city: varchar("city", { length: 100 }).notNull(),
   state: varchar("state", { length: 50 }).notNull(),
   zipCode: varchar("zip_code", { length: 10 }).notNull(),

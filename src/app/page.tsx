@@ -1,38 +1,17 @@
-import {
-  BedDouble,
-  Bookmark,
-  Instagram,
-  MapPin,
-  Share2,
-  Toilet,
-  Users,
-} from "lucide-react";
-import Image from "next/image";
+import { CalendarSearch, Instagram, MapPinHouse } from "lucide-react";
 import Link from "next/link";
 
 import { AdvancedSearch } from "@/components/AdvancedSearch";
 import AutoCarousel from "@/components/AutoCarousel";
+import { PropertyCarousel } from "@/components/PropertyCarousel";
 import ScrollingHeader from "@/components/ScrollingHeader";
 import { TikTokIcon, WhatsAppIcon } from "@/components/SocialIcons";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import {
   getPropertiesByClass,
   getPropertiesByType,
   PropertyWithDetails,
 } from "@/lib/get-properties";
-
-// Dados fictícios para propriedades sem imagem
-const fallbackImage =
-  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop";
 
 // Componente para renderizar uma seção de propriedades
 function PropertySection({
@@ -56,161 +35,7 @@ function PropertySection({
           </p>
         </div>
 
-        {properties.length > 0 ? (
-          <div className="relative">
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {properties.map((property) => {
-                  const mainImage =
-                    property.images.find((img) => img.isMain) ||
-                    property.images[0];
-                  const imageUrl = mainImage?.imageUrl || fallbackImage;
-                  const location = `${property.location.neighborhood}, ${property.location.city}`;
-                  const dailyPrice = parseFloat(property.pricing.dailyRate);
-
-                  return (
-                    <CarouselItem
-                      key={property.id}
-                      className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3"
-                    >
-                      <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-xl">
-                        <div className="relative h-64 px-6 pb-0">
-                          <div className="relative h-full overflow-hidden rounded-md">
-                            <Image
-                              src={imageUrl}
-                              alt={property.title}
-                              fill
-                              className="object-cover shadow-md"
-                            />
-                            <div className="absolute top-4 right-4">
-                              <Badge
-                                variant="secondary"
-                                className="bg-white/90 text-gray-900"
-                              >
-                                R$ {dailyPrice.toFixed(0)}/noite
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-
-                        <CardContent className="p-6">
-                          <div className="mb-2 flex items-start justify-between">
-                            <h3 className="line-clamp-2 text-xl font-semibold text-gray-900">
-                              {property.title}
-                            </h3>
-                          </div>
-
-                          <div className="mb-3 flex items-center gap-1">
-                            <MapPin className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-600">
-                              {location}
-                            </span>
-                          </div>
-
-                          <p className="mb-4 line-clamp-2 text-sm text-gray-600">
-                            {property.shortDescription}
-                          </p>
-
-                          <div className="mb-4 flex items-center gap-5 text-sm text-gray-600">
-                            <div className="flex items-center gap-1">
-                              <span className="flex items-center gap-1">
-                                {property.maxGuests}{" "}
-                                <Users className="h-4 w-4" />
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="flex items-center gap-1">
-                                {property.bedrooms}{" "}
-                                <BedDouble className="h-4 w-4" />
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="flex items-center gap-1">
-                                {property.bathrooms}{" "}
-                                <Toilet className="h-4 w-4" />
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* <div className="mb-4 flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1 text-gray-500">
-                                <Wifi className="h-4 w-4" />
-                              </div>
-                              {property.allowsPets && (
-                                <div className="flex items-center gap-1 text-gray-500">
-                                  <Dog className="h-4 w-4" />
-                                </div>
-                              )}
-                              <div className="flex items-center gap-1 text-gray-500">
-                                <Utensils className="h-4 w-4" />
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="text-sm text-gray-600">
-                                (Nota)
-                              </span>
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span className="font-medium">4.8</span>
-                              <span className="text-sm text-gray-500"></span>
-                            </div>
-                          </div> ADICIONAR AVALIAÇOES NO FUTURO */}
-
-                          <div className="-mb-7 flex items-center justify-between">
-                            <Button
-                              className="bg-[#101828] px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
-                              size="sm"
-                              variant="outline"
-                            >
-                              Ver Detalhes
-                            </Button>
-                            <div className="space-x-2">
-                              <Button
-                                className="bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
-                                size="sm"
-                                variant="outline"
-                              >
-                                <Share2 />
-                              </Button>
-                              <Button
-                                className="bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828]/90 hover:text-white hover:active:scale-95"
-                                size="sm"
-                                variant="outline"
-                              >
-                                <Bookmark />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </CarouselItem>
-                  );
-                })}
-              </CarouselContent>
-              {properties.length > 3 && (
-                <>
-                  <CarouselPrevious className="absolute top-1/2 -left-12 -translate-y-1/2 transform drop-shadow-sm" />
-                  <CarouselNext className="absolute top-1/2 -right-12 -translate-y-1/2 transform drop-shadow-sm" />
-                </>
-              )}
-            </Carousel>
-          </div>
-        ) : (
-          <div className="py-12 text-center">
-            <p className="text-lg text-gray-500">
-              Nenhum imóvel disponível no momento
-            </p>
-            <p className="mt-2 text-sm text-gray-400">
-              Novos imóveis serão adicionados em breve
-            </p>
-          </div>
-        )}
+        <PropertyCarousel properties={properties} />
       </div>
     </section>
   );
@@ -238,20 +63,57 @@ export default async function Home() {
       {/* Banner Principal com Carrossel */}
       <section className="relative min-h-[60vh] overflow-hidden pt-16 text-white">
         <AutoCarousel />
+
+        {/* Card de pesquisa sobreposto para mobile */}
+        <div className="absolute inset-x-0 top-1/2 z-30 block -translate-y-1/2 transform px-4 md:hidden">
+          <div className="mx-auto max-w-md">
+            {/* Tabs triggers centralizados acima do card - Mobile */}
+            <div className="mb-0 flex justify-center">
+              <div className="flex">
+                <button className="rounded-t-lg bg-gray-50/70 px-4 py-3 text-[#101828] backdrop-blur-sm">
+                  <CalendarSearch />
+                </button>
+                <button className="rounded-t-lg border-transparent bg-gray-300/70 px-4 py-3 text-[#101828]/70 duration-300 hover:bg-gray-200/70">
+                  <MapPinHouse />
+                </button>
+              </div>
+            </div>
+
+            <Card className="rounded-lg border-0 bg-gray-50/70 shadow-md backdrop-blur-sm">
+              <CardContent className="p-6">
+                <div className="mb-4 text-center">
+                  <h2 className="text-xl2 -mt-5 mb-6 font-bold text-gray-800">
+                    Encontre o lugar perfeito pra sua estadia.
+                  </h2>
+                </div>
+                <AdvancedSearch />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </section>
 
-      {/* Área de Pesquisa Avançada */}
-      <section className="relative z-20 -mt-22 mb-4">
+      {/* Área de Pesquisa Avançada - Desktop */}
+      <section className="relative z-20 -mt-22 mb-4 hidden md:block">
         <div className="mx-auto max-w-[70%] px-4 sm:px-6 lg:px-8">
-          <Card className="rounded-lg border-0 bg-white/95 shadow-lg backdrop-blur-sm">
-            <CardContent className="p-8">
+          {/* Tabs triggers centralizados acima do card - Desktop */}
+          <div className="mb-0 flex justify-center">
+            <div className="flex">
+              <button className="rounded-t-lg bg-gray-50 px-4 py-3 text-[#101828] shadow-sm">
+                <CalendarSearch />
+              </button>
+              <button className="rounded-t-lg border-transparent bg-gray-200 px-4 py-3 text-[#101828]/70 hover:bg-gray-200">
+                <MapPinHouse />
+              </button>
+            </div>
+          </div>
+
+          <Card className="rounded-lg border-0 bg-gray-50 shadow-lg backdrop-blur-sm">
+            <CardContent className="px-8">
               <div className="mb-4 text-center">
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Faça sua reserva online
-                </h2>
-                <p className="text-gray-600">
+                <h2 className="mb-2 text-[18px] font-bold text-gray-800">
                   Encontre o imóvel perfeito para sua estadia
-                </p>
+                </h2>
               </div>
               <AdvancedSearch />
             </CardContent>

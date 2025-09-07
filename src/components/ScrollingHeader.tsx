@@ -1,6 +1,7 @@
 "use client";
 
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Menu, Search } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -12,9 +13,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { MobileSidebar } from "./MobileSidebar";
+
 export default function ScrollingHeader() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const controlHeader = () => {
@@ -51,14 +55,15 @@ export default function ScrollingHeader() {
             : "-translate-y-full opacity-0"
         }`}
       >
-        <div className="mx-60 flex h-16 items-center justify-between">
+        <div className="mx-4 flex h-16 items-center justify-between md:mx-60">
           <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="text-2xl font-bold text-[#101828] transition-colors hover:text-gray-200"
-            >
-              Logo
-            </Link>
+            <Image
+              src="/logo-1.png"
+              alt="Ceará por Temporada"
+              width={150}
+              height={40}
+              className="h-auto w-40 cursor-pointer"
+            />
           </div>
           <nav className="hidden items-center gap-6 font-medium md:flex">
             <Link href="/" className="text-[#101828] transition-colors">
@@ -169,12 +174,29 @@ export default function ScrollingHeader() {
             </a>
           </nav>
           <div className="flex items-center gap-2">
-            <Button className="rounded-3xl bg-gray-300/20 p-2 px-4 text-[#101828] shadow-md backdrop-blur-md duration-500 hover:bg-gray-300/25">
+            {/* Botões ocultos para uso futuro */}
+            {/* <Button className="hidden rounded-3xl bg-gray-300/20 p-2 px-4 text-[#101828] shadow-md backdrop-blur-md duration-500 hover:bg-gray-300/25 md:block">
               Entrar
             </Button>
-            <Button className="rounded-3xl bg-[#101828] p-2 px-4 shadow-md backdrop-blur-md duration-500 hover:bg-[#101828]/90">
+            <Button className="rounded-3xl bg-[#101828] p-1 px-2 text-sm shadow-md backdrop-blur-md duration-500 hover:bg-[#101828]/90 md:p-2 md:px-4 md:text-base">
               Criar Conta
-            </Button>
+            </Button> */}
+
+            {/* Menu hambúrguer para mobile */}
+            <div className="md:hidden">
+              <MobileSidebar
+                trigger={
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-none px-1 text-[#101828] shadow-md"
+                  >
+                    <Menu className="h-6 w-6" />
+                  </Button>
+                }
+                open={isMobileMenuOpen}
+                onOpenChange={setIsMobileMenuOpen}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -183,62 +205,66 @@ export default function ScrollingHeader() {
           isVisible ? "translate-y-0" : "-translate-y-16"
         }`}
       >
-        <div className="mx-60 flex h-16 items-center justify-between">
+        <div className="mx-4 flex h-16 items-center justify-between md:mx-60">
           <div
-            className={`flex items-center gap-3 transition-all duration-300 ${
+            className={`flex flex-shrink-0 items-center gap-3 transition-all duration-300 ${
               isVisible
                 ? "translate-x-4 opacity-0"
                 : "translate-x-0 opacity-100"
             }`}
           >
-            <Link
-              href="/"
-              className="text-2xl font-bold text-white transition-colors hover:text-gray-200"
-            >
-              Logo
-            </Link>
+            <Image
+              src="/logo-1.png"
+              alt="Ceará por Temporada"
+              width={150}
+              height={40}
+              className="h-auto w-40 cursor-pointer"
+            />
           </div>
-          <nav className="mr-32 hidden items-center gap-6 font-medium md:flex">
+
+          {/* Desktop Navigation */}
+          <nav className="mr-0 hidden flex-1 items-center gap-3 font-medium md:mr-32 md:flex md:gap-6">
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
               Fortaleza
             </a>
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
               Cumbuco
             </a>
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
-              Jericoaquara
+              Jericoacoara
             </a>
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
               Canoa Quebrada
             </a>
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
               Beach Park
             </a>
             <a
               href="#"
-              className="text-white/90 transition-colors hover:text-white"
+              className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
             >
               Outros
             </a>
           </nav>
-          <div className="flex items-center">
-            <Button className="rounded-3xl bg-gray-300/20 p-2 px-8 backdrop-blur-md duration-500 hover:bg-gray-300/40">
-              <Search />
+
+          <div className="flex flex-shrink-0 items-center">
+            <Button className="rounded-3xl bg-gray-300/20 p-1 px-4 text-sm backdrop-blur-md duration-500 hover:bg-gray-300/40 md:p-2 md:px-8 md:text-base">
+              <Search className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </div>
         </div>

@@ -1,6 +1,8 @@
 "use client";
 
+import { ptBR } from "date-fns/locale";
 import { Calendar as CalendarIcon, Search, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
 
@@ -18,15 +20,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PropertyWithDetails, searchProperties } from "@/lib/get-properties";
 import { cn } from "@/lib/utils";
 
 interface AdvancedSearchProps {
   onSearchResults?: (results: PropertyWithDetails[]) => void;
+  redirectOnSearch?: boolean; // Nova prop para controlar redirecionamento
 }
 
-export function AdvancedSearch({ onSearchResults }: AdvancedSearchProps) {
+export function AdvancedSearch({
+  onSearchResults,
+  redirectOnSearch = true,
+}: AdvancedSearchProps) {
+  const router = useRouter();
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState<string>("");
   const [isSearching, setIsSearching] = useState(false);
@@ -50,12 +56,20 @@ export function AdvancedSearch({ onSearchResults }: AdvancedSearchProps) {
 
       console.log(`Encontrados ${results.length} imóveis:`, results);
 
-      // Callback para o componente pai com os resultados
-      if (onSearchResults) {
-        onSearchResults(results);
+      // Se deve redirecionar (página principal), navega para página de resultados
+      if (redirectOnSearch) {
+        const searchParams = new URLSearchParams({
+          checkIn: dateRange.from.toISOString(),
+          checkOut: dateRange.to.toISOString(),
+          guests: guests,
+        });
+        router.push(`/resultados?${searchParams.toString()}`);
+      } else {
+        // Se não deve redirecionar (página de resultados), chama callback
+        if (onSearchResults) {
+          onSearchResults(results);
+        }
       }
-
-      // TODO: Implementar navegação para página de resultados ou exibir na mesma página
     } catch (error) {
       console.error("Erro ao buscar imóveis:", error);
     } finally {
@@ -64,111 +78,123 @@ export function AdvancedSearch({ onSearchResults }: AdvancedSearchProps) {
   };
 
   return (
-    <Tabs defaultValue="tradicional" className="w-full">
-      <TabsList className="grid w-full grid-cols-1">
-        <TabsTrigger value="tradicional">Busca Tradicional</TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="tradicional" className="mt-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {/* Seletor de Datas */}
-          <div className="md:col-span-1">
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Check-in / Check-out
-            </label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "h-12 w-full justify-start text-left font-normal",
-                    !dateRange && "text-muted-foreground",
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+    <div className="w-full">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+        {/* Seletor de Datas */}
+        <div className="md:col-span-1">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Check-in e checkout
+          </label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "h-10 w-full justify-start text-left font-normal md:h-12",
+                  !dateRange && "text-muted-foreground",
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                <span className="text-xs md:text-sm">
                   {formatDateRange(dateRange)}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={dateRange?.from}
-                  selected={dateRange}
-                  onSelect={setDateRange}
-                  numberOfMonths={2}
-                  disabled={(date) => date < new Date()}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          {/* Seletor de Hóspedes */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-gray-700">
-              Número de Hóspedes
-            </label>
-            <Select value={guests} onValueChange={setGuests}>
-              <SelectTrigger className="h-12">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-gray-400" />
-                  <SelectValue placeholder="Quantos hóspedes?" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 hóspede</SelectItem>
-                <SelectItem value="2">2 hóspedes</SelectItem>
-                <SelectItem value="3">3 hóspedes</SelectItem>
-                <SelectItem value="4">4 hóspedes</SelectItem>
-                <SelectItem value="5">5 hóspedes</SelectItem>
-                <SelectItem value="6">6 hóspedes</SelectItem>
-                <SelectItem value="7">7 hóspedes</SelectItem>
-                <SelectItem value="8">8 hóspedes</SelectItem>
-                <SelectItem value="9">9 hóspedes</SelectItem>
-                <SelectItem value="10">10+ hóspedes</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Botão de Busca */}
-          <div className="flex items-end">
-            <Button
-              onClick={handleSearch}
-              size="lg"
-              className="h-12 w-full bg-[#101828] hover:bg-[#101828]/90"
-              disabled={
-                !dateRange?.from || !dateRange?.to || !guests || isSearching
-              }
-            >
-              <Search className="mr-2 h-5 w-5" />
-              {isSearching ? "Buscando..." : "Buscar Imóveis"}
-            </Button>
-          </div>
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={1}
+                disabled={(date) => date < new Date()}
+                locale={ptBR}
+                className="md:hidden"
+              />
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                disabled={(date) => date < new Date()}
+                locale={ptBR}
+                className="hidden md:block"
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
-        {/* Info sobre a busca */}
-        {dateRange?.from && dateRange?.to && guests && (
-          <div className="mt-4 rounded-md bg-blue-50 p-3">
-            <p className="text-sm text-blue-800">
-              <strong>Busca configurada:</strong> {guests} hóspede
-              {Number(guests) > 1 ? "s" : ""} •{" "}
-              {Math.ceil(
-                (dateRange.to.getTime() - dateRange.from.getTime()) /
-                  (1000 * 60 * 60 * 24),
-              )}{" "}
-              noite
-              {Math.ceil(
-                (dateRange.to.getTime() - dateRange.from.getTime()) /
-                  (1000 * 60 * 60 * 24),
-              ) > 1
-                ? "s"
-                : ""}{" "}
-              • {dateRange.from.toLocaleDateString("pt-BR")} até{" "}
-              {dateRange.to.toLocaleDateString("pt-BR")}
-            </p>
-          </div>
-        )}
-      </TabsContent>
-    </Tabs>
+        {/* Seletor de Hóspedes */}
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-700">
+            Hóspedes
+          </label>
+          <Select value={guests} onValueChange={setGuests}>
+            <SelectTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-full justify-start border py-[23px] text-left font-normal md:h-12">
+              <div className="flex items-center gap-2">
+                <Users className="mr-2 h-4 w-4" />
+                <SelectValue
+                  placeholder="Quantos hóspedes?"
+                  className="text-xs md:text-sm"
+                />
+              </div>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1">1 hóspede</SelectItem>
+              <SelectItem value="2">2 hóspedes</SelectItem>
+              <SelectItem value="3">3 hóspedes</SelectItem>
+              <SelectItem value="4">4 hóspedes</SelectItem>
+              <SelectItem value="5">5 hóspedes</SelectItem>
+              <SelectItem value="6">6 hóspedes</SelectItem>
+              <SelectItem value="7">7 hóspedes</SelectItem>
+              <SelectItem value="8">8 hóspedes</SelectItem>
+              <SelectItem value="9">9 hóspedes</SelectItem>
+              <SelectItem value="10">10+ hóspedes</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Botão de Busca */}
+        <div className="mt-5 -mb-3 flex items-end">
+          <Button
+            onClick={handleSearch}
+            size="lg"
+            className="h-10 w-full bg-[#101828] text-sm transition-transform duration-300 hover:scale-[1.02] hover:bg-[#101828] hover:active:scale-95 md:h-12 md:text-base"
+            disabled={
+              !dateRange?.from || !dateRange?.to || !guests || isSearching
+            }
+          >
+            <Search className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+            {isSearching ? "Procurar" : "Procurar"}
+          </Button>
+        </div>
+      </div>
+
+      {/* Info sobre a busca */}
+      {dateRange?.from && dateRange?.to && guests && (
+        <div className="mt-4 rounded-md p-2 md:mt-4 md:p-3">
+          <p className="text-xs text-gray-800 md:text-sm">
+            <strong>Busca configurada:</strong> {guests} hóspede
+            {Number(guests) > 1 ? "s" : ""} -{" "}
+            {Math.ceil(
+              (dateRange.to.getTime() - dateRange.from.getTime()) /
+                (1000 * 60 * 60 * 24),
+            )}{" "}
+            noite
+            {Math.ceil(
+              (dateRange.to.getTime() - dateRange.from.getTime()) /
+                (1000 * 60 * 60 * 24),
+            ) > 1
+              ? "s"
+              : ""}{" "}
+            • {dateRange.from.toLocaleDateString("pt-BR")} até{" "}
+            {dateRange.to.toLocaleDateString("pt-BR")}
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

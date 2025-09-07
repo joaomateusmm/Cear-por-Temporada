@@ -1,6 +1,6 @@
 "use server";
 
-import { and, eq, gte, ilike, lte } from "drizzle-orm";
+import { and, eq, ilike, lte } from "drizzle-orm";
 
 import { db } from "@/app/db";
 import {
@@ -472,8 +472,8 @@ export async function searchProperties({
       .where(
         and(
           eq(propertiesTable.status, "active"),
-          // Imóvel deve suportar pelo menos o número de hóspedes solicitado
-          gte(propertiesTable.maxGuests, maxGuests),
+          // Imóvel deve ter capacidade EXATA igual ao número de hóspedes solicitado
+          eq(propertiesTable.maxGuests, maxGuests),
           // Imóvel deve permitir o número mínimo de dias
           lte(propertiesTable.minimumStay, numberOfDays),
         ),

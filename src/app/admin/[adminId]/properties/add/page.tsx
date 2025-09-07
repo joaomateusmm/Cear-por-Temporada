@@ -55,6 +55,7 @@ const propertyFormSchema = z.object({
     .array(z.string())
     .min(1, "Selecione pelo menos uma classe"),
   minimumStay: z.number().min(1, "Estadia mínima deve ser pelo menos 1 noite"),
+  maximumStay: z.number().min(1, "Duração máxima deve ser pelo menos 1 dia"),
   checkInTime: z.string().optional(),
   checkOutTime: z.string().optional(),
 
@@ -77,6 +78,7 @@ const propertyFormSchema = z.object({
   // Localização
   fullAddress: z.string().min(5, "Endereço completo é obrigatório"),
   neighborhood: z.string().min(2, "Bairro é obrigatório"),
+  municipality: z.string().min(2, "Município é obrigatório"),
   city: z.string().min(2, "Cidade é obrigatória"),
   state: z.string().min(2, "Estado é obrigatório"),
   zipCode: z.string().min(8, "CEP deve ter 8 dígitos"),
@@ -110,6 +112,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
       allowsPets: false,
       parkingSpaces: 0,
       minimumStay: 1,
+      maximumStay: 30,
       checkInTime: "15:00",
       checkOutTime: "11:00",
       propertyClasses: [],
@@ -225,6 +228,194 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     "Pousada",
     "Studio",
     "Loft",
+  ];
+
+  // Lista completa dos 184 municípios do Ceará
+  const cearaMunicipalities = [
+    "Abaiara",
+    "Acarape",
+    "Acaraú",
+    "Acopiara",
+    "Aiuaba",
+    "Alcântaras",
+    "Altaneira",
+    "Alto Santo",
+    "Amontada",
+    "Antonina do Norte",
+    "Apuiarés",
+    "Aquiraz",
+    "Aracati",
+    "Aracoiaba",
+    "Ararendá",
+    "Araripe",
+    "Aratuba",
+    "Arneiroz",
+    "Assaré",
+    "Aurora",
+    "Baixio",
+    "Banabuiú",
+    "Barbalha",
+    "Barreira",
+    "Barro",
+    "Barroquinha",
+    "Baturité",
+    "Beberibe",
+    "Bela Cruz",
+    "Boa Viagem",
+    "Brejo Santo",
+    "Camocim",
+    "Campos Sales",
+    "Canindé",
+    "Capistrano",
+    "Caridade",
+    "Caririaçu",
+    "Cariré",
+    "Cariús",
+    "Carnaubal",
+    "Cascavel",
+    "Catarina",
+    "Catunda",
+    "Caucaia",
+    "Cedro",
+    "Chaval",
+    "Chorozinho",
+    "Choró",
+    "Coreaú",
+    "Crateús",
+    "Crato",
+    "Croatá",
+    "Cruz",
+    "Deputado Irapuan Pinheiro",
+    "Ererê",
+    "Eusébio",
+    "Farias Brito",
+    "Forquilha",
+    "Fortaleza",
+    "Fortim",
+    "Frecheirinha",
+    "General Sampaio",
+    "Granja",
+    "Granjeiro",
+    "Graça",
+    "Groaíras",
+    "Guaiúba",
+    "Guaraciaba do Norte",
+    "Guaramiranga",
+    "Hidrolândia",
+    "Horizonte",
+    "Ibaretama",
+    "Ibiapina",
+    "Ibicuitinga",
+    "Icapuí",
+    "Icó",
+    "Iguatu",
+    "Independência",
+    "Ipaporanga",
+    "Ipaumirim",
+    "Ipu",
+    "Ipueiras",
+    "Iracema",
+    "Irauçuba",
+    "Itaitinga",
+    "Itaiçaba",
+    "Itapajé",
+    "Itapipoca",
+    "Itapiúna",
+    "Itarema",
+    "Itatira",
+    "Jaguaretama",
+    "Jaguaribara",
+    "Jaguaribe",
+    "Jaguaruana",
+    "Jardim",
+    "Jati",
+    "Jijoca de Jericoacoara",
+    "Juazeiro do Norte",
+    "Jucás",
+    "Lavras da Mangabeira",
+    "Limoeiro do Norte",
+    "Madalena",
+    "Maracanaú",
+    "Maranguape",
+    "Marco",
+    "Martinólope",
+    "Massapê",
+    "Mauriti",
+    "Meruoca",
+    "Milagres",
+    "Milhã",
+    "Miraíma",
+    "Missão Velha",
+    "Mombaça",
+    "Monsenhor Tabosa",
+    "Morada Nova",
+    "Moraújo",
+    "Morrinhos",
+    "Mucambo",
+    "Mulungu",
+    "Nova Olinda",
+    "Nova Russas",
+    "Novo Oriente",
+    "Ocara",
+    "Orós",
+    "Pacajus",
+    "Pacatuba",
+    "Pacoti",
+    "Pacujá",
+    "Palhano",
+    "Palmácia",
+    "Paracuru",
+    "Paraipaba",
+    "Parambú",
+    "Paramoti",
+    "Pedra Branca",
+    "Penaforte",
+    "Pentecoste",
+    "Pereiro",
+    "Pindoretama",
+    "Piquet Carneiro",
+    "Pires Ferreira",
+    "Poranga",
+    "Porteiras",
+    "Potengi",
+    "Potiretama",
+    "Quiterianópolis",
+    "Quixadá",
+    "Quixelô",
+    "Quixeramobim",
+    "Quixeré",
+    "Redenção",
+    "Reriutaba",
+    "Russas",
+    "Saboeiro",
+    "Salitre",
+    "Santa Quitéria",
+    "Santana do Acaraú",
+    "Santana do Cariri",
+    "São Benedito",
+    "São Gonçalo do Amarante",
+    "São João do Jaguaribe",
+    "São Luís do Curu",
+    "Senador Pompeu",
+    "Senador Sá",
+    "Sobral",
+    "Solonópole",
+    "Tabuleiro do Norte",
+    "Tamboril",
+    "Tarrafas",
+    "Tauá",
+    "Tejuçuoca",
+    "Tianguá",
+    "Trairi",
+    "Tururu",
+    "Ubajara",
+    "Umari",
+    "Umirim",
+    "Uruburetama",
+    "Uruoca",
+    "Varjota",
+    "Várzea Alegre",
+    "Viçosa do Ceará",
   ];
 
   // Agrupar comodidades por categoria
@@ -594,6 +785,30 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
 
                   <FormField
                     control={form.control}
+                    name="maximumStay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Estadia Máxima (dias)
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="number"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                            className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
+                            placeholder="30"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="allowsPets"
                     render={({ field }) => (
                       <FormItem className="flex flex-col justify-end">
@@ -879,7 +1094,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                   )}
                 />
 
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                   <FormField
                     control={form.control}
                     name="neighborhood"
@@ -895,6 +1110,40 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                             placeholder="Nome do bairro"
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="municipality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Município
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors focus:border-blue-400 focus:ring-blue-400/20">
+                              <SelectValue placeholder="Selecione o município" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-60 border-slate-600 bg-slate-800">
+                            {cearaMunicipalities.map((municipality) => (
+                              <SelectItem
+                                key={municipality}
+                                value={municipality}
+                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                              >
+                                {municipality}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}

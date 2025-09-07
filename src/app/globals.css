@@ -8,6 +8,29 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Desabilitar scroll horizontal em toda a aplicação */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Garantir que nenhum elemento ultrapasse a largura da tela */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Esconder scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

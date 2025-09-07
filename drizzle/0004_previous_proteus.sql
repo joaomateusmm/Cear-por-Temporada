@@ -1,0 +1,1 @@
+ALTER TABLE "property_location" ADD COLUMN "municipality" varchar(100) NOT NULL;

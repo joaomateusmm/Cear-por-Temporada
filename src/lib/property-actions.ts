@@ -26,6 +26,7 @@ interface PropertyLocation {
   propertyId: string;
   fullAddress: string;
   neighborhood: string;
+  municipality: string;
   city: string;
   state: string;
   zipCode: string;
@@ -83,6 +84,7 @@ interface FullProperty {
   propertyClass: string;
   bedTypes: string | null;
   minimumStay: number;
+  maximumStay: number | null;
   checkInTime: string | null;
   checkOutTime: string | null;
   petPolicy: string | null;
@@ -112,6 +114,7 @@ export type PropertyFormData = {
   propertyStyle: string;
   propertyClasses: string[];
   minimumStay: number;
+  maximumStay: number;
   checkInTime?: string;
   checkOutTime?: string;
 
@@ -134,6 +137,7 @@ export type PropertyFormData = {
   // Localização
   fullAddress: string;
   neighborhood: string;
+  municipality: string;
   city: string;
   state: string;
   zipCode: string;
@@ -150,7 +154,6 @@ export type PropertyFormData = {
   allowsSmoking?: boolean;
   allowsParties?: boolean;
   isInstantBook?: boolean;
-  maximumStay?: number;
   advanceNotice?: number;
   propertyType?: string;
   listingType?: string;
@@ -162,6 +165,7 @@ export type PropertyFormData = {
   location?: {
     fullAddress: string;
     neighborhood: string;
+    municipality: string;
     city: string;
     state: string;
     zipCode: string;
@@ -202,6 +206,7 @@ export async function createProperty(data: PropertyFormData) {
         allowsPets: data.allowsPets,
         propertyStyle: data.propertyStyle,
         minimumStay: data.minimumStay,
+        maximumStay: data.maximumStay,
         checkInTime: data.checkInTime,
         checkOutTime: data.checkOutTime,
         status: "active",
@@ -249,6 +254,7 @@ export async function createProperty(data: PropertyFormData) {
       propertyId,
       fullAddress: data.fullAddress,
       neighborhood: data.neighborhood,
+      municipality: data.municipality,
       city: data.city,
       state: data.state,
       zipCode: data.zipCode,
@@ -329,6 +335,7 @@ export async function getPropertiesByAdmin(adminId: string) {
         monthlyRent: propertyPricingTable.monthlyRent,
         fullAddress: propertyLocationTable.fullAddress,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
       })
@@ -532,6 +539,7 @@ export async function updateProperty(
         areaM2: data.areaM2?.toString(),
         allowsPets: data.allowsPets,
         minimumStay: data.minimumStay,
+        maximumStay: data.maximumStay,
         checkInTime: data.checkInTime,
         checkOutTime: data.checkOutTime,
         propertyStyle: data.propertyStyle,
@@ -547,6 +555,7 @@ export async function updateProperty(
         .set({
           fullAddress: data.location.fullAddress,
           neighborhood: data.location.neighborhood,
+          municipality: data.location.municipality,
           city: data.location.city,
           state: data.location.state,
           zipCode: data.location.zipCode,
@@ -696,6 +705,7 @@ export async function getPropertiesByClass(className: string) {
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         // Dados de preço
         dailyRate: propertyPricingTable.dailyRate,
         // Primeira imagem
