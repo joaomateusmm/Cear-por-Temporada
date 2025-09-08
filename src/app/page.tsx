@@ -68,7 +68,7 @@ export default async function Home() {
       <ScrollingHeader />
 
       {/* Banner Principal com Carrossel */}
-      <section className="relative min-h-[60vh] overflow-hidden pt-16 text-white shadow-lg">
+      <section className="relative min-h-[60vh] overflow-hidden text-white shadow-lg">
         <AutoCarousel />
       </section>
       {/* Seções de Imóveis por Tipo */}

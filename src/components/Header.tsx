@@ -66,7 +66,7 @@ export default function Header() {
                 />
               </Link>
             </div>
-            <nav className="hidden items-center gap-8 font-medium md:flex">
+            <nav className="mr-35 hidden items-center gap-8 font-medium md:flex">
               <Link
                 href="/"
                 className="whitespace-nowrap text-[#101828] transition-colors"
@@ -172,6 +172,11 @@ export default function Header() {
                       Apartamentos em Destaque
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem className="text-white hover:bg-gray-700/50">
+                    <Link href="/categoria" className="w-full scroll-smooth">
+                      Todos
+                    </Link>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <Link href="/sobre-nos" className="">
@@ -224,7 +229,7 @@ export default function Header() {
             </div>
 
             {/* Desktop Navigation - Centralizada */}
-            <nav className="absolute top-1/2 left-1/2 ml-20 hidden -translate-x-1/2 -translate-y-1/2 transform items-center gap-8 font-medium md:flex">
+            <nav className="absolute top-1/2 left-1/2 ml-2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center gap-8 font-medium md:flex">
               <a
                 href="#"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
@@ -264,9 +269,11 @@ export default function Header() {
             </nav>
 
             <div className="flex flex-shrink-0 items-center">
-              <Button className="rounded-3xl bg-gray-300/20 p-1 px-4 text-sm backdrop-blur-md duration-500 hover:bg-gray-300/40 md:p-2 md:px-8 md:text-base">
-                <Search className="h-4 w-4 md:h-5 md:w-5" />
-              </Button>
+              <Link href="/">
+                <Button className="rounded-3xl bg-gray-300/20 p-1 px-4 text-sm backdrop-blur-md duration-500 hover:bg-gray-300/40 md:p-2 md:px-8 md:text-base">
+                  <Search className="h-4 w-4 md:h-5 md:w-5" />
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

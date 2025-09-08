@@ -698,8 +698,7 @@ export default function PropertyPage() {
                           Segurança e zero burocracia
                         </div>
                         <div className="text-sm text-gray-600">
-                          Não precisa de depósito, fiador ou contratos, é
-                          simples e 100% digital.
+                          Não precisa de depósito, é simples e 100% digital.
                         </div>
                       </div>
                     </div>

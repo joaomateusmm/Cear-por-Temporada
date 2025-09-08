@@ -376,10 +376,6 @@ export async function getPropertiesByClass(
       )
       .orderBy(propertiesTable.createdAt);
 
-    console.log(
-      `📊 Encontradas ${properties.length} propriedades da classe "${propertyClass}"`,
-    );
-
     // Buscar imagens para cada propriedade
     const propertiesWithImages: PropertyWithDetails[] = [];
 
@@ -438,16 +434,48 @@ export async function searchProperties({
   checkIn,
   checkOut,
   maxGuests,
+  municipality,
+  city,
+  neighborhood,
 }: {
-  checkIn: Date;
-  checkOut: Date;
-  maxGuests: number;
+  checkIn?: Date;
+  checkOut?: Date;
+  maxGuests?: number;
+  municipality?: string;
+  city?: string;
+  neighborhood?: string;
 }): Promise<PropertyWithDetails[]> {
   try {
-    // Calcular número mínimo de dias
-    const numberOfDays = Math.ceil(
-      (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
-    );
+    // Construir condições de busca dinamicamente
+    const conditions = [eq(propertiesTable.status, "active")];
+
+    // Se é busca por data e hóspedes
+    if (checkIn && checkOut && maxGuests) {
+      const numberOfDays = Math.ceil(
+        (checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      conditions.push(
+        eq(propertiesTable.maxGuests, maxGuests),
+        lte(propertiesTable.minimumStay, numberOfDays),
+      );
+    }
+
+    // Se é busca por localização
+    if (municipality) {
+      conditions.push(
+        ilike(propertyLocationTable.municipality, `%${municipality}%`),
+      );
+    }
+    if (city) {
+      // Busca por cidade usando ilike (case-insensitive)
+      conditions.push(ilike(propertyLocationTable.city, `%${city}%`));
+    }
+    if (neighborhood) {
+      // Busca por bairro usando ilike (case-insensitive)
+      conditions.push(
+        ilike(propertyLocationTable.neighborhood, `%${neighborhood}%`),
+      );
+    }
 
     // Buscar imóveis que atendem aos critérios
     const properties = await db
@@ -481,15 +509,7 @@ export async function searchProperties({
         propertyPricingTable,
         eq(propertiesTable.id, propertyPricingTable.propertyId),
       )
-      .where(
-        and(
-          eq(propertiesTable.status, "active"),
-          // Imóvel deve ter capacidade EXATA igual ao número de hóspedes solicitado
-          eq(propertiesTable.maxGuests, maxGuests),
-          // Imóvel deve permitir o número mínimo de dias
-          lte(propertiesTable.minimumStay, numberOfDays),
-        ),
-      );
+      .where(and(...conditions));
 
     // Buscar imagens para cada propriedade
     const propertiesWithImages: PropertyWithDetails[] = [];

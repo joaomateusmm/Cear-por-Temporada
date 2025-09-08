@@ -16,6 +16,7 @@ export default function AutoCarousel() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [api, setApi] = useState<any>(undefined);
   const [resetTimer, setResetTimer] = useState(0);
+  const [searchMode, setSearchMode] = useState<"date" | "location">("date");
 
   // Função para renderizar o card de pesquisa (desktop)
   const renderSearchCard = () => {
@@ -24,10 +25,24 @@ export default function AutoCarousel() {
         {/* Tabs triggers centralizados acima do card - Desktop */}
         <div className="mb-0 flex justify-center">
           <div className="flex">
-            <button className="rounded-t-lg bg-[#101828]/85 px-4 py-3 text-gray-100 backdrop-blur-sm">
+            <button
+              onClick={() => setSearchMode("date")}
+              className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
+                searchMode === "date"
+                  ? "bg-[#101828]/85"
+                  : "bg-[#101828]/70 hover:bg-[#101828]/80"
+              }`}
+            >
               <CalendarSearch />
             </button>
-            <button className="rounded-t-lg border-transparent bg-[#101828]/70 px-4 py-3 text-gray-100/70 duration-300 hover:bg-sky-200/80">
+            <button
+              onClick={() => setSearchMode("location")}
+              className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
+                searchMode === "location"
+                  ? "bg-[#101828]/85"
+                  : "bg-[#101828]/70 hover:bg-[#101828]/80"
+              }`}
+            >
               <MapPinHouse />
             </button>
           </div>
@@ -37,14 +52,21 @@ export default function AutoCarousel() {
           <CardContent className="px-6 pt-6 pb-2">
             <div className="mb-6 text-center">
               <h2 className="mb-2 text-[27px] font-bold text-gray-100">
-                Faça sua reserva online
+                {searchMode === "date"
+                  ? "Faça sua reserva online"
+                  : "Busque por localização"}
               </h2>
               <h2 className="text-md font-normal text-gray-100">
-                Encontre o lugar perfeito pra sua estadia.
+                {searchMode === "date"
+                  ? "Encontre o lugar perfeito pra sua estadia."
+                  : "Encontre imóveis por município, cidade ou bairro."}
               </h2>
             </div>
             {/* AdvancedSearch */}
-            <AdvancedSearch />
+            <AdvancedSearch
+              searchMode={searchMode}
+              onModeChange={setSearchMode}
+            />
           </CardContent>
         </Card>
       </div>
@@ -106,20 +128,6 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/50" />
-            <div className="relative z-10 flex h-full items-end pb-1">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Texto centralizado na parte inferior */}
-                <div className="mb-6 text-center">
-                  <h1 className="text-4xl font-bold text-white md:text-6xl">
-                    Beach Park
-                  </h1>
-                  <p className="mx-auto max-w-3xl text-lg text-white/90 md:text-xl">
-                    Hospede-se pertinho do maior parque aquático da América
-                    Latina e com o pé na areia.
-                  </p>
-                </div>
-              </div>
-            </div>
           </CarouselItem>
 
           {/* Slide 2 - Casal */}
@@ -131,20 +139,6 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-1">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Texto centralizado na parte inferior */}
-                <div className="mb-6 text-center">
-                  <h1 className="text-4xl font-bold text-white md:text-6xl">
-                    Experiência a Dois
-                  </h1>
-                  <p className="max-w-sm text-lg text-white/90 md:text-xl">
-                    Criem memórias inesquecíveis juntos. Nossos imóveis
-                    românticos oferecem o cenário perfeito para casais.
-                  </p>
-                </div>
-              </div>
-            </div>
           </CarouselItem>
 
           {/* Slide 3 - Praia bonita */}
@@ -156,20 +150,6 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-1">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Texto centralizado na parte inferior */}
-                <div className="mb-3 text-center">
-                  <h1 className="text-4xl font-bold text-white md:text-6xl">
-                    Paraíso Natural
-                  </h1>
-                  <p className="mx-auto max-w-3xl text-lg text-white/90 md:text-xl">
-                    Descubra as praias mais exuberantes do Ceará. Nossos imóveis
-                    oferecem acesso privilegiado às belezas naturais da região.
-                  </p>
-                </div>
-              </div>
-            </div>
           </CarouselItem>
 
           {/* Slide 4 - Praia bonita 2 */}
@@ -181,26 +161,12 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-1">
-              <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-                {/* Texto centralizado na parte inferior */}
-                <div className="mb-4 text-center">
-                  <h1 className="text-4xl font-bold text-white md:text-6xl">
-                    Refúgio Exclusivo
-                  </h1>
-                  <p className="mx-auto max-w-3xl text-lg text-white/90 md:text-xl">
-                    Viva momentos únicos em locais paradisíacos. Onde o luxo e a
-                    natureza se encontram para criar experiências memoráveis.
-                  </p>
-                </div>
-              </div>
-            </div>
           </CarouselItem>
         </CarouselContent>
       </Carousel>
 
       {/* Card de pesquisa fixo centralizado por cima de todos os slides */}
-      <div className="pointer-events-none absolute inset-0 z-30 mb-25 flex items-center justify-center">
+      <div className="pointer-events-none absolute inset-0 z-30 mb-25 flex items-center justify-center pt-32">
         <div className="pointer-events-auto">
           {/* Card para desktop */}
           <div className="hidden lg:block">{renderSearchCard()}</div>
@@ -211,10 +177,24 @@ export default function AutoCarousel() {
               {/* Tabs triggers centralizados acima do card - Mobile */}
               <div className="mb-0 flex justify-center">
                 <div className="flex">
-                  <button className="rounded-t-lg bg-[#101828]/85 px-4 py-3 text-gray-100 backdrop-blur-sm">
+                  <button
+                    onClick={() => setSearchMode("date")}
+                    className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
+                      searchMode === "date"
+                        ? "bg-[#101828]/85"
+                        : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                    }`}
+                  >
                     <CalendarSearch />
                   </button>
-                  <button className="rounded-t-lg border-transparent bg-[#101828]/70 px-4 py-3 text-gray-100 duration-300 hover:bg-[#101828]/70">
+                  <button
+                    onClick={() => setSearchMode("location")}
+                    className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
+                      searchMode === "location"
+                        ? "bg-[#101828]/85"
+                        : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                    }`}
+                  >
                     <MapPinHouse />
                   </button>
                 </div>
@@ -224,13 +204,20 @@ export default function AutoCarousel() {
                 <CardContent className="p-6">
                   <div className="mb-10 text-center">
                     <h2 className="mb-2 text-[27px] font-bold text-gray-100">
-                      Faça sua reserva online
+                      {searchMode === "date"
+                        ? "Faça sua reserva online"
+                        : "Busque por localização"}
                     </h2>
                     <h2 className="text-md font-normal text-gray-100">
-                      Encontre o lugar perfeito pra sua estadia
+                      {searchMode === "date"
+                        ? "Encontre o lugar perfeito pra sua estadia"
+                        : "Encontre imóveis por município, cidade ou bairro"}
                     </h2>
                   </div>
-                  <AdvancedSearch />
+                  <AdvancedSearch
+                    searchMode={searchMode}
+                    onModeChange={setSearchMode}
+                  />
                 </CardContent>
               </Card>
             </div>

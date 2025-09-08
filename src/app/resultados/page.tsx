@@ -14,11 +14,19 @@ function ResultadosContent() {
   const searchParams = useSearchParams();
   const [properties, setProperties] = useState<PropertyWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchInfo, setSearchInfo] = useState<{
-    checkIn: string;
-    checkOut: string;
-    guests: string;
-  } | null>(null);
+  const [searchInfo, setSearchInfo] = useState<
+    | {
+        checkIn: string;
+        checkOut: string;
+        guests: string;
+      }
+    | {
+        municipality?: string;
+        city?: string;
+        neighborhood?: string;
+      }
+    | null
+  >(null);
 
   // Função para realizar a busca inicial baseada nos parâmetros da URL
   useEffect(() => {
@@ -27,7 +35,13 @@ function ResultadosContent() {
       const checkOut = searchParams.get("checkOut");
       const guests = searchParams.get("guests");
 
+      // Parâmetros de busca por localização
+      const municipality = searchParams.get("municipality");
+      const city = searchParams.get("city");
+      const neighborhood = searchParams.get("neighborhood");
+
       if (checkIn && checkOut && guests) {
+        // Busca por data e hóspedes
         setSearchInfo({
           checkIn: new Date(checkIn).toLocaleDateString("pt-BR"),
           checkOut: new Date(checkOut).toLocaleDateString("pt-BR"),
@@ -43,6 +57,25 @@ function ResultadosContent() {
           setProperties(results);
         } catch (error) {
           console.error("Erro ao buscar imóveis:", error);
+          setProperties([]);
+        }
+      } else if (municipality || city || neighborhood) {
+        // Busca por localização
+        setSearchInfo({
+          municipality: municipality || undefined,
+          city: city || undefined,
+          neighborhood: neighborhood || undefined,
+        });
+
+        try {
+          const results = await searchProperties({
+            municipality: municipality || undefined,
+            city: city || undefined,
+            neighborhood: neighborhood || undefined,
+          });
+          setProperties(results);
+        } catch (error) {
+          console.error("Erro ao buscar imóveis por localização:", error);
           setProperties([]);
         }
       } else {
@@ -80,9 +113,26 @@ function ResultadosContent() {
               </h2>
               {searchInfo && (
                 <p className="mt-2 text-gray-600">
-                  {searchInfo.guests} hóspede
-                  {Number(searchInfo.guests) > 1 ? "s" : ""} •{" "}
-                  {searchInfo.checkIn} até {searchInfo.checkOut}
+                  {"guests" in searchInfo ? (
+                    <>
+                      {searchInfo.guests} hóspede
+                      {Number(searchInfo.guests) > 1 ? "s" : ""} •{" "}
+                      {searchInfo.checkIn} até {searchInfo.checkOut}
+                    </>
+                  ) : (
+                    <>
+                      Busca por localização:
+                      {searchInfo.municipality && ` ${searchInfo.municipality}`}
+                      {searchInfo.city &&
+                        (searchInfo.municipality
+                          ? `, ${searchInfo.city}`
+                          : ` ${searchInfo.city}`)}
+                      {searchInfo.neighborhood &&
+                        (searchInfo.municipality || searchInfo.city
+                          ? `, ${searchInfo.neighborhood}`
+                          : ` ${searchInfo.neighborhood}`)}
+                    </>
+                  )}
                 </p>
               )}
             </div>
