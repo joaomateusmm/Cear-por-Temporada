@@ -84,7 +84,9 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       variant="secondary"
                       className="bg-white/90 text-gray-900"
                     >
-                      R$ {dailyPrice.toFixed(0)}/noite
+                      {dailyPrice === 0
+                        ? "Valor a combinar"
+                        : `R$ ${dailyPrice.toFixed(0)}/noite`}
                     </Badge>
                   </div>
                 </div>
@@ -230,7 +232,11 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                                 Diária:{" "}
                               </span>
                               <span className="font-semibold text-green-600">
-                                R$ {property.pricing.dailyRate}/dia
+                                {parseFloat(
+                                  property.pricing.dailyRate || "0",
+                                ) === 0
+                                  ? "Valor a combinar"
+                                  : `R$ ${property.pricing.dailyRate}/dia`}
                               </span>
                             </div>
                             <div className="space-y-1">
@@ -238,7 +244,11 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                                 Mensal:{" "}
                               </span>
                               <span className="font-semibold text-green-600">
-                                R$ {property.pricing.monthlyRent}/mês
+                                {parseFloat(
+                                  property.pricing.monthlyRent || "0",
+                                ) === 0
+                                  ? "Valor a combinar"
+                                  : `R$ ${property.pricing.monthlyRent}/mês`}
                               </span>
                             </div>
                           </div>

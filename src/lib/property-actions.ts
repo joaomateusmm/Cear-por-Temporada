@@ -675,7 +675,12 @@ export async function getPropertyClasses() {
       .where(eq(propertyClassesTable.isActive, true))
       .orderBy(propertyClassesTable.name);
 
-    return classes;
+    // Filtrar classes de banner
+    const filteredClasses = classes.filter(
+      (cls) => !cls.name.includes("Banner"),
+    );
+
+    return filteredClasses;
   } catch (error) {
     console.error("Erro ao buscar classes de imóveis:", error);
     return [];

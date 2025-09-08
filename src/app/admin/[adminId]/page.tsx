@@ -54,7 +54,7 @@ export default async function AdminDashboard({ params }: AdminDashboardProps) {
 
   return (
     <>
-      <div className="mx-52">
+      <div className="md:mx-52">
         {/* Main Content */}
         <div>
           <div className="mt-26 space-y-8 px-4 py-8 sm:px-6 lg:px-8">

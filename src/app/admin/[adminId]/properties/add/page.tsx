@@ -60,12 +60,16 @@ const propertyFormSchema = z.object({
   checkOutTime: z.string().optional(),
 
   // Preços
-  monthlyRent: z.number().min(0, "Valor mensal inválido"),
-  dailyRate: z.number().min(0, "Valor da diária inválido"),
-  condominiumFee: z.number().optional(),
-  iptuFee: z.number().optional(),
-  monthlyCleaningFee: z.number().optional(),
-  otherFees: z.number().optional(),
+  monthlyRent: z.number().min(0, "Valor mensal inválido").optional().default(0),
+  dailyRate: z
+    .number()
+    .min(0, "Valor da diária inválida")
+    .optional()
+    .default(0),
+  condominiumFee: z.number().optional().default(0),
+  iptuFee: z.number().optional().default(0),
+  monthlyCleaningFee: z.number().optional().default(0),
+  otherFees: z.number().optional().default(0),
 
   // Serviços inclusos
   includesKitchenUtensils: z.boolean(),
@@ -106,7 +110,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     Array<{ id: number; name: string; description: string | null }>
   >([]);
 
-  const form = useForm<PropertyFormValues>({
+  const form = useForm({
     resolver: zodResolver(propertyFormSchema),
     defaultValues: {
       allowsPets: false,
@@ -809,6 +813,9 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                   </CardTitle>
                   <span className="text-sm text-gray-200">
                     Adicione aqui as informações sobre preços e taxas do imóvel.
+                    Se você deixar o valor das <strong>duas taxas</strong> igual
+                    a 0, o sistema irá entender como{" "}
+                    <strong>&apos; A combinar &apos;</strong>.
                   </span>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6">

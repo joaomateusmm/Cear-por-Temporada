@@ -133,47 +133,54 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="border-gray-700 bg-gray-800/95 backdrop-blur-md">
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a href="#casas" className="w-full scroll-smooth">
+                    <Link
+                      href="/categoria/casas"
+                      className="w-full scroll-smooth"
+                    >
                       Casas
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a href="#apartamentos" className="w-full scroll-smooth">
+                    <Link
+                      href="/categoria/apartamentos"
+                      className="w-full scroll-smooth"
+                    >
                       Apartamentos
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a
-                      href="#imoveis-destaque"
+                    <Link
+                      href="/categoria/imoveis-destaque"
                       className="w-full scroll-smooth"
                     >
                       Imóveis em Destaque
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a href="#casas-destaque" className="w-full scroll-smooth">
+                    <Link
+                      href="/categoria/casas-destaque"
+                      className="w-full scroll-smooth"
+                    >
                       Casas em Destaque
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a
-                      href="#apartamentos-destaque"
+                    <Link
+                      href="/categoria/apartamentos-destaque"
                       className="w-full scroll-smooth"
                     >
                       Apartamentos em Destaque
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <a href="#casas-destaque" className="w-full scroll-smooth">
-                      Experiência a Dois
-                    </a>
+                    </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <a href="#" className="whitespace-nowrap text-[#101828]">
-                Sobre
-              </a>
-              <a href="#" className="whitespace-nowrap text-[#101828]">
+              <Link href="/sobre-nos" className="">
+                Sobre Nós
+              </Link>
+              <a
+                href="https://api.whatsapp.com/send/?phone=5585992718222&text&type=phone_number&app_absent=0"
+                className="whitespace-nowrap text-[#101828]"
+              >
                 Contato
               </a>
               <a href="#footer" className="whitespace-nowrap text-[#101828]">

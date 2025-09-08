@@ -100,21 +100,23 @@ export function PropertyCarousel({
                 key={property.id}
                 className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/4"
               >
-                <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-xl">
+                <Card className="group cursor-pointer overflow-hidden duration-300 hover:shadow-lg">
                   <div className="relative h-64 px-6 pb-0">
                     <div className="relative h-full overflow-hidden rounded-md">
                       <Image
                         src={imageUrl}
                         alt={property.title}
                         fill
-                        className="object-cover shadow-md"
+                        className="object-cover shadow-md duration-1000 group-hover:scale-[1.02]"
                       />
                       <div className="absolute top-4 right-4">
                         <Badge
                           variant="secondary"
                           className="bg-white/90 text-gray-900"
                         >
-                          R$ {dailyPrice.toFixed(0)}/noite
+                          {dailyPrice === 0
+                            ? "Valor a combinar"
+                            : `R$ ${dailyPrice.toFixed(0)}/noite`}
                         </Badge>
                       </div>
                     </div>
@@ -236,15 +238,22 @@ export function PropertyCarousel({
                                     Diária:{" "}
                                   </span>
                                   <span className="font-semibold text-green-600">
-                                    R$ {property.pricing.dailyRate}/dia
+                                    {parseFloat(property.pricing.dailyRate) ===
+                                    0
+                                      ? "Valor a combinar"
+                                      : `R$ ${property.pricing.dailyRate}/dia`}
                                   </span>
                                 </div>
                                 <div className="space-y-1">
                                   <span className="font-medium text-gray-700">
-                                    Mensal:
+                                    Mensal:{""}
                                   </span>
                                   <span className="font-semibold text-green-600">
-                                    R$ {property.pricing.monthlyRent}/mês
+                                    {parseFloat(
+                                      property.pricing.monthlyRent,
+                                    ) === 0
+                                      ? "Valor a combinar"
+                                      : `R$ ${property.pricing.monthlyRent}/mês`}
                                   </span>
                                 </div>
                               </div>
