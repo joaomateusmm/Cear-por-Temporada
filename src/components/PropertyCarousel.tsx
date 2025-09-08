@@ -186,7 +186,7 @@ export function PropertyCarousel({
                             size="sm"
                             variant="outline"
                           >
-                            Ver Detalhes
+                            Ver Rapidamente
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="mx-4 max-h-[90vh] w-[400px] overflow-y-auto">

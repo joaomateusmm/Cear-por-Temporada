@@ -158,7 +158,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       size="sm"
                       variant="outline"
                     >
-                      Ver Detalhes
+                      Ver Rapidamente
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="mx-auto max-h-[90vh] w-[400px] overflow-y-auto">
