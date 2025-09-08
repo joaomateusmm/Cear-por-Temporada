@@ -135,7 +135,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-800 pt-8 text-center text-gray-400">
+        <div className="mt-10 -mb-8 border-t border-gray-800 pt-8 text-center text-gray-400">
           <p>&copy; 2025 Ceará por Temporada. Todos os direitos reservados.</p>
         </div>
       </div>

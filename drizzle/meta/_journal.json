@@ -36,6 +36,13 @@
       "when": 1757266751690,
       "tag": "0004_previous_proteus",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1757350167645,
+      "tag": "0005_majestic_iron_lad",
+      "breakpoints": true
     }
   ]
 }

@@ -30,6 +30,8 @@ export const propertiesTable = pgTable("properties", {
   title: varchar("title", { length: 255 }).notNull(),
   shortDescription: text("short_description").notNull(),
   fullDescription: text("full_description"),
+  nearbyRegion: text("nearby_region"),
+  aboutBuilding: text("about_building"),
   maxGuests: integer("max_guests").notNull(),
   bedrooms: integer("bedrooms").notNull(),
   bathrooms: integer("bathrooms").notNull(),

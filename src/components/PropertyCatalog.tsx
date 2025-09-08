@@ -2,6 +2,7 @@
 
 import { BedDouble, MapPin, Share2, Toilet, Users } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import {
   AlertDialog,
@@ -69,7 +70,11 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
         const dailyPrice = parseFloat(property.pricing.dailyRate || "0");
 
         return (
-          <>
+          <Link
+            key={property.id}
+            href={`/imovel/${property.id}`}
+            className="block"
+          >
             <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-xl">
               <div className="relative h-64 px-6 pb-0">
                 <div className="relative h-full overflow-hidden rounded-md">
@@ -157,6 +162,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                         className="cursor-pointer bg-[#101828] px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828] hover:text-white hover:active:scale-95"
                         size="sm"
                         variant="outline"
+                        onClick={(e) => e.stopPropagation()}
                       >
                         Ver Detalhes
                       </Button>
@@ -269,9 +275,11 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                         <AlertDialogCancel className="text-xs">
                           Fechar
                         </AlertDialogCancel>
-                        <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
-                          Ver Página Completa
-                        </AlertDialogAction>
+                        <Link href={`/imovel/${property.id}`}>
+                          <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
+                            Ver Página Completa
+                          </AlertDialogAction>
+                        </Link>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
@@ -280,6 +288,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       className="cursor-pointer bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828] hover:text-white hover:active:scale-95"
                       size="sm"
                       variant="outline"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <Share2 />
                     </Button>
@@ -294,7 +303,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                 </div>
               </CardContent>
             </Card>
-          </>
+          </Link>
         );
       })}
     </div>

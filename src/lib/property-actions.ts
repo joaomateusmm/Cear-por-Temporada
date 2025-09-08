@@ -105,6 +105,8 @@ export type PropertyFormData = {
   title: string;
   shortDescription: string;
   fullDescription?: string;
+  nearbyRegion?: string;
+  aboutBuilding?: string;
   maxGuests: number;
   bedrooms: number;
   bathrooms: number;
@@ -198,6 +200,8 @@ export async function createProperty(data: PropertyFormData) {
         title: data.title,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
+        nearbyRegion: data.nearbyRegion,
+        aboutBuilding: data.aboutBuilding,
         maxGuests: data.maxGuests,
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
@@ -489,6 +493,7 @@ export async function getPropertyById(
         amenityId: propertyAmenitiesTable.amenityId,
         name: amenitiesTable.name,
         icon: amenitiesTable.icon,
+        category: amenitiesTable.category,
       })
       .from(propertyAmenitiesTable)
       .leftJoin(
@@ -510,7 +515,16 @@ export async function getPropertyById(
       location: location[0] || null,
       pricing: pricing[0] || null,
       images: images.map((img) => ({ imageUrl: img.imageUrl })) || [],
-      amenities: amenities.map((a) => ({ amenityId: a.amenityId })) || [],
+      amenities:
+        amenities.map((a) => ({
+          amenityId: a.amenityId,
+          amenity: {
+            id: a.amenityId,
+            name: a.name,
+            icon: a.icon,
+            category: a.category,
+          },
+        })) || [],
       classes: classes || [],
     };
   } catch (error) {
@@ -532,6 +546,8 @@ export async function updateProperty(
         title: data.title,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription || "",
+        nearbyRegion: data.nearbyRegion,
+        aboutBuilding: data.aboutBuilding,
         maxGuests: data.maxGuests,
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,

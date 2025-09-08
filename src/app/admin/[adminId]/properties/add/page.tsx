@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader, Plus, X } from "lucide-react";
+import { ArrowLeft, Loader, Plus, SquareCheck, SquareX, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -43,11 +43,15 @@ const propertyFormSchema = z.object({
   shortDescription: z
     .string()
     .min(10, "Descrição deve ter pelo menos 10 caracteres"),
-  fullDescription: z.string().optional(),
+  fullDescription: z
+    .string()
+    .min(10, "Descrição completa deve ter pelo menos 10 caracteres"),
+  nearbyRegion: z.string().optional(),
+  aboutBuilding: z.string().optional(),
   maxGuests: z.number().min(1, "Deve aceitar pelo menos 1 hóspede"),
   bedrooms: z.number().min(0, "Número de quartos inválido"),
   bathrooms: z.number().min(1, "Deve ter pelo menos 1 banheiro"),
-  parkingSpaces: z.number().min(0, "Número de vagas inválido"),
+  parkingSpaces: z.number().min(0, "Número de vagas inválido").optional(),
   areaM2: z.number().optional(),
   allowsPets: z.boolean(),
   propertyStyle: z.string().min(1, "Selecione o tipo do imóvel"),
@@ -115,6 +119,8 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     defaultValues: {
       allowsPets: false,
       parkingSpaces: 0,
+      nearbyRegion: "",
+      aboutBuilding: "",
       minimumStay: 1,
       maximumStay: 30,
       checkInTime: "15:00",
@@ -203,6 +209,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     try {
       const propertyData: PropertyFormData = {
         ...values,
+        parkingSpaces: values.parkingSpaces || 0,
         amenities: selectedAmenities,
         images: uploadedImages,
       };
@@ -593,14 +600,14 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-slate-200">
-                          Descrição Curta
+                          Descrição no Card (obrigatória)
                         </FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                             rows={3}
-                            placeholder="Essa descrição aparecerá em cards menores de visualização do seu imóvel..."
+                            placeholder="Essa descrição ficará exibida APENAS no card de amostra do seu imóvel, resuma e seja breve"
                           />
                         </FormControl>
                         <FormMessage />
@@ -614,14 +621,56 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-medium text-slate-200">
-                          Descrição Completa (Opcional)
+                          Descrição na Página (obrigatória)
                         </FormLabel>
                         <FormControl>
                           <Textarea
                             {...field}
                             className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                             rows={5}
-                            placeholder="Essa descrição aparecerá na página individual do imóvel"
+                            placeholder="Essa descrição ficará exibida APENAS na página principal do seu imóvel, a parte mais importante, aqui você precisa ser mais detalhista para o seu hóspede."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="nearbyRegion"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Região Próxima (opcional)
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
+                            rows={3}
+                            placeholder="Descreva aqui como é a região próxima ao imóvel alugado, se possui restaurantes bons, academia, pracinhas, pontos turísticos, lugares interessantes, etc."
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="aboutBuilding"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Sobre o Prédio (opcional)
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
+                            rows={3}
+                            placeholder="Descreva aqui como é o prédio do imóvel que seu cliente irá frequentar."
                           />
                         </FormControl>
                         <FormMessage />
@@ -695,6 +744,34 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                               }
                               className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                               placeholder="0"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="parkingSpaces"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium text-slate-200">
+                            Vagas de Veículos (opcional)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="number"
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.value
+                                    ? Number(e.target.value)
+                                    : undefined,
+                                )
+                              }
+                              className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
+                              placeholder="Caso você deixe essa opção vazia, o sistema vai entender que seu imóvel NÃO POSSUI vagas para veículos."
                             />
                           </FormControl>
                           <FormMessage />
@@ -1025,11 +1102,17 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                         render={({ field }) => (
                           <FormItem className="flex items-center space-x-3">
                             <FormControl>
-                              <Checkbox
-                                checked={field.value as boolean}
-                                onCheckedChange={field.onChange}
-                                className="border-slate-600 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
-                              />
+                              <button
+                                type="button"
+                                onClick={() => field.onChange(!field.value)}
+                                className="flex h-5 w-5 items-center justify-center rounded border border-slate-600 transition-colors hover:border-blue-400"
+                              >
+                                {field.value ? (
+                                  <SquareCheck className="h-4 w-4 text-green-500" />
+                                ) : (
+                                  <SquareX className="h-4 w-4 text-red-500" />
+                                )}
+                              </button>
                             </FormControl>
                             <FormLabel className="cursor-pointer text-sm font-medium text-slate-200">
                               {service.label}
