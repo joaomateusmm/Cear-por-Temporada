@@ -292,7 +292,7 @@ export function PropertyCarousel({
                             </div>
                           </div>
 
-                          <AlertDialogFooter className="mx-auto justify-between gap-2 pt-4 text-center">
+                          <AlertDialogFooter className="mx-auto flex justify-between gap-26 pt-4 text-center">
                             <Link href={`/imovel/${property.id}`}>
                               <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
                                 Ver Página Completa
@@ -380,7 +380,7 @@ export function PropertyCarousel({
 
                             <div className="mt-3 border-t border-gray-300"></div>
 
-                            <AlertDialogFooter className="mx-auto justify-between gap-2 pt-4 text-center">
+                            <AlertDialogFooter className="mx-auto flex justify-between gap-10 pt-4 text-center">
                               <Link href={`/imovel/${property.id}`}>
                                 <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
                                   Ver Página Completa

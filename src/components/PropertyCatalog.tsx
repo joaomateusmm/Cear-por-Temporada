@@ -264,7 +264,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       </div>
                     </div>
 
-                    <AlertDialogFooter className="gap-2 pt-4">
+                    <AlertDialogFooter className="mx-auto flex justify-between gap-26 pt-4 text-center">
                       <AlertDialogCancel className="text-xs">
                         Fechar
                       </AlertDialogCancel>
@@ -351,7 +351,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
 
                       <div className="mt-3 border-t border-gray-300"></div>
 
-                      <AlertDialogFooter className="w-full gap-2 pt-4">
+                      <AlertDialogFooter className="flex gap-10 pt-4">
                         <Link href={`/imovel/${property.id}`}>
                           <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
                             Ver Página Completa
