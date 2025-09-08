@@ -112,7 +112,7 @@ export default function AdminLogin() {
   return (
     <>
       <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-        <Card className="w-[300px] border-slate-700 bg-slate-800">
+        <Card className="w-[85vw] border-slate-700 bg-slate-800 md:w-[450px]">
           <CardHeader className="space-y-2 text-start">
             <CardTitle className="text-slate-100">
               Entrar na Área Administrativa
@@ -202,7 +202,6 @@ export default function AdminLogin() {
           </CardContent>
         </Card>
       </div>
-      
     </>
   );
 }

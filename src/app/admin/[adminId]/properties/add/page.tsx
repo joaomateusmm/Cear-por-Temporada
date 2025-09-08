@@ -219,16 +219,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     }
   };
 
-  const propertyTypes = [
-    "Apartamento",
-    "Casa",
-    "Flat",
-    "Sítio",
-    "Chalé",
-    "Pousada",
-    "Studio",
-    "Loft",
-  ];
+  const propertyTypes = ["Apartamento", "Casa"];
 
   // Lista completa dos 184 municípios do Ceará
   const cearaMunicipalities = [
@@ -512,7 +503,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                             defaultValue={field.value}
                           >
                             <FormControl>
-                              <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors focus:border-blue-400 focus:ring-blue-400/20">
+                              <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors hover:text-slate-100 focus:border-blue-400 focus:ring-blue-400/20 hover:active:text-slate-100">
                                 <SelectValue placeholder="Selecione o tipo" />
                               </SelectTrigger>
                             </FormControl>
@@ -706,30 +697,6 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="parkingSpaces"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-200">
-                            Vagas
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type="number"
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                              className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
-                              placeholder="0"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -904,7 +871,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Condomínio (R$)
+                            Condomínio (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -933,7 +900,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            IPTU (R$)
+                            IPTU (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -962,7 +929,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Taxa Limpeza (R$)
+                            Taxa Limpeza (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -991,7 +958,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Outras Taxas (R$)
+                            Outras Taxas (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input

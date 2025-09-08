@@ -112,7 +112,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
 
   return (
     <>
-      <div className="mt-32 space-y-6">
+      <div className="mt-32 space-y-6 mx-52">
         {/* Header da página */}
         <div className="flex items-center justify-between">
           <div>

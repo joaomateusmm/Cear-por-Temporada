@@ -98,7 +98,7 @@ export default function AutoCarousel() {
       >
         <CarouselContent className="-ml-0 h-full">
           {/* Slide 1 - Beach Park */}
-          <CarouselItem className="relative min-h-[80vh] w-full flex-[0_0_100%]">
+          <CarouselItem className="relative min-h-[95vh] w-full flex-[0_0_100%]">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
@@ -123,7 +123,7 @@ export default function AutoCarousel() {
           </CarouselItem>
 
           {/* Slide 2 - Casal */}
-          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+          <CarouselItem className="relative min-h-[95vh] w-full flex-[0_0_100%]">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
@@ -148,7 +148,7 @@ export default function AutoCarousel() {
           </CarouselItem>
 
           {/* Slide 3 - Praia bonita */}
-          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+          <CarouselItem className="relative min-h-[95vh] w-full flex-[0_0_100%]">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{
@@ -173,7 +173,7 @@ export default function AutoCarousel() {
           </CarouselItem>
 
           {/* Slide 4 - Praia bonita 2 */}
-          <CarouselItem className="relative min-h-[70vh] w-full flex-[0_0_100%]">
+          <CarouselItem className="relative min-h-[95vh] w-full flex-[0_0_100%]">
             <div
               className="absolute inset-0 bg-cover bg-center"
               style={{

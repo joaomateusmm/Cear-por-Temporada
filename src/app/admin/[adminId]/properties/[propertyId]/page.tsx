@@ -829,30 +829,6 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="parkingSpaces"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-200">
-                            Vagas
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                              value={field.value}
-                              className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
-                              placeholder="0"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
 
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
@@ -1033,7 +1009,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Condomínio (R$)
+                            Condomínio (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -1061,7 +1037,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            IPTU (R$)
+                            IPTU (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -1089,7 +1065,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Limpeza Mensal (R$)
+                            Limpeza Mensal (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -1117,7 +1093,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-sm font-medium text-slate-200">
-                            Outras Taxas (R$)
+                            Outras Taxas (opicional)
                           </FormLabel>
                           <FormControl>
                             <Input
