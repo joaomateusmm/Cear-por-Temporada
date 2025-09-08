@@ -68,32 +68,35 @@ function ResultadosContent() {
       <ScrollingHeader />
 
       {/* Banner com carrossel igual à página principal */}
-      <div className="relative h-[80vh]">
+      <div className="relative h-[80vh] pt-16">
         <AutoCarousel />
 
         {/* Overlay com pesquisa avançada */}
         <div className="absolute inset-0 z-20 bg-black/40">
-          <div className="relative flex h-full items-center justify-center">
+          <div className="relative flex h-full items-center justify-center pt-8">
             <div className="mx-auto max-w-[70%] px-4 sm:px-6 lg:px-8">
               {/* Tabs triggers centralizados acima do card - Desktop */}
               <div className="mb-0 flex justify-center">
                 <div className="flex">
-                  <button className="rounded-t-lg bg-gray-50/70 px-4 py-3 text-[#101828] shadow-sm">
+                  <button className="rounded-t-lg bg-[#101828]/85 px-4 py-3 text-gray-100 backdrop-blur-sm">
                     <CalendarSearch />
                   </button>
-                  <button className="rounded-t-lg border-transparent bg-gray-300/70 px-4 py-3 text-[#101828]/70 duration-300 hover:bg-gray-200/70">
+                  <button className="rounded-t-lg border-transparent bg-[#101828]/70 px-4 py-3 text-gray-100/70 duration-300 hover:bg-sky-200/80">
                     <MapPinHouse />
                   </button>
                 </div>
               </div>
 
-              <Card className="rounded-lg border-0 bg-gray-50/70 shadow-md backdrop-blur-sm">
+              <Card className="rounded-lg border-0 bg-[#101828]/85 shadow-md backdrop-blur-sm">
                 <CardContent className="px-8">
-                  <div className="mb-4 text-center">
-                    <h2 className="mb-2 text-[18px] font-bold text-gray-800">
-                      Encontre o imóvel perfeito para sua estadia.
-                    </h2>
-                  </div>
+                  <div className="mb-6 text-center">
+              <h2 className="mb-2 text-[27px] font-bold text-gray-100">
+                Faça sua reserva online
+              </h2>
+              <h2 className="text-md font-normal text-gray-100">
+                Encontre o lugar perfeito pra sua estadia.
+              </h2>
+            </div>
                   <AdvancedSearch
                     onSearchResults={handleNewSearchResults}
                     redirectOnSearch={false}

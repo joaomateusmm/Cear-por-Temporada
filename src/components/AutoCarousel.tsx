@@ -24,22 +24,22 @@ export default function AutoCarousel() {
         {/* Tabs triggers centralizados acima do card - Desktop */}
         <div className="mb-0 flex justify-center">
           <div className="flex">
-            <button className="rounded-t-lg bg-gray-50/85 px-4 py-3 text-[#101828] backdrop-blur-sm">
+            <button className="rounded-t-lg bg-[#101828]/85 px-4 py-3 text-gray-100 backdrop-blur-sm">
               <CalendarSearch />
             </button>
-            <button className="rounded-t-lg border-transparent bg-gray-300/70 px-4 py-3 text-[#101828]/70 duration-300 hover:bg-gray-200/70">
+            <button className="rounded-t-lg border-transparent bg-[#101828]/70 px-4 py-3 text-gray-100/70 duration-300 hover:bg-sky-200/80">
               <MapPinHouse />
             </button>
           </div>
         </div>
 
-        <Card className="rounded-lg border-0 bg-gray-50/85 shadow-lg backdrop-blur-sm">
+        <Card className="rounded-lg border-0 bg-[#101828]/85 shadow-md backdrop-blur-sm">
           <CardContent className="px-6 pt-6 pb-2">
             <div className="mb-6 text-center">
-              <h2 className="mb-2 text-[27px] font-bold text-gray-800">
+              <h2 className="mb-2 text-[27px] font-bold text-gray-100">
                 Faça sua reserva online
               </h2>
-              <h2 className="text-md font-normal text-gray-800">
+              <h2 className="text-md font-normal text-gray-100">
                 Encontre o lugar perfeito pra sua estadia.
               </h2>
             </div>
@@ -106,7 +106,7 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/50" />
-            <div className="relative z-10 flex h-full items-end pb-8">
+            <div className="relative z-10 flex h-full items-end pb-1">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Texto centralizado na parte inferior */}
                 <div className="mb-6 text-center">
@@ -131,7 +131,7 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-8">
+            <div className="relative z-10 flex h-full items-end pb-1">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Texto centralizado na parte inferior */}
                 <div className="mb-6 text-center">
@@ -156,7 +156,7 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-8">
+            <div className="relative z-10 flex h-full items-end pb-1">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Texto centralizado na parte inferior */}
                 <div className="mb-3 text-center">
@@ -181,7 +181,7 @@ export default function AutoCarousel() {
               }}
             />
             <div className="absolute inset-0 bg-black/25" />
-            <div className="relative z-10 flex h-full items-end pb-8">
+            <div className="relative z-10 flex h-full items-end pb-1">
               <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Texto centralizado na parte inferior */}
                 <div className="mb-4 text-center">
@@ -211,22 +211,22 @@ export default function AutoCarousel() {
               {/* Tabs triggers centralizados acima do card - Mobile */}
               <div className="mb-0 flex justify-center">
                 <div className="flex">
-                  <button className="rounded-t-lg bg-gray-200/85 px-4 py-3 text-[#101828] backdrop-blur-sm">
+                  <button className="rounded-t-lg bg-[#101828]/85 px-4 py-3 text-gray-100 backdrop-blur-sm">
                     <CalendarSearch />
                   </button>
-                  <button className="rounded-t-lg border-transparent bg-gray-300/70 px-4 py-3 text-[#101828]/70 duration-300 hover:bg-gray-200/70">
+                  <button className="rounded-t-lg border-transparent bg-[#101828]/70 px-4 py-3 text-gray-100 duration-300 hover:bg-[#101828]/70">
                     <MapPinHouse />
                   </button>
                 </div>
               </div>
 
-              <Card className="mb-10 rounded-lg border-0 bg-gray-200/85 shadow-lg backdrop-blur-sm">
+              <Card className="rounded-lg border-0 bg-[#101828]/85 shadow-md backdrop-blur-sm">
                 <CardContent className="p-6">
                   <div className="mb-10 text-center">
-                    <h2 className="mb-2 text-[27px] font-bold text-gray-800">
+                    <h2 className="mb-2 text-[27px] font-bold text-gray-100">
                       Faça sua reserva online
                     </h2>
-                    <h2 className="text-md font-normal text-gray-800">
+                    <h2 className="text-md font-normal text-gray-100">
                       Encontre o lugar perfeito pra sua estadia
                     </h2>
                   </div>

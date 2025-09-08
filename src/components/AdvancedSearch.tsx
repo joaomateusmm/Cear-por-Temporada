@@ -82,7 +82,7 @@ export function AdvancedSearch({
       <div className="grid w-full grid-cols-1 gap-3">
         {/* Seletor de Datas */}
         <div className="w-full">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-200">
             Check-in e Check-out
           </label>
           <Popover>
@@ -90,14 +90,12 @@ export function AdvancedSearch({
               <Button
                 variant="outline"
                 className={cn(
-                  "h-10 w-full max-w-full justify-start text-left font-normal md:h-12",
+                  "h-12 w-full max-w-full justify-start bg-gray-100 py-6 text-left text-xs font-normal",
                   !dateRange && "text-muted-foreground",
                 )}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                <span className="text-xs md:text-sm">
-                  {formatDateRange(dateRange)}
-                </span>
+                <span className="text-sm">{formatDateRange(dateRange)}</span>
               </Button>
             </PopoverTrigger>
             <PopoverContent
@@ -132,16 +130,16 @@ export function AdvancedSearch({
 
         {/* Seletor de Hóspedes */}
         <div className="w-full">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium text-gray-200">
             Hóspedes
           </label>
           <Select value={guests} onValueChange={setGuests}>
-            <SelectTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-full max-w-full justify-start border py-[23px] text-left font-normal md:h-12">
+            <SelectTrigger className="border-input hover:bg-accent hover:text-accent-foreground h-12 w-full max-w-full justify-start border bg-gray-100 py-[23px] text-left font-normal">
               <div className="flex items-center gap-2">
                 <Users className="mr-2 h-4 w-4" />
                 <SelectValue
                   placeholder="Quantos hóspedes?"
-                  className="text-xs md:text-sm"
+                  className="text-xs"
                 />
               </div>
             </SelectTrigger>
@@ -165,10 +163,7 @@ export function AdvancedSearch({
           <Button
             onClick={handleSearch}
             size="lg"
-            className="h-10 w-full max-w-full bg-[#101828] text-sm transition-transform duration-300 hover:scale-[1.02] hover:bg-[#101828] hover:active:scale-95 md:h-12 md:text-base"
-            disabled={
-              !dateRange?.from || !dateRange?.to || !guests || isSearching
-            }
+            className="h-10 w-full max-w-full cursor-pointer bg-gray-50 py-6 text-sm text-[#101828] shadow-md duration-300 hover:bg-gray-200 hover:active:scale-95 md:h-12 md:text-base"
           >
             <Search className="mr-2 h-4 w-4 md:h-5 md:w-5" />
             {isSearching ? "Procurando..." : "Procurar"}
@@ -178,7 +173,7 @@ export function AdvancedSearch({
 
       {/* Info sobre a busca */}
       {dateRange?.from && dateRange?.to && guests && (
-        <div className="mt-2 w-full">
+        <div className="mt-3 w-full">
           <p className="text-center text-xs leading-tight text-gray-800 md:text-sm">
             <span className="font-semibold">Busca:</span> {guests} hóspede
             {Number(guests) > 1 ? "s" : ""} |{" "}
