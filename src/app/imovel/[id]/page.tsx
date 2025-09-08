@@ -25,6 +25,7 @@ import {
   SquareM,
   Toilet,
   TvMinimal,
+  UserRound,
   Users,
   Utensils,
   WavesLadder,
@@ -332,6 +333,119 @@ export default function PropertyPage() {
                 </div>
               </div>
 
+              {/* Personalizar Moradia */}
+              <Card className="sticky top-4 md:hidden">
+                <CardHeader>
+                  <CardTitle className="text-lg text-gray-900">
+                    Personalize sua moradia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Datas */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <Label htmlFor="checkin" className="text-sm font-medium">
+                        Data de entrada
+                      </Label>
+                      <Input
+                        id="checkin"
+                        type="date"
+                        value={checkIn}
+                        onChange={(e) => setCheckIn(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="checkout" className="text-sm font-medium">
+                        Saída
+                      </Label>
+                      <Input
+                        id="checkout"
+                        type="date"
+                        value={checkOut}
+                        onChange={(e) => setCheckOut(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Número de Pessoas */}
+                  <div>
+                    <Label className="text-sm font-medium">
+                      Número de pessoas
+                    </Label>
+                    <div className="mt-2 flex items-center justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setGuests(Math.max(1, guests - 1))}
+                        disabled={guests <= 1}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="text-lg font-semibold">{guests}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setGuests(Math.min(property.maxGuests, guests + 1))
+                        }
+                        disabled={guests >= property.maxGuests}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Valores */}
+                  <div className="space-y-3 border-t pt-4">
+                    <div className="flex justify-between">
+                      <span>Aluguel</span>
+                      <span>
+                        R${" "}
+                        {monthlyRent > 0
+                          ? monthlyRent.toFixed(2)
+                          : dailyPrice.toFixed(2)}
+                      </span>
+                    </div>
+
+                    {cleaningFee > 0 && (
+                      <div className="flex justify-between">
+                        <span>Limpeza mensal</span>
+                        <span>R$ {cleaningFee.toFixed(2)}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between">
+                      <span>Pacote de moradia</span>
+                      <span>Incluído</span>
+                    </div>
+
+                    <div className="border-t pt-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm">Até 29 noites</span>
+                        <div className="text-right">
+                          <div className="text-xl font-bold">
+                            {nightlyRate > 0
+                              ? `R$ ${nightlyRate.toFixed(0)}/Noite`
+                              : "A combinar"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Botão Reservar */}
+                  <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
+                    Reservar
+                  </Button>
+
+                  <p className="text-center text-sm text-gray-500">
+                    Você não será cobrado agora
+                  </p>
+                </CardContent>
+              </Card>
+
               {/* Grid de Informações */}
               <div className="grid cursor-default grid-cols-2 gap-4 md:grid-cols-3">
                 <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
@@ -540,7 +654,7 @@ export default function PropertyPage() {
           {/* Coluna Direita - Sidebar */}
           <div className="space-y-6">
             {/* Personalizar Moradia */}
-            <Card className="sticky top-4">
+            <Card className="sticky top-4 hidden md:block">
               <CardHeader>
                 <CardTitle className="text-lg text-gray-900">
                   Personalize sua moradia
@@ -642,7 +756,7 @@ export default function PropertyPage() {
                 </div>
 
                 {/* Botão Reservar */}
-                <Button className="w-full bg-[#101828] py-3 text-lg text-white hover:bg-[#101828]/90">
+                <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
                   Reservar
                 </Button>
 
@@ -654,24 +768,44 @@ export default function PropertyPage() {
 
             {/* Suporte */}
             <Card>
-              <CardContent className="pt-6">
+              <CardContent>
                 <div className="space-y-3 text-center">
-                  <p className="font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-gray-900">
                     Dúvidas ou Precisa de ajuda?
                   </p>
-                  <Button variant="outline" className="gap-2">
-                    Fale com a gente
-                  </Button>
+                  <Link
+                    href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`Olá! 👋\n\nEstou interessado(a) no imóvel *${property.title}* e gostaria de tirar algumas dúvidas.\n\n📍 Localização: ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\nPoderia me ajudar com mais informações?`)}&type=phone_number&app_absent=0`}
+                    target="_blank"
+                  >
+                    <Button className="gap-2 bg-gray-800 py-4 text-white shadow-md duration-300 hover:bg-gray-900">
+                      Fale com a gente
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent>
+                <div className="space-y-3 text-start">
+                  <p className="text-lg font-semibold text-gray-900">
+                    Perfil do Anfitrião
+                  </p>
+                  <div>
+                    <div className="h-18 w-18 rounded-full flex justify-center items-center bg-gray-200 shadow-lg ">
+                      <UserRound className="h-9 w-9 text-gray-600/80" />
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
             {/* Benefícios */}
             <Card>
-              <CardContent className="pt-6">
+              <CardContent>
                 <div className="space-y-4">
                   <div className="text-center">
-                    <h3 className="mb-4 font-semibold text-gray-900">
+                    <h3 className="mb-4 text-lg font-semibold text-gray-900">
                       Sem burocracia e 100% Online
                     </h3>
                   </div>
