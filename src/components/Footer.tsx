@@ -6,7 +6,10 @@ import { TikTokIcon, WhatsAppIcon } from "@/components/SocialIcons";
 
 export default function Footer() {
   return (
-    <footer id="footer" className="bg-gray-900 py-16 text-white border-t border-gray-800">
+    <footer
+      id="footer"
+      className="border-t border-gray-800 bg-gray-900 py-16 text-white"
+    >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between lg:grid-cols-4">
           <div className="md:col-span-2 lg:col-span-1">
@@ -76,24 +79,32 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-
           <div>
             <h4 className="mb-4 font-semibold">Suporte</h4>
             <ul className="space-y-3 text-gray-300">
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Central de Ajuda
-                </a>
+                <Link
+                  href="/sobre-nos"
+                  className="transition-colors hover:text-white"
+                >
+                  Sobre Nós
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Privacidade
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition-colors hover:text-white">
+                <Link
+                  href="/termos-de-uso"
+                  className="transition-colors hover:text-white"
+                >
                   Termos de Uso
-                </a>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/tira-duvidas"
+                  className="transition-colors hover:text-white"
+                >
+                  Tira dúvidas
+                </Link>
               </li>
             </ul>
           </div>
@@ -111,11 +122,7 @@ export default function Footer() {
                   Como funciona?
                 </a>
               </li>
-              <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Tira dúvidas
-                </a>
-              </li>
+
               <li>
                 <Link
                   href="/admin/login"

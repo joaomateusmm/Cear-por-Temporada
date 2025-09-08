@@ -1,16 +1,13 @@
 "use client";
 
-import { CalendarSearch, MapPinHouse } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useEffect, useState } from "react";
 
-import { AdvancedSearch } from "@/components/AdvancedSearch";
 import AutoCarousel from "@/components/AutoCarousel";
 import Footer from "@/components/Footer";
 import PropertyCatalog from "@/components/PropertyCatalog";
 import ScrollingHeader from "@/components/ScrollingHeader";
-import { Card, CardContent } from "@/components/ui/card";
 import { PropertyWithDetails, searchProperties } from "@/lib/get-properties";
 
 function ResultadosContent() {
@@ -56,11 +53,6 @@ function ResultadosContent() {
 
     performInitialSearch();
   }, [searchParams]);
-
-  // Função para atualizar os resultados quando uma nova pesquisa é feita
-  const handleNewSearchResults = (results: PropertyWithDetails[]) => {
-    setProperties(results);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

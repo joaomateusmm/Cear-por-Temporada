@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { db } from "@/app/db";
 import { propertyClassesTable } from "@/app/db/schema";
