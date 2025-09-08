@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Menu, Search } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -13,12 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { MobileSidebar } from "../MobileSidebar";
-
-export default function ScrollingHeader() {
+export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const controlHeader = () => {
@@ -45,10 +42,11 @@ export default function ScrollingHeader() {
   return (
     <>
       <header
-        className={`fixed left-1/2 z-50 mx-auto w-full -translate-x-1/2 border-b border-gray-100/30 bg-black/25 backdrop-blur-sm transition-all duration-300 ${
+        className={`fixed top-0 left-0 z-50 hidden w-full bg-black/25 backdrop-blur-sm transition-all duration-300 md:block ${
           isVisible ? "h-32" : "h-16"
         }`}
       >
+        {/* Header branco */}
         <div
           className={`mx-auto max-w-full bg-gray-50 px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
             isVisible
@@ -58,16 +56,21 @@ export default function ScrollingHeader() {
         >
           <div className="mx-4 flex h-16 items-center justify-between md:mx-60">
             <div className="flex items-center gap-3">
-              <Image
-                src="/logo-1.png"
-                alt="Ceará por Temporada"
-                width={150}
-                height={40}
-                className="h-auto w-40 cursor-pointer"
-              />
+              <Link href="/" className="cursor-pointer">
+                <Image
+                  src="/logo-alternativa.svg"
+                  alt="Ceará por Temporada"
+                  width={150}
+                  height={40}
+                  className="h-auto w-40 cursor-pointer"
+                />
+              </Link>
             </div>
-            <nav className="hidden items-center gap-6 font-medium md:flex">
-              <Link href="/" className="text-[#101828] transition-colors">
+            <nav className="hidden items-center gap-8 font-medium md:flex">
+              <Link
+                href="/"
+                className="whitespace-nowrap text-[#101828] transition-colors"
+              >
                 Início
               </Link>
               <DropdownMenu>
@@ -167,13 +170,13 @@ export default function ScrollingHeader() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <a href="#" className="text-[#101828]">
+              <a href="#" className="whitespace-nowrap text-[#101828]">
                 Sobre
               </a>
-              <a href="#" className="text-[#101828]">
+              <a href="#" className="whitespace-nowrap text-[#101828]">
                 Contato
               </a>
-              <a href="#footer" className="text-[#101828]">
+              <a href="#footer" className="whitespace-nowrap text-[#101828]">
                 Proprietário
               </a>
             </nav>
@@ -185,31 +188,16 @@ export default function ScrollingHeader() {
             <Button className="rounded-3xl bg-[#101828] p-1 px-2 text-sm shadow-md backdrop-blur-md duration-500 hover:bg-[#101828]/90 md:p-2 md:px-4 md:text-base">
               Criar Conta
             </Button> */}
-
-              {/* Menu hambúrguer para mobile */}
-              <div className="md:hidden">
-                <MobileSidebar
-                  trigger={
-                    <Button
-                      variant="outline"
-                      className="rounded-full border-none px-1 text-[#101828] shadow-md"
-                    >
-                      <Menu className="h-6 w-6" />
-                    </Button>
-                  }
-                  open={isMobileMenuOpen}
-                  onOpenChange={setIsMobileMenuOpen}
-                />
-              </div>
             </div>
           </div>
         </div>
+        {/* Header azul */}
         <div
           className={`mx-auto max-w-full bg-[#101828]/50 px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
             isVisible ? "translate-y-0" : "-translate-y-16"
           }`}
         >
-          <div className="mx-4 flex h-16 items-center justify-between md:mx-60">
+          <div className="relative mx-4 flex h-16 items-center justify-between md:mx-60">
             <div
               className={`flex flex-shrink-0 items-center gap-3 transition-all duration-300 ${
                 isVisible
@@ -217,50 +205,52 @@ export default function ScrollingHeader() {
                   : "translate-x-0 opacity-100"
               }`}
             >
-              <Image
-                src="/logo-1.png"
-                alt="Ceará por Temporada"
-                width={150}
-                height={40}
-                className="h-auto w-40 cursor-pointer"
-              />
+              <Link href="/" className="cursor-pointer">
+                <Image
+                  src="/logo-alternativa.svg"
+                  alt="Ceará por Temporada"
+                  width={150}
+                  height={40}
+                  className="h-auto w-40 cursor-pointer"
+                />
+              </Link>
             </div>
 
-            {/* Desktop Navigation */}
-            <nav className="mr-0 hidden flex-1 items-center gap-3 font-medium md:mr-32 md:flex md:gap-6">
+            {/* Desktop Navigation - Centralizada */}
+            <nav className="absolute top-1/2 left-1/2 ml-20 hidden -translate-x-1/2 -translate-y-1/2 transform items-center gap-8 font-medium md:flex">
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Fortaleza
               </a>
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Cumbuco
               </a>
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Jericoacoara
               </a>
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Canoa Quebrada
               </a>
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Beach Park
               </a>
               <a
                 href="#"
-                className="text-sm text-white/90 transition-colors hover:text-white md:text-base"
+                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Outros
               </a>
@@ -276,7 +266,7 @@ export default function ScrollingHeader() {
       </header>
 
       {/* Espaçador para compensar a altura do header fixo */}
-      <div className="h-16"></div>
+      <div className="hidden h-16 md:block"></div>
     </>
   );
 }

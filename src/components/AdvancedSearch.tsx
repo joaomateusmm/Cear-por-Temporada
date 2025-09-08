@@ -78,19 +78,19 @@ export function AdvancedSearch({
   };
 
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+    <div className="mx-auto w-full max-w-sm overflow-hidden">
+      <div className="grid w-full grid-cols-1 gap-3">
         {/* Seletor de Datas */}
-        <div className="md:col-span-1">
+        <div className="w-full">
           <label className="mb-2 block text-sm font-medium text-gray-700">
-            Check-in e checkout
+            Check-in e Check-out
           </label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
                 className={cn(
-                  "h-10 w-full justify-start text-left font-normal md:h-12",
+                  "h-10 w-full max-w-full justify-start text-left font-normal md:h-12",
                   !dateRange && "text-muted-foreground",
                 )}
               >
@@ -100,7 +100,10 @@ export function AdvancedSearch({
                 </span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent
+              className="w-auto max-w-[calc(100vw-2rem)] p-0"
+              align="start"
+            >
               <Calendar
                 initialFocus
                 mode="range"
@@ -128,12 +131,12 @@ export function AdvancedSearch({
         </div>
 
         {/* Seletor de Hóspedes */}
-        <div>
+        <div className="w-full">
           <label className="mb-2 block text-sm font-medium text-gray-700">
             Hóspedes
           </label>
           <Select value={guests} onValueChange={setGuests}>
-            <SelectTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-full justify-start border py-[23px] text-left font-normal md:h-12">
+            <SelectTrigger className="border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-full max-w-full justify-start border py-[23px] text-left font-normal md:h-12">
               <div className="flex items-center gap-2">
                 <Users className="mr-2 h-4 w-4" />
                 <SelectValue
@@ -142,7 +145,7 @@ export function AdvancedSearch({
                 />
               </div>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-w-[calc(100vw-2rem)]">
               <SelectItem value="1">1 hóspede</SelectItem>
               <SelectItem value="2">2 hóspedes</SelectItem>
               <SelectItem value="3">3 hóspedes</SelectItem>
@@ -158,40 +161,40 @@ export function AdvancedSearch({
         </div>
 
         {/* Botão de Busca */}
-        <div className="mt-5 -mb-3 flex items-end">
+        <div className="mt-5">
           <Button
             onClick={handleSearch}
             size="lg"
-            className="h-10 w-full bg-[#101828] text-sm transition-transform duration-300 hover:scale-[1.02] hover:bg-[#101828] hover:active:scale-95 md:h-12 md:text-base"
+            className="h-10 w-full max-w-full bg-[#101828] text-sm transition-transform duration-300 hover:scale-[1.02] hover:bg-[#101828] hover:active:scale-95 md:h-12 md:text-base"
             disabled={
               !dateRange?.from || !dateRange?.to || !guests || isSearching
             }
           >
             <Search className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-            {isSearching ? "Procurar" : "Procurar"}
+            {isSearching ? "Procurando..." : "Procurar"}
           </Button>
         </div>
       </div>
 
       {/* Info sobre a busca */}
       {dateRange?.from && dateRange?.to && guests && (
-        <div className="mt-4 rounded-md p-2 md:mt-4 md:p-3">
-          <p className="text-xs text-gray-800 md:text-sm">
-            <strong>Busca configurada:</strong> {guests} hóspede
-            {Number(guests) > 1 ? "s" : ""} -{" "}
-            {Math.ceil(
-              (dateRange.to.getTime() - dateRange.from.getTime()) /
-                (1000 * 60 * 60 * 24),
-            )}{" "}
-            noite
-            {Math.ceil(
-              (dateRange.to.getTime() - dateRange.from.getTime()) /
-                (1000 * 60 * 60 * 24),
-            ) > 1
-              ? "s"
-              : ""}{" "}
-            • {dateRange.from.toLocaleDateString("pt-BR")} até{" "}
-            {dateRange.to.toLocaleDateString("pt-BR")}
+        <div className="mt-2 w-full">
+          <p className="text-center text-xs leading-tight text-gray-800 md:text-sm">
+            <span className="font-semibold">Busca:</span> {guests} hóspede
+            {Number(guests) > 1 ? "s" : ""} |{" "}
+            <span className="opacity-75">
+              {Math.ceil(
+                (dateRange.to.getTime() - dateRange.from.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              )}{" "}
+              noite
+              {Math.ceil(
+                (dateRange.to.getTime() - dateRange.from.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              ) > 1
+                ? "s"
+                : ""}
+            </span>
           </p>
         </div>
       )}

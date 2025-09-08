@@ -3,6 +3,17 @@
 import { BedDouble, MapPin, Share2, Toilet, Users } from "lucide-react";
 import Image from "next/image";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -138,13 +149,122 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                                     </div> ADICIONAR AVALIAÇOES NO FUTURO */}
 
                 <div className="-mb-7 flex items-center justify-between">
-                  <Button
-                    className="cursor-pointer bg-[#101828] px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828] hover:text-white hover:active:scale-95"
-                    size="sm"
-                    variant="outline"
-                  >
-                    Ver Detalhes
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        className="cursor-pointer bg-[#101828] px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828] hover:text-white hover:active:scale-95"
+                        size="sm"
+                        variant="outline"
+                      >
+                        Ver Detalhes
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="mx-auto max-h-[90vh] w-[400px] overflow-y-auto">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-lg font-bold text-gray-900">
+                          {property.title}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-sm text-gray-600">
+                          <div className="mb-3 flex items-center gap-1">
+                            <MapPin className="h-4 w-4 text-gray-400" />
+                            <span>{location}</span>
+                          </div>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+
+                      <div className="space-y-4">
+                        {/* Informações básicas */}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div className="space-y-1">
+                            <span className="font-medium text-gray-700">
+                              Hóspedes:{" "}
+                            </span>
+                            <span className="text-gray-600">
+                              {property.maxGuests}
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="font-medium text-gray-700">
+                              Quartos:{" "}
+                            </span>
+                            <span className="text-gray-600">
+                              {property.bedrooms}
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="font-medium text-gray-700">
+                              Banheiros:{" "}
+                            </span>
+                            <span className="text-gray-600">
+                              {property.bathrooms}
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="font-medium text-gray-700">
+                              Tipo:{" "}
+                            </span>
+                            <span className="text-gray-600">
+                              {property.propertyStyle}
+                            </span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="font-medium text-gray-700">
+                              Aceita Pets:{" "}
+                            </span>
+                            <span
+                              className={`${property.allowsPets ? "text-green-600" : "text-red-600"} font-medium`}
+                            >
+                              {property.allowsPets ? "Sim" : "Não"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Preços */}
+                        <div className="border-t pt-3">
+                          <h4 className="mb-2 font-medium text-gray-900">
+                            Preços
+                          </h4>
+                          <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div className="space-y-1">
+                              <span className="font-medium text-gray-700">
+                                Diária:{" "}
+                              </span>
+                              <span className="font-semibold text-green-600">
+                                R$ {property.pricing.dailyRate}/dia
+                              </span>
+                            </div>
+                            <div className="space-y-1">
+                              <span className="font-medium text-gray-700">
+                                Mensal:{" "}
+                              </span>
+                              <span className="font-semibold text-green-600">
+                                R$ {property.pricing.monthlyRent}/mês
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Descrição */}
+                        <div className="border-t pt-3">
+                          <h4 className="mb-2 font-medium text-gray-900">
+                            Sobre o imóvel
+                          </h4>
+                          <p className="text-sm leading-relaxed text-gray-600">
+                            {property.shortDescription}
+                          </p>
+                        </div>
+                      </div>
+
+                      <AlertDialogFooter className="gap-2 pt-4">
+                        <AlertDialogCancel className="text-xs">
+                          Fechar
+                        </AlertDialogCancel>
+                        <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
+                          Ver Página Completa
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                   <div className="space-x-2">
                     <Button
                       className="cursor-pointer bg-[#101828] px-6 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-[#101828] hover:text-white hover:active:scale-95"

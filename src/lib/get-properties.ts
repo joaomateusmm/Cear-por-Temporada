@@ -25,6 +25,7 @@ export interface PropertyWithDetails {
   location: {
     fullAddress: string;
     neighborhood: string;
+    municipality: string;
     city: string;
     state: string;
   };
@@ -56,6 +57,7 @@ export async function getActiveProperties(): Promise<PropertyWithDetails[]> {
         // Dados de localização
         fullAddress: propertyLocationTable.fullAddress,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
         // Dados de preço
@@ -139,6 +141,7 @@ export async function getActiveProperties(): Promise<PropertyWithDetails[]> {
         location: {
           fullAddress: property.fullAddress || "",
           neighborhood: property.neighborhood || "",
+          municipality: property.municipality || "",
           city: property.city || "",
           state: property.state || "",
         },
@@ -176,6 +179,7 @@ export async function getPropertiesByType(
         // Dados de localização
         fullAddress: propertyLocationTable.fullAddress,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
         // Dados de preço
@@ -264,6 +268,7 @@ export async function getPropertiesByType(
         location: {
           fullAddress: property.fullAddress || "",
           neighborhood: property.neighborhood || "",
+          municipality: property.municipality || "",
           city: property.city || "",
           state: property.state || "",
         },
@@ -339,6 +344,7 @@ export async function getPropertiesByClass(
         // Dados de localização
         fullAddress: propertyLocationTable.fullAddress,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
         // Dados de preço
@@ -401,6 +407,7 @@ export async function getPropertiesByClass(
         location: {
           fullAddress: property.fullAddress || "",
           neighborhood: property.neighborhood || "",
+          municipality: property.municipality || "",
           city: property.city || "",
           state: property.state || "",
         },
@@ -454,6 +461,7 @@ export async function searchProperties({
         // Dados de localização
         fullAddress: propertyLocationTable.fullAddress,
         neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
         city: propertyLocationTable.city,
         state: propertyLocationTable.state,
         // Dados de preço
@@ -503,6 +511,7 @@ export async function searchProperties({
         location: {
           fullAddress: property.fullAddress || "",
           neighborhood: property.neighborhood || "",
+          municipality: property.municipality || "",
           city: property.city || "",
           state: property.state || "",
         },
@@ -517,6 +526,104 @@ export async function searchProperties({
     return propertiesWithImages;
   } catch (error) {
     console.error("Erro ao buscar propriedades com filtros:", error);
+    return [];
+  }
+}
+
+// Função para buscar todas as propriedades sem filtros específicos
+export async function getAllProperties(): Promise<PropertyWithDetails[]> {
+  try {
+    const properties = await db
+      .select({
+        // Dados da propriedade
+        id: propertiesTable.id,
+        title: propertiesTable.title,
+        shortDescription: propertiesTable.shortDescription,
+        maxGuests: propertiesTable.maxGuests,
+        bedrooms: propertiesTable.bedrooms,
+        bathrooms: propertiesTable.bathrooms,
+        allowsPets: propertiesTable.allowsPets,
+        propertyStyle: propertiesTable.propertyStyle,
+        status: propertiesTable.status,
+
+        // Dados de localização
+        locationId: propertyLocationTable.id,
+        fullAddress: propertyLocationTable.fullAddress,
+        neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
+        city: propertyLocationTable.city,
+        state: propertyLocationTable.state,
+
+        // Dados de preços
+        pricingId: propertyPricingTable.id,
+        dailyRate: propertyPricingTable.dailyRate,
+        monthlyRent: propertyPricingTable.monthlyRent,
+
+        // Primeira imagem
+        imageUrl: propertyImagesTable.imageUrl,
+        isMain: propertyImagesTable.isMain,
+      })
+      .from(propertiesTable)
+      .leftJoin(
+        propertyLocationTable,
+        eq(propertiesTable.id, propertyLocationTable.propertyId),
+      )
+      .leftJoin(
+        propertyPricingTable,
+        eq(propertiesTable.id, propertyPricingTable.propertyId),
+      )
+      .leftJoin(
+        propertyImagesTable,
+        eq(propertiesTable.id, propertyImagesTable.propertyId),
+      )
+      .where(eq(propertiesTable.status, "active"));
+
+    // Agrupar propriedades e suas imagens
+    const propertiesMap = new Map<string, PropertyWithDetails>();
+
+    for (const row of properties) {
+      if (!propertiesMap.has(row.id)) {
+        propertiesMap.set(row.id, {
+          id: row.id,
+          title: row.title,
+          shortDescription: row.shortDescription,
+          maxGuests: row.maxGuests,
+          bedrooms: row.bedrooms,
+          bathrooms: row.bathrooms,
+          allowsPets: row.allowsPets || false,
+          propertyStyle: row.propertyStyle || "",
+          status: row.status || "active",
+          location: {
+            fullAddress: row.fullAddress || "",
+            neighborhood: row.neighborhood || "",
+            municipality: row.municipality || "",
+            city: row.city || "",
+            state: row.state || "",
+          },
+          pricing: {
+            dailyRate: row.dailyRate || "0",
+            monthlyRent: row.monthlyRent || "0",
+          },
+          images: [],
+        });
+      }
+
+      const property = propertiesMap.get(row.id)!;
+      if (
+        row.imageUrl &&
+        !property.images.some((img) => img.imageUrl === row.imageUrl)
+      ) {
+        property.images.push({
+          imageUrl: row.imageUrl,
+          altText: null,
+          isMain: row.isMain || false,
+        });
+      }
+    }
+
+    return Array.from(propertiesMap.values());
+  } catch (error) {
+    console.error("Erro ao buscar todas as propriedades:", error);
     return [];
   }
 }

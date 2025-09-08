@@ -110,93 +110,99 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-      <Card className="w-full max-w-md border-slate-700 bg-slate-800">
-        <CardHeader className="space-y-2 text-start">
-          <CardTitle className="text-slate-100">
-            Entrar na Área Administrativa
-          </CardTitle>
-          <CardDescription className="text-slate-400">
-            Faça login para acessar o painel de gerenciamento de imóveis do
-            Ceará por Temporada.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-slate-200">Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="Digite seu email..."
-                        className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-slate-200">Senha</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={isLoading}
+    <>
+      <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
+        <Card className="w-[300px] border-slate-700 bg-slate-800">
+          <CardHeader className="space-y-2 text-start">
+            <CardTitle className="text-slate-100">
+              Entrar na Área Administrativa
+            </CardTitle>
+            <CardDescription className="text-slate-400">
+              Faça login para acessar o painel de gerenciamento de imóveis do
+              Ceará por Temporada.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Entrando...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Entrar
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-200">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="Digite seu email..."
+                          className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          {/* Informações para teste */}
-          <div className="mt-6 rounded-lg border border-blue-800 bg-blue-900/30 p-3">
-            <h4 className="mb-2 text-sm font-medium text-blue-300">
-              Conta de Teste:
-            </h4>
-            <p className="text-sm text-blue-200">
-              <strong>Email:</strong> test1@gmail.com
-              <br />
-              <strong>Senha:</strong> 13IAmb13
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-200">Senha</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Entrando...
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="mr-2 h-4 w-4" />
+                      Entrar
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+
+            {/* Informações para teste */}
+            <div className="mt-6 rounded-lg border border-blue-800 bg-blue-900/30 p-3">
+              <h4 className="mb-2 text-sm font-medium text-blue-300">
+                Conta de Teste:
+              </h4>
+              <p className="text-sm text-blue-200">
+                <strong>Email:</strong> test1@gmail.com
+                <br />
+                <strong>Senha:</strong> 13IAmb13
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+    </>
   );
 }
