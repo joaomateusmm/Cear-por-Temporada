@@ -436,9 +436,14 @@ export default function PropertyPage() {
                   </div>
 
                   {/* Botão Reservar */}
-                  <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
-                    Reservar
-                  </Button>
+                  <Link
+                    href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Número de hóspedes: ${guests}\n📅 Check-in: ${checkIn || "A definir"}\n📅 Check-out: ${checkOut || "A definir"}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`}
+                    target="_blank"
+                  >
+                    <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
+                      Reservar Agora
+                    </Button>
+                  </Link>
 
                   <p className="text-center text-sm text-gray-500">
                     Você não será cobrado agora
@@ -756,15 +761,40 @@ export default function PropertyPage() {
                 </div>
 
                 {/* Botão Reservar */}
-                <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
-                  Reservar
-                </Button>
+                <Link
+                  href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Número de hóspedes: ${guests}\n📅 Check-in: ${checkIn || "A definir"}\n📅 Check-out: ${checkOut || "A definir"}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`}
+                  target="_blank"
+                >
+                  <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
+                    Reservar Agora
+                  </Button>
+                </Link>
 
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm text-gray-500 mt-4">
                   Você não será cobrado agora
                 </p>
               </CardContent>
             </Card>
+
+            {/* Perfil do Anfitrião
+            <Card>
+              <CardContent>
+                <div className="space-y-3 text-start">
+                  <p className="text-lg font-semibold text-gray-900">
+                    Perfil do Anfitrião
+                  </p>
+                  <div className="flex items-center gap-5">
+                    <div className="flex h-18 w-18 items-center justify-center rounded-full bg-gray-200 shadow-lg">
+                      <UserRound className="h-9 w-9 text-gray-600/80" />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <p>Nome: (nome não encontrado no sistema)</p>
+                      <p>Contatos: (contato não encontrado no sistema)</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card> */}
 
             {/* Suporte */}
             <Card>
@@ -781,21 +811,6 @@ export default function PropertyPage() {
                       Fale com a gente
                     </Button>
                   </Link>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent>
-                <div className="space-y-3 text-start">
-                  <p className="text-lg font-semibold text-gray-900">
-                    Perfil do Anfitrião
-                  </p>
-                  <div>
-                    <div className="h-18 w-18 rounded-full flex justify-center items-center bg-gray-200 shadow-lg ">
-                      <UserRound className="h-9 w-9 text-gray-600/80" />
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
