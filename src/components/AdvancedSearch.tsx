@@ -174,10 +174,12 @@ export function AdvancedSearch({
       {/* Info sobre a busca */}
       {dateRange?.from && dateRange?.to && guests && (
         <div className="mt-3 w-full">
-          <p className="text-center text-xs leading-tight text-gray-800 md:text-sm">
-            <span className="font-semibold">Busca:</span> {guests} hóspede
-            {Number(guests) > 1 ? "s" : ""} |{" "}
+          <p className="text-center text-xs leading-tight text-gray-100 md:text-sm">
+            <span className="font-semibold text-gray-200">Busca:</span>
             <span className="opacity-75">
+              {" "}
+              {guests} hóspede
+              {Number(guests) > 1 ? "s" : ""} |{" "}
               {Math.ceil(
                 (dateRange.to.getTime() - dateRange.from.getTime()) /
                   (1000 * 60 * 60 * 24),

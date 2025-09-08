@@ -549,32 +549,40 @@ export async function updateProperty(
       .where(eq(propertiesTable.id, propertyId));
 
     // Atualizar localização
-    if (data.location) {
-      await db
-        .update(propertyLocationTable)
-        .set({
-          fullAddress: data.location.fullAddress,
-          neighborhood: data.location.neighborhood,
-          municipality: data.location.municipality,
-          city: data.location.city,
-          state: data.location.state,
-          zipCode: data.location.zipCode,
-          latitude: data.location.latitude?.toString(),
-          longitude: data.location.longitude?.toString(),
-        })
-        .where(eq(propertyLocationTable.propertyId, propertyId));
-    }
+    await db
+      .update(propertyLocationTable)
+      .set({
+        fullAddress: data.fullAddress,
+        neighborhood: data.neighborhood,
+        municipality: data.municipality,
+        city: data.city,
+        state: data.state,
+        zipCode: data.zipCode,
+        latitude: data.latitude?.toString(),
+        longitude: data.longitude?.toString(),
+        updatedAt: new Date(),
+      })
+      .where(eq(propertyLocationTable.propertyId, propertyId));
 
     // Atualizar preços
-    if (data.pricing) {
-      await db
-        .update(propertyPricingTable)
-        .set({
-          dailyRate: data.pricing.dailyRate,
-          monthlyRent: data.pricing.monthlyRate,
-        })
-        .where(eq(propertyPricingTable.propertyId, propertyId));
-    }
+    await db
+      .update(propertyPricingTable)
+      .set({
+        monthlyRent: data.monthlyRent.toString(),
+        dailyRate: data.dailyRate.toString(),
+        condominiumFee: data.condominiumFee?.toString() || "0",
+        iptuFee: data.iptuFee?.toString() || "0",
+        monthlyCleaningFee: data.monthlyCleaningFee?.toString() || "0",
+        otherFees: data.otherFees?.toString() || "0",
+        includesKitchenUtensils: data.includesKitchenUtensils,
+        includesFurniture: data.includesFurniture,
+        includesElectricity: data.includesElectricity,
+        includesInternet: data.includesInternet,
+        includesLinens: data.includesLinens,
+        includesWater: data.includesWater,
+        updatedAt: new Date(),
+      })
+      .where(eq(propertyPricingTable.propertyId, propertyId));
 
     // Atualizar comodidades
     if (data.amenities && data.amenities.length > 0) {
@@ -642,22 +650,6 @@ export async function updateProperty(
       if (imageInserts.length > 0) {
         await db.insert(propertyImagesTable).values(imageInserts);
       }
-    }
-
-    // Atualizar classes do imóvel
-    if (data.propertyClasses && data.propertyClasses.length > 0) {
-      // Primeiro remover todas as classes existentes
-      await db
-        .delete(propertyPropertyClassesTable)
-        .where(eq(propertyPropertyClassesTable.propertyId, propertyId));
-
-      // Depois adicionar as novas classes
-      const propertyClassValues = data.propertyClasses.map((classId) => ({
-        propertyId,
-        classId: parseInt(classId),
-      }));
-
-      await db.insert(propertyPropertyClassesTable).values(propertyClassValues);
     }
 
     return { success: true, message: "Imóvel atualizado com sucesso!" };

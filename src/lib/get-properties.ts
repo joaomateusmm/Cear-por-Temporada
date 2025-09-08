@@ -376,6 +376,10 @@ export async function getPropertiesByClass(
       )
       .orderBy(propertiesTable.createdAt);
 
+    console.log(
+      `📊 Encontradas ${properties.length} propriedades da classe "${propertyClass}"`,
+    );
+
     // Buscar imagens para cada propriedade
     const propertiesWithImages: PropertyWithDetails[] = [];
 

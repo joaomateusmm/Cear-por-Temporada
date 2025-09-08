@@ -82,6 +82,8 @@ export function PropertyCarousel({
         opts={{
           align: "start",
           loop: true,
+          skipSnaps: false,
+          dragFree: false,
         }}
         className="w-full"
       >
@@ -96,7 +98,7 @@ export function PropertyCarousel({
             return (
               <CarouselItem
                 key={property.id}
-                className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/3"
+                className="pl-2 md:basis-1/2 md:pl-4 lg:basis-1/4"
               >
                 <Card className="cursor-pointer overflow-hidden transition-shadow hover:shadow-xl">
                   <div className="relative h-64 px-6 pb-0">

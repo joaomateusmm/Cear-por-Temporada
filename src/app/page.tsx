@@ -45,18 +45,22 @@ function PropertySection({
 }
 
 export default async function Home() {
-  // Buscar imóveis por classe "Imóvel em Destaque"
-  const featuredProperties = await getPropertiesByClass("Imóvel em Destaque");
+  // Buscar imóveis por classe "Imóvel em Destaque" - máximo 8
+  const featuredProperties = (
+    await getPropertiesByClass("Imóvel em Destaque")
+  ).slice(0, 8);
 
-  // Buscar imóveis por tipo específico
-  const apartments = await getPropertiesByType("Apartamento");
-  const houses = await getPropertiesByType("Casa");
+  // Buscar imóveis por tipo específico - máximo 8
+  const apartments = (await getPropertiesByType("Apartamento")).slice(0, 8);
+  const houses = (await getPropertiesByType("Casa")).slice(0, 8);
 
-  // Buscar imóveis em destaque por tipo específico
-  const featuredHouses = await getPropertiesByClass("Destaque em Casas");
-  const featuredApartments = await getPropertiesByClass(
-    "Destaque em Apartamentos",
-  );
+  // Buscar imóveis em destaque por tipo específico - máximo 8
+  const featuredHouses = (
+    await getPropertiesByClass("Destaque em Casas")
+  ).slice(0, 8);
+  const featuredApartments = (
+    await getPropertiesByClass("Destaque em Apartamentos")
+  ).slice(0, 8);
 
   return (
     <div className="min-h-screen bg-gray-50">
