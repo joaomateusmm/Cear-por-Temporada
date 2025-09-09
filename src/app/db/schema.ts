@@ -98,6 +98,9 @@ export const propertyLocationTable = pgTable("property_location", {
   zipCode: varchar("zip_code", { length: 10 }).notNull(),
   latitude: decimal("latitude", { precision: 10, scale: 8 }),
   longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  popularDestination: varchar("popular_destination", { length: 100 })
+    .notNull()
+    .default("Nenhum dos anteriores"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

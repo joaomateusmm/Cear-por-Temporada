@@ -43,6 +43,13 @@
       "when": 1757350167645,
       "tag": "0005_majestic_iron_lad",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1757435974138,
+      "tag": "0006_wandering_senator_kelly",
+      "breakpoints": true
     }
   ]
 }

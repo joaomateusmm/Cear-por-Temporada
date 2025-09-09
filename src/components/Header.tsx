@@ -80,48 +80,48 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="border-gray-700 bg-gray-800/95 backdrop-blur-md">
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Fortaleza" className="w-full">
                       Fortaleza
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Jericoacoara" className="w-full">
                       Jericoacoara
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Canoa%20Quebrada" className="w-full">
                       Canoa Quebrada
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Praia%20de%20Picos" className="w-full">
                       Praia de Picos
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Morro%20Branco" className="w-full">
                       Morro Branco
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Águas%20Belas" className="w-full">
                       Águas Belas
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Cumbuco" className="w-full">
                       Cumbuco
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
+                    <Link href="/destino/Beach%20Park" className="w-full">
                       Beach Park
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
-                    <Link href="#" className="w-full">
-                      Outros
+                    <Link href="/destinos" className="w-full">
+                      Ver Todos
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -230,42 +230,42 @@ export default function Header() {
 
             {/* Desktop Navigation - Centralizada */}
             <nav className="absolute top-1/2 left-1/2 ml-2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center gap-8 font-medium md:flex">
-              <a
-                href="#"
+              <Link
+                href="/destino/Fortaleza"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Fortaleza
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/destino/Cumbuco"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Cumbuco
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/destino/Jericoacoara"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Jericoacoara
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/destino/Canoa%20Quebrada"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Canoa Quebrada
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/destino/Beach%20Park"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
                 Beach Park
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/destinos"
                 className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
               >
-                Outros
-              </a>
+                Todos os Destinos
+              </Link>
             </nav>
 
             <div className="flex flex-shrink-0 items-center">

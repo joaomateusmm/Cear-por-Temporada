@@ -87,67 +87,67 @@ export function MobileSidebar({
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-1 pl-3">
                   <Link
-                    href="#"
+                    href="/destino/Fortaleza"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Fortaleza
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Jericoacoara"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Jericoacoara
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Canoa%20Quebrada"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Canoa Quebrada
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Cumbuco"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Cumbuco
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Beach%20Park"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Beach Park
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Praia%20de%20Picos"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Praia de Picos
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Morro%20Branco"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Morro Branco
                   </Link>
                   <Link
-                    href="#"
+                    href="/destino/Águas%20Belas"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Águas Belas
                   </Link>
                   <Link
-                    href="#"
+                    href="/destinos"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
-                    Outros
+                    Todos os Destinos
                   </Link>
                 </CollapsibleContent>
               </Collapsible>

@@ -145,6 +145,7 @@ export type PropertyFormData = {
   zipCode: string;
   latitude?: number;
   longitude?: number;
+  popularDestination: string;
 
   // Comodidades
   amenities: number[];
@@ -264,6 +265,7 @@ export async function createProperty(data: PropertyFormData) {
       zipCode: data.zipCode,
       latitude: data.latitude?.toString(),
       longitude: data.longitude?.toString(),
+      popularDestination: data.popularDestination,
     });
 
     // 4. Adicionar imagens
@@ -576,6 +578,7 @@ export async function updateProperty(
         zipCode: data.zipCode,
         latitude: data.latitude?.toString(),
         longitude: data.longitude?.toString(),
+        popularDestination: data.popularDestination,
         updatedAt: new Date(),
       })
       .where(eq(propertyLocationTable.propertyId, propertyId));

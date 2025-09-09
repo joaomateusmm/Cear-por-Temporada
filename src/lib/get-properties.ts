@@ -28,6 +28,7 @@ export interface PropertyWithDetails {
     municipality: string;
     city: string;
     state: string;
+    popularDestination?: string;
   };
   pricing: {
     dailyRate: string;
@@ -648,6 +649,113 @@ export async function getAllProperties(): Promise<PropertyWithDetails[]> {
     return Array.from(propertiesMap.values());
   } catch (error) {
     console.error("Erro ao buscar todas as propriedades:", error);
+    return [];
+  }
+}
+
+// Função para buscar propriedades por destino popular
+export async function getPropertiesByDestination(
+  destination: string,
+): Promise<PropertyWithDetails[]> {
+  try {
+    const properties = await db
+      .select({
+        // Dados da propriedade
+        id: propertiesTable.id,
+        title: propertiesTable.title,
+        shortDescription: propertiesTable.shortDescription,
+        maxGuests: propertiesTable.maxGuests,
+        bedrooms: propertiesTable.bedrooms,
+        bathrooms: propertiesTable.bathrooms,
+        allowsPets: propertiesTable.allowsPets,
+        propertyStyle: propertiesTable.propertyStyle,
+        status: propertiesTable.status,
+
+        // Dados de localização
+        locationId: propertyLocationTable.id,
+        fullAddress: propertyLocationTable.fullAddress,
+        neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
+        city: propertyLocationTable.city,
+        state: propertyLocationTable.state,
+        popularDestination: propertyLocationTable.popularDestination,
+
+        // Dados de preços
+        pricingId: propertyPricingTable.id,
+        dailyRate: propertyPricingTable.dailyRate,
+        monthlyRent: propertyPricingTable.monthlyRent,
+
+        // Primeira imagem
+        imageUrl: propertyImagesTable.imageUrl,
+        isMain: propertyImagesTable.isMain,
+      })
+      .from(propertiesTable)
+      .leftJoin(
+        propertyLocationTable,
+        eq(propertiesTable.id, propertyLocationTable.propertyId),
+      )
+      .leftJoin(
+        propertyPricingTable,
+        eq(propertiesTable.id, propertyPricingTable.propertyId),
+      )
+      .leftJoin(
+        propertyImagesTable,
+        eq(propertiesTable.id, propertyImagesTable.propertyId),
+      )
+      .where(
+        and(
+          eq(propertiesTable.status, "active"),
+          eq(propertyLocationTable.popularDestination, destination),
+        ),
+      );
+
+    // Agrupar propriedades e suas imagens
+    const propertiesMap = new Map<string, PropertyWithDetails>();
+
+    for (const row of properties) {
+      if (!propertiesMap.has(row.id)) {
+        propertiesMap.set(row.id, {
+          id: row.id,
+          title: row.title,
+          shortDescription: row.shortDescription,
+          maxGuests: row.maxGuests,
+          bedrooms: row.bedrooms,
+          bathrooms: row.bathrooms,
+          allowsPets: row.allowsPets || false,
+          propertyStyle: row.propertyStyle || "",
+          status: row.status || "active",
+          location: {
+            fullAddress: row.fullAddress || "",
+            neighborhood: row.neighborhood || "",
+            municipality: row.municipality || "",
+            city: row.city || "",
+            state: row.state || "",
+            popularDestination: row.popularDestination || "",
+          },
+          pricing: {
+            dailyRate: row.dailyRate || "0",
+            monthlyRent: row.monthlyRent || "0",
+          },
+          images: [],
+        });
+      }
+
+      const property = propertiesMap.get(row.id)!;
+      if (
+        row.imageUrl &&
+        !property.images.some((img) => img.imageUrl === row.imageUrl)
+      ) {
+        property.images.push({
+          imageUrl: row.imageUrl,
+          altText: null,
+          isMain: row.isMain || false,
+        });
+      }
+    }
+
+    return Array.from(propertiesMap.values());
+  } catch (error) {
+    console.error("Erro ao buscar propriedades por destino:", error);
     return [];
   }
 }

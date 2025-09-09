@@ -16,6 +16,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -93,6 +94,7 @@ const propertyFormSchema = z.object({
   zipCode: z.string().min(8, "CEP deve ter 8 dígitos"),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  popularDestination: z.string().min(1, "Selecione um destino popular"),
 
   // Comodidades
   amenities: z.array(z.number()).optional(),
@@ -437,6 +439,9 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
           longitude: property.location?.longitude
             ? Number(property.location.longitude)
             : undefined,
+          popularDestination:
+            (property.location as { popularDestination?: string })
+              ?.popularDestination || "Nenhum dos anteriores",
           amenities:
             property.amenities?.map(
               (a: { amenityId: number }) => a.amenityId,
@@ -1406,6 +1411,91 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       )}
                     />
                   </div>
+
+                  <FormField
+                    control={form.control}
+                    name="popularDestination"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium text-slate-200">
+                          Seu imóvel está localizado em um destes destinos
+                          populares ou está muito próximo deles?
+                        </FormLabel>
+                        <FormDescription className="text-xs text-slate-400">
+                          Essa opção ajuda nossos clientes que estiverem
+                          interessados em destinos específicos, que seu imóvel
+                          pode estar próximo.
+                        </FormDescription>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors focus:border-blue-400 focus:ring-blue-400/20">
+                              <SelectValue placeholder="Selecione um destino popular" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="max-h-60 border-slate-600 bg-slate-800">
+                            <SelectItem
+                              value="Fortaleza"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Fortaleza
+                            </SelectItem>
+                            <SelectItem
+                              value="Jericoacoara"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Jericoacoara
+                            </SelectItem>
+                            <SelectItem
+                              value="Canoa Quebrada"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Canoa Quebrada
+                            </SelectItem>
+                            <SelectItem
+                              value="Praia de Picos"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Praia de Picos
+                            </SelectItem>
+                            <SelectItem
+                              value="Morro Branco"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Morro Branco
+                            </SelectItem>
+                            <SelectItem
+                              value="Águas Belas"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Águas Belas
+                            </SelectItem>
+                            <SelectItem
+                              value="Cumbuco"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Cumbuco
+                            </SelectItem>
+                            <SelectItem
+                              value="Beach Park"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Beach Park
+                            </SelectItem>
+                            <SelectItem
+                              value="Nenhum dos anteriores"
+                              className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
+                            >
+                              Nenhum dos anteriores
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </CardContent>
               </Card>
 

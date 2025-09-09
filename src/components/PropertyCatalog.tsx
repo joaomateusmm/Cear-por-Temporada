@@ -264,12 +264,12 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       </div>
                     </div>
 
-                    <AlertDialogFooter className="mx-auto flex justify-between gap-26 pt-4 text-center">
-                      <AlertDialogCancel className="text-xs">
+                    <AlertDialogFooter className="flex flex-row gap-2 pt-4 sm:gap-4">
+                      <AlertDialogCancel className="flex-1 text-xs">
                         Fechar
                       </AlertDialogCancel>
-                      <Link href={`/imovel/${property.id}`}>
-                        <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
+                      <Link href={`/imovel/${property.id}`} className="flex-1">
+                        <AlertDialogAction className="w-full bg-[#101828] text-xs hover:bg-[#101828]/90">
                           Ver Página Completa
                         </AlertDialogAction>
                       </Link>
@@ -351,15 +351,18 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
 
                       <div className="mt-3 border-t border-gray-300"></div>
 
-                      <AlertDialogFooter className="flex gap-10 pt-4">
-                        <Link href={`/imovel/${property.id}`}>
-                          <AlertDialogAction className="bg-[#101828] text-xs hover:bg-[#101828]/90">
+                      <AlertDialogFooter className="flex flex-row gap-2 pt-4 sm:gap-4">
+                        <AlertDialogCancel className="flex-1 bg-gray-100 text-xs shadow-md hover:bg-gray-200">
+                          Fechar
+                        </AlertDialogCancel>
+                        <Link
+                          href={`/imovel/${property.id}`}
+                          className="flex-1"
+                        >
+                          <AlertDialogAction className="w-full bg-[#101828] text-xs hover:bg-[#101828]/90">
                             Ver Página Completa
                           </AlertDialogAction>
                         </Link>
-                        <AlertDialogCancel className="bg-gray-100 text-xs shadow-md hover:bg-gray-200">
-                          Fechar
-                        </AlertDialogCancel>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

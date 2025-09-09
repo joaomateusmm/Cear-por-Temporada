@@ -6,6 +6,7 @@ import {
   Bath,
   BedDouble,
   BedSingle,
+  Building2,
   Car,
   Check,
   Coffee,
@@ -18,14 +19,16 @@ import {
   MapPin,
   Microwave,
   Minus,
+  Palmtree,
   Plus,
   Refrigerator,
+  RollerCoaster,
+  Share2,
   Shirt,
   SquareCheck,
   SquareM,
   Toilet,
   TvMinimal,
-  UserRound,
   Users,
   Utensils,
   WavesLadder,
@@ -261,6 +264,30 @@ export default function PropertyPage() {
     return HousePlus;
   };
 
+  // Função para obter ícone do destino popular
+  const getDestinationIcon = (destination: string) => {
+    switch (destination) {
+      case "Fortaleza":
+        return Building2; // Cidade grande
+      case "Jericoacoara":
+        return Palmtree; // Praia paradisíaca
+      case "Canoa Quebrada":
+        return Palmtree; // Praia com ondas
+      case "Praia de Picos":
+        return Palmtree; // Praia
+      case "Morro Branco":
+        return Palmtree; // Natureza/montanha
+      case "Águas Belas":
+        return Palmtree; // Águas
+      case "Cumbuco":
+        return Palmtree; // Praia
+      case "Beach Park":
+        return RollerCoaster; // Parque aquático/diversão
+      default:
+        return MapPin; // Padrão
+    }
+  };
+
   // Preparar lista de comodidades com ícones
   const amenitiesWithIcons =
     property.amenities?.map(
@@ -313,10 +340,13 @@ export default function PropertyPage() {
                 <CarouselNext className="right-4" />
               </Carousel>
 
-              <div className="flex justify-center">
-                <Button variant="outline" className="gap-2">
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" className="gap-2 shadow-md">
                   <ImageIcon className="h-4 w-4" />
                   Ampliar fotos
+                </Button>
+                <Button className="bg-gray-800 shadow-md hover:bg-gray-900">
+                  <Share2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -445,7 +475,7 @@ export default function PropertyPage() {
                     </Button>
                   </Link>
 
-                  <p className="text-center text-sm text-gray-500">
+                  <p className="mt-4 text-center text-sm text-gray-500">
                     Você não será cobrado agora
                   </p>
                 </CardContent>
@@ -770,7 +800,7 @@ export default function PropertyPage() {
                   </Button>
                 </Link>
 
-                <p className="text-center text-sm text-gray-500 mt-4">
+                <p className="mt-4 text-center text-sm text-gray-500">
                   Você não será cobrado agora
                 </p>
               </CardContent>
@@ -855,11 +885,45 @@ export default function PropertyPage() {
                 </div>
               </CardContent>
             </Card>
+            {/* Destino Popular */}
+            {property.location?.popularDestination &&
+              property.location.popularDestination !==
+                "Nenhum dos anteriores" && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl text-gray-900">
+                      Destino Popular Próximo
+                    </CardTitle>
+                    <p className="text-gray-600">
+                      Este imóvel está localizado próximo a um destino popular
+                      do Ceará
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center gap-3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        {(() => {
+                          const DestinationIcon = getDestinationIcon(
+                            property.location.popularDestination,
+                          );
+                          return (
+                            <DestinationIcon className="h-4 w-4 text-gray-800" />
+                          );
+                        })()}
+                      </div>
+                      <span className="text-gray-900">
+                        {property.location.popularDestination}
+                      </span>
+                      <Check className="ml-auto h-4 w-4 text-gray-600" />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
           </div>
         </div>
 
         {/* Localização */}
-        <div className="mt-12 space-y-6">
+        <div className="mt-6 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl text-gray-900">

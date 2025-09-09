@@ -100,7 +100,7 @@ export default async function Home() {
       </section>
 
       {/* Seção de Destinos */}
-      <section id="destinos" className="bg-[#101828] py-16">
+      <section id="destinos" className="bg-[#101828] py-16 shadow-md">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
             <h2 className="mb-4 text-3xl font-bold text-gray-50 md:text-4xl">
