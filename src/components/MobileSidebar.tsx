@@ -68,13 +68,13 @@ export function MobileSidebar({
                 >
                   Contato
                 </a>
-                <a
-                  href="#footer"
+                <Link
+                  href="/proprietario"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                   onClick={handleLinkClick}
                 >
                   Proprietário
-                </a>
+                </Link>
               </div>
             </div>
 

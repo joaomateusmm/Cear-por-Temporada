@@ -188,9 +188,12 @@ export default function Header() {
               >
                 Contato
               </a>
-              <a href="#footer" className="whitespace-nowrap text-[#101828]">
+              <Link
+                href="/proprietario"
+                className="whitespace-nowrap text-[#101828]"
+              >
                 Proprietário
-              </a>
+              </Link>
             </nav>
             <div className="flex items-center gap-2">
               {/* Botões ocultos para uso futuro */}

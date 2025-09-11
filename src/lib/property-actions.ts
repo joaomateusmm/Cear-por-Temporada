@@ -362,6 +362,46 @@ export async function getPropertiesByAdmin(adminId: string) {
     return [];
   }
 }
+
+// Função para buscar propriedades de um proprietário
+export async function getPropertiesByOwner(ownerId: number) {
+  try {
+    const properties = await db
+      .select({
+        id: propertiesTable.id,
+        title: propertiesTable.title,
+        shortDescription: propertiesTable.shortDescription,
+        maxGuests: propertiesTable.maxGuests,
+        bedrooms: propertiesTable.bedrooms,
+        bathrooms: propertiesTable.bathrooms,
+        status: propertiesTable.status,
+        createdAt: propertiesTable.createdAt,
+        dailyRate: propertyPricingTable.dailyRate,
+        monthlyRent: propertyPricingTable.monthlyRent,
+        fullAddress: propertyLocationTable.fullAddress,
+        neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
+        city: propertyLocationTable.city,
+        state: propertyLocationTable.state,
+      })
+      .from(propertiesTable)
+      .leftJoin(
+        propertyPricingTable,
+        eq(propertiesTable.id, propertyPricingTable.propertyId),
+      )
+      .leftJoin(
+        propertyLocationTable,
+        eq(propertiesTable.id, propertyLocationTable.propertyId),
+      )
+      .where(eq(propertiesTable.ownerId, ownerId))
+      .orderBy(desc(propertiesTable.createdAt));
+
+    return properties;
+  } catch (error) {
+    console.error("Erro ao buscar propriedades do proprietário:", error);
+    return [];
+  }
+}
 export async function getAmenities() {
   try {
     const amenities = await db

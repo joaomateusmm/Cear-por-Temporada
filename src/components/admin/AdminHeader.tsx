@@ -173,9 +173,9 @@ export default function ScrollingHeader() {
               <a href="#" className="text-[#101828]">
                 Contato
               </a>
-              <a href="#footer" className="text-[#101828]">
+              <Link href="/proprietario" className="text-[#101828]">
                 Proprietário
-              </a>
+              </Link>
             </nav>
             <div className="flex items-center gap-2">
               {/* Botões ocultos para uso futuro */}

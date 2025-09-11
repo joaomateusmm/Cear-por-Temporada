@@ -24,9 +24,24 @@ export const usersTable = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Tabela de proprietários
+export const ownersTable = pgTable("owners", {
+  id: serial("id").primaryKey(),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  password: varchar("password", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 20 }),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Tabela principal de imóveis
 export const propertiesTable = pgTable("properties", {
   id: varchar("id", { length: 21 }).primaryKey(), // nanoid generates 21 character IDs
+  ownerId: integer("owner_id").references(() => ownersTable.id, {
+    onDelete: "set null",
+  }),
   title: varchar("title", { length: 255 }).notNull(),
   shortDescription: text("short_description").notNull(),
   fullDescription: text("full_description"),
@@ -216,9 +231,17 @@ export const reservationsTable = pgTable("reservations", {
 });
 
 // Definição das relações
+export const ownersRelations = relations(ownersTable, ({ many }) => ({
+  properties: many(propertiesTable),
+}));
+
 export const propertiesRelations = relations(
   propertiesTable,
   ({ one, many }) => ({
+    owner: one(ownersTable, {
+      fields: [propertiesTable.ownerId],
+      references: [ownersTable.id],
+    }),
     pricing: one(propertyPricingTable),
     location: one(propertyLocationTable),
     images: many(propertyImagesTable),
