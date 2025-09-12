@@ -1,10 +1,18 @@
 "use client";
 
-import { ArrowLeft, Edit, MapPin, Plus } from "lucide-react";
+import {
+  ArrowLeft,
+  Check,
+  Edit,
+  MapPin,
+  MoreHorizontal,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { DeletePropertyButton } from "@/components/DeletePropertyButton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -50,6 +65,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
   const [adminId, setAdminId] = useState<string>("");
   const [properties, setProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedProperties, setSelectedProperties] = useState<string[]>([]);
   const [adminUser, setAdminUser] = useState<{
     id: number;
     name: string;
@@ -85,13 +101,117 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
     loadData();
   }, [params]);
 
-  const handlePropertyDeleted = async () => {
-    // Recarregar a lista de propriedades após exclusão
+  const handleStatusChange = async (
+    propertyId: string,
+    newStatus: "ativo" | "pendente",
+  ) => {
     try {
+      const response = await fetch(
+        `/api/admin/properties/${propertyId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao atualizar status");
+      }
+
+      // Recarregar a lista de propriedades
       const propertiesData = await getPropertiesByAdmin(adminId);
       setProperties(propertiesData);
     } catch (error) {
-      console.error("Erro ao recarregar propriedades:", error);
+      console.error("Erro ao alterar status:", error);
+      alert("Erro ao alterar status do imóvel");
+    }
+  };
+
+  // Funções para seleção em massa
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedProperties(properties.map((p) => p.id));
+    } else {
+      setSelectedProperties([]);
+    }
+  };
+
+  const handleSelectProperty = (propertyId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedProperties((prev) => [...prev, propertyId]);
+    } else {
+      setSelectedProperties((prev) => prev.filter((id) => id !== propertyId));
+    }
+  };
+
+  // Função para excluir imóvel individual
+  const handleDeleteProperty = async (propertyId: string) => {
+    if (!confirm("Tem certeza que deseja excluir este imóvel?")) return;
+
+    try {
+      const response = await fetch(`/api/properties/${propertyId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir imóvel");
+      }
+
+      // Recarregar a lista
+      const propertiesData = await getPropertiesByAdmin(adminId);
+      setProperties(propertiesData);
+
+      // Remover da seleção se estiver selecionado
+      setSelectedProperties((prev) => prev.filter((id) => id !== propertyId));
+    } catch (error) {
+      console.error("Erro ao excluir imóvel:", error);
+      alert("Erro ao excluir imóvel");
+    }
+  };
+
+  // Ações em massa
+  const handleBulkAction = async (action: "ativo" | "pendente" | "delete") => {
+    if (selectedProperties.length === 0) {
+      alert("Selecione pelo menos um imóvel");
+      return;
+    }
+
+    if (action === "delete") {
+      if (
+        !confirm(
+          `Tem certeza que deseja excluir ${selectedProperties.length} imóveis?`,
+        )
+      )
+        return;
+    }
+
+    try {
+      for (const propertyId of selectedProperties) {
+        if (action === "delete") {
+          await fetch(`/api/properties/${propertyId}`, {
+            method: "DELETE",
+          });
+        } else {
+          await fetch(`/api/admin/properties/${propertyId}/status`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status: action }),
+          });
+        }
+      }
+
+      // Recarregar a lista
+      const propertiesData = await getPropertiesByAdmin(adminId);
+      setProperties(propertiesData);
+      setSelectedProperties([]);
+    } catch (error) {
+      console.error("Erro na ação em massa:", error);
+      alert("Erro ao executar ação em massa");
     }
   };
 
@@ -143,6 +263,55 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
           </Link>
         </div>
 
+        {/* Barra de ações em massa */}
+        {selectedProperties.length > 0 && (
+          <Card className="border-slate-700 bg-slate-800">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-300">
+                  {selectedProperties.length} imóvel(is) selecionado(s)
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => handleBulkAction("ativo")}
+                    size="sm"
+                    className="border-green-600 bg-green-800 text-green-100 hover:bg-green-700"
+                  >
+                    <Check className="mr-1 h-3 w-3" />
+                    Aprovar
+                  </Button>
+                  <Button
+                    onClick={() => handleBulkAction("pendente")}
+                    variant="outline"
+                    size="sm"
+                    className="border-yellow-600 bg-yellow-800 text-yellow-100 hover:bg-yellow-700"
+                  >
+                    <X className="mr-1 h-3 w-3" />
+                    Tornar Pendente
+                  </Button>
+                  <Button
+                    onClick={() => handleBulkAction("delete")}
+                    variant="outline"
+                    size="sm"
+                    className="border-red-600 bg-red-800 text-red-100 hover:bg-red-700"
+                  >
+                    <Trash2 className="mr-1 h-3 w-3" />
+                    Excluir
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedProperties([])}
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Estatísticas */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           <Card className="border-slate-700 bg-slate-800">
@@ -168,7 +337,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-400">
-                {properties.filter((p) => p.status === "active").length}
+                {properties.filter((p) => p.status === "ativo").length}
               </div>
             </CardContent>
           </Card>
@@ -176,13 +345,13 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
           <Card className="border-slate-700 bg-slate-800">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-300">
-                Inativos
+                Pendentes
               </CardTitle>
-              <div className="h-4 w-4 rounded-full bg-red-500"></div>
+              <div className="h-4 w-4 rounded-full bg-yellow-500"></div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-red-400">
-                {properties.filter((p) => p.status !== "active").length}
+              <div className="text-2xl font-bold text-yellow-400">
+                {properties.filter((p) => p.status === "pendente").length}
               </div>
             </CardContent>
           </Card>
@@ -243,6 +412,15 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-slate-700">
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={
+                            selectedProperties.length === properties.length &&
+                            properties.length > 0
+                          }
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </TableHead>
                       <TableHead className="text-slate-300">ID</TableHead>
                       <TableHead className="text-slate-300">Título</TableHead>
                       <TableHead className="text-slate-300">
@@ -264,6 +442,17 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                         key={property.id}
                         className="border-slate-700 hover:bg-slate-700/50"
                       >
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedProperties.includes(property.id)}
+                            onCheckedChange={(checked) =>
+                              handleSelectProperty(
+                                property.id,
+                                checked as boolean,
+                              )
+                            }
+                          />
+                        </TableCell>
                         <TableCell className="font-medium text-slate-200">
                           #{property.id}
                         </TableCell>
@@ -301,33 +490,70 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                         <TableCell>
                           <span
                             className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                              property.status === "active"
+                              property.status === "ativo"
                                 ? "border border-green-700 bg-green-900/30 text-green-400"
-                                : "border border-red-700 bg-red-900/30 text-red-400"
+                                : "border border-yellow-700 bg-yellow-900/30 text-yellow-400"
                             }`}
                           >
-                            {property.status === "active" ? "Ativo" : "Inativo"}
+                            {property.status === "ativo" ? "Ativo" : "Pendente"}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <Link
-                              href={`/admin/${adminId}/properties/${property.id}`}
-                            >
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
                               >
-                                <Edit className="h-3 w-3" />
+                                <MoreHorizontal className="h-4 w-4" />
                               </Button>
-                            </Link>
-                            <DeletePropertyButton
-                              propertyId={property.id}
-                              propertyTitle={property.title}
-                              onPropertyDeleted={handlePropertyDeleted}
-                            />
-                          </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="border-slate-700 bg-slate-800"
+                            >
+                              {property.status === "pendente" ? (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleStatusChange(property.id, "ativo")
+                                  }
+                                  className="text-green-400 hover:bg-slate-700 hover:text-green-300"
+                                >
+                                  <Check className="mr-2 h-4 w-4" />
+                                  Aprovar
+                                </DropdownMenuItem>
+                              ) : (
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    handleStatusChange(property.id, "pendente")
+                                  }
+                                  className="text-yellow-400 hover:bg-slate-700 hover:text-yellow-300"
+                                >
+                                  <X className="mr-2 h-4 w-4" />
+                                  Tornar Pendente
+                                </DropdownMenuItem>
+                              )}
+                              <DropdownMenuItem asChild>
+                                <Link
+                                  href={`/admin/${adminId}/properties/${property.id}`}
+                                  className="flex items-center text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+                                >
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Editar
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  handleDeleteProperty(property.id)
+                                }
+                                className="text-red-400 hover:bg-slate-700 hover:text-red-300"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))}

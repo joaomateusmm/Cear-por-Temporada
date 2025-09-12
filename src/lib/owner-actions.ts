@@ -20,6 +20,18 @@ interface OwnerResponse {
   id: number;
   fullName: string;
   email: string;
+  phone?: string;
+  instagram?: string;
+  website?: string;
+  profileImage?: string;
+}
+
+interface OwnerProfileData {
+  fullName: string;
+  phone?: string;
+  instagram?: string;
+  website?: string;
+  profileImage?: string;
 }
 
 export async function loginOwner(data: OwnerLoginData): Promise<OwnerResponse> {
@@ -110,14 +122,55 @@ export async function getOwnerById(id: number): Promise<OwnerResponse | null> {
         id: ownersTable.id,
         fullName: ownersTable.fullName,
         email: ownersTable.email,
+        phone: ownersTable.phone,
+        instagram: ownersTable.instagram,
+        website: ownersTable.website,
+        profileImage: ownersTable.profileImage,
       })
       .from(ownersTable)
       .where(eq(ownersTable.id, id))
       .limit(1);
 
-    return owner || null;
+    if (!owner) return null;
+
+    return {
+      id: owner.id,
+      fullName: owner.fullName,
+      email: owner.email,
+      phone: owner.phone || undefined,
+      instagram: owner.instagram || undefined,
+      website: owner.website || undefined,
+      profileImage: owner.profileImage || undefined,
+    };
   } catch (error) {
     console.error("Erro ao buscar proprietário:", error);
     return null;
+  }
+}
+
+export async function updateOwnerProfile(
+  ownerId: number,
+  data: OwnerProfileData,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await db
+      .update(ownersTable)
+      .set({
+        fullName: data.fullName,
+        phone: data.phone,
+        instagram: data.instagram,
+        website: data.website,
+        profileImage: data.profileImage,
+        updatedAt: new Date(),
+      })
+      .where(eq(ownersTable.id, ownerId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao atualizar perfil do proprietário:", error);
+    return {
+      success: false,
+      error: "Erro interno do servidor",
+    };
   }
 }

@@ -30,7 +30,7 @@ export default function AutoCarousel() {
               className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
                 searchMode === "date"
                   ? "bg-[#101828]/85"
-                  : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                  : "bg-[#101828]/50 hover:bg-[#101828]/80"
               }`}
             >
               <CalendarSearch />
@@ -40,7 +40,7 @@ export default function AutoCarousel() {
               className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
                 searchMode === "location"
                   ? "bg-[#101828]/85"
-                  : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                  : "bg-[#101828]/50 hover:bg-[#101828]/80"
               }`}
             >
               <MapPinHouse />
@@ -182,7 +182,7 @@ export default function AutoCarousel() {
                     className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
                       searchMode === "date"
                         ? "bg-[#101828]/85"
-                        : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                        : "bg-[#101828]/50 hover:bg-[#101828]/80"
                     }`}
                   >
                     <CalendarSearch />
@@ -192,7 +192,7 @@ export default function AutoCarousel() {
                     className={`rounded-t-lg px-4 py-3 text-gray-100 backdrop-blur-sm transition-all duration-300 ${
                       searchMode === "location"
                         ? "bg-[#101828]/85"
-                        : "bg-[#101828]/70 hover:bg-[#101828]/80"
+                        : "bg-[#101828]/50 hover:bg-[#101828]/80"
                     }`}
                   >
                     <MapPinHouse />

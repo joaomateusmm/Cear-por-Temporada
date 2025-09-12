@@ -63,7 +63,7 @@ export default async function Home() {
   ).slice(0, 8);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50">
       {/* Header fixo que aparece/desaparece no scroll */}
       <ScrollingHeader />
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, SquareCheck, SquareX, Upload, X } from "lucide-react";
+import { ArrowLeft, Loader, Plus, SquareCheck, SquareX, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -580,7 +580,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 container mx-auto mt-26 px-4 py-8 pb-16">
+        <div className="relative z-10 px-4 py-8 pb-16 sm:px-6 lg:px-52">
           <div className="mb-8 flex items-center gap-4">
             <Link href={`/admin/${adminId}/properties`}>
               <Button
@@ -1520,15 +1520,20 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                       >
                         Adicionar Imagens
                       </label>
-                      <input
-                        id="images"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={isUploading}
-                        className="w-full text-sm text-slate-300 transition-all duration-200 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-600/20 file:px-4 file:py-2 file:font-medium file:text-blue-300 hover:file:bg-blue-600/30 disabled:opacity-50"
-                      />
+                      <label className="cursor-pointer">
+                        <div className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-100 transition-all duration-200 hover:bg-slate-600 disabled:opacity-50">
+                          {isUploading ? "Enviando..." : "Escolher Imagens"}
+                        </div>
+                        <input
+                          id="images"
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={isUploading}
+                          className="hidden"
+                        />
+                      </label>
                       {isUploading && (
                         <p className="mt-2 text-sm text-blue-400">
                           Fazendo upload...
@@ -1555,7 +1560,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                             <button
                               type="button"
                               onClick={() => removeUploadedImage(index)}
-                              className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                              className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
                             >
                               <X className="h-4 w-4" />
                             </button>
@@ -1651,19 +1656,14 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="transform rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 px-12 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-blue-700 hover:to-cyan-700 hover:shadow-2xl disabled:transform-none disabled:opacity-50"
+                  className="transform rounded-lg bg-[#182334] px-12 py-6 text-lg font-semibold text-white shadow-xl transition-all duration-500 hover:scale-[1.02] hover:bg-[#182334] hover:shadow-2xl disabled:transform-none disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <>
-                      <Upload className="mr-2 h-5 w-5 animate-spin" />
-                      Atualizando Imóvel...
-                    </>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <>
-                      <Upload className="mr-2 h-5 w-5" />
-                      Atualizar Imóvel
-                    </>
+                    <Plus className="mr-2 h-4 w-4" />
                   )}
+                  {isSubmitting ? "Cadastrando..." : "Cadastrar Imóvel"}
                 </Button>
               </div>
             </form>

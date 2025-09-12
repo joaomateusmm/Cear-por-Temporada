@@ -1,4 +1,5 @@
-import { writeFile } from "fs/promises";
+import { existsSync } from "fs";
+import { mkdir, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 
@@ -15,6 +16,19 @@ export async function POST(request: NextRequest) {
     }
 
     const uploadedFiles: string[] = [];
+
+    // Caminho onde os arquivos serão salvos
+    const uploadsDir = path.join(
+      process.cwd(),
+      "public",
+      "uploads",
+      "properties",
+    );
+
+    // Criar diretório se não existir
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
+    }
 
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
@@ -41,13 +55,6 @@ export async function POST(request: NextRequest) {
       const fileExtension = path.extname(file.name);
       const fileName = `property_${timestamp}_${randomSuffix}${fileExtension}`;
 
-      // Caminho onde o arquivo será salvo
-      const uploadsDir = path.join(
-        process.cwd(),
-        "public",
-        "uploads",
-        "properties",
-      );
       const filePath = path.join(uploadsDir, fileName);
 
       // Salvar o arquivo
@@ -59,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      files: uploadedFiles,
+      urls: uploadedFiles,
       message: `${uploadedFiles.length} arquivo(s) enviado(s) com sucesso`,
     });
   } catch (error) {

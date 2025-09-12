@@ -74,7 +74,7 @@ export async function getActiveProperties(): Promise<PropertyWithDetails[]> {
         propertyPricingTable,
         eq(propertiesTable.id, propertyPricingTable.propertyId),
       )
-      .where(eq(propertiesTable.status, "active"))
+      .where(eq(propertiesTable.status, "ativo"))
       .orderBy(propertiesTable.createdAt);
 
     // Buscar imagens para cada propriedade
@@ -198,7 +198,7 @@ export async function getPropertiesByType(
       )
       .where(
         and(
-          eq(propertiesTable.status, "active"),
+          eq(propertiesTable.status, "ativo"),
           ilike(propertiesTable.propertyStyle, propertyType),
         ),
       )
@@ -371,7 +371,7 @@ export async function getPropertiesByClass(
       )
       .where(
         and(
-          eq(propertiesTable.status, "active"),
+          eq(propertiesTable.status, "ativo"),
           eq(propertyClassesTable.name, propertyClass),
         ),
       )
@@ -448,7 +448,7 @@ export async function searchProperties({
 }): Promise<PropertyWithDetails[]> {
   try {
     // Construir condições de busca dinamicamente
-    const conditions = [eq(propertiesTable.status, "active")];
+    const conditions = [eq(propertiesTable.status, "ativo")];
 
     // Se é busca por data e hóspedes
     if (checkIn && checkOut && maxGuests) {
@@ -601,7 +601,7 @@ export async function getAllProperties(): Promise<PropertyWithDetails[]> {
         propertyImagesTable,
         eq(propertiesTable.id, propertyImagesTable.propertyId),
       )
-      .where(eq(propertiesTable.status, "active"));
+      .where(eq(propertiesTable.status, "ativo"));
 
     // Agrupar propriedades e suas imagens
     const propertiesMap = new Map<string, PropertyWithDetails>();
@@ -617,7 +617,7 @@ export async function getAllProperties(): Promise<PropertyWithDetails[]> {
           bathrooms: row.bathrooms,
           allowsPets: row.allowsPets || false,
           propertyStyle: row.propertyStyle || "",
-          status: row.status || "active",
+          status: row.status || "ativo",
           location: {
             fullAddress: row.fullAddress || "",
             neighborhood: row.neighborhood || "",
@@ -704,7 +704,7 @@ export async function getPropertiesByDestination(
       )
       .where(
         and(
-          eq(propertiesTable.status, "active"),
+          eq(propertiesTable.status, "ativo"),
           eq(propertyLocationTable.popularDestination, destination),
         ),
       );
@@ -723,7 +723,7 @@ export async function getPropertiesByDestination(
           bathrooms: row.bathrooms,
           allowsPets: row.allowsPets || false,
           propertyStyle: row.propertyStyle || "",
-          status: row.status || "active",
+          status: row.status || "ativo",
           location: {
             fullAddress: row.fullAddress || "",
             neighborhood: row.neighborhood || "",
@@ -756,6 +756,104 @@ export async function getPropertiesByDestination(
     return Array.from(propertiesMap.values());
   } catch (error) {
     console.error("Erro ao buscar propriedades por destino:", error);
+    return [];
+  }
+}
+
+// Função específica para admins - retorna todos os imóveis incluindo pendentes
+export async function getAllPropertiesForAdmin(): Promise<
+  PropertyWithDetails[]
+> {
+  try {
+    const properties = await db
+      .select({
+        // Dados da propriedade
+        id: propertiesTable.id,
+        title: propertiesTable.title,
+        shortDescription: propertiesTable.shortDescription,
+        maxGuests: propertiesTable.maxGuests,
+        bedrooms: propertiesTable.bedrooms,
+        bathrooms: propertiesTable.bathrooms,
+        allowsPets: propertiesTable.allowsPets,
+        propertyStyle: propertiesTable.propertyStyle,
+        status: propertiesTable.status,
+
+        // Dados de localização
+        locationId: propertyLocationTable.id,
+        fullAddress: propertyLocationTable.fullAddress,
+        neighborhood: propertyLocationTable.neighborhood,
+        municipality: propertyLocationTable.municipality,
+        city: propertyLocationTable.city,
+        state: propertyLocationTable.state,
+
+        // Dados de preços
+        pricingId: propertyPricingTable.id,
+        dailyRate: propertyPricingTable.dailyRate,
+        monthlyRent: propertyPricingTable.monthlyRent,
+
+        // Primeira imagem
+        imageUrl: propertyImagesTable.imageUrl,
+        isMain: propertyImagesTable.isMain,
+      })
+      .from(propertiesTable)
+      .leftJoin(
+        propertyLocationTable,
+        eq(propertiesTable.id, propertyLocationTable.propertyId),
+      )
+      .leftJoin(
+        propertyPricingTable,
+        eq(propertiesTable.id, propertyPricingTable.propertyId),
+      )
+      .leftJoin(
+        propertyImagesTable,
+        eq(propertiesTable.id, propertyImagesTable.propertyId),
+      );
+    // Não filtra por status - retorna todos os imóveis
+
+    // Agrupar propriedades e suas imagens
+    const propertiesMap = new Map<string, PropertyWithDetails>();
+
+    for (const row of properties) {
+      if (!propertiesMap.has(row.id)) {
+        propertiesMap.set(row.id, {
+          id: row.id,
+          title: row.title,
+          shortDescription: row.shortDescription,
+          maxGuests: row.maxGuests,
+          bedrooms: row.bedrooms,
+          bathrooms: row.bathrooms,
+          allowsPets: row.allowsPets || false,
+          propertyStyle: row.propertyStyle || "",
+          status: row.status || "pendente",
+          location: {
+            fullAddress: row.fullAddress || "",
+            neighborhood: row.neighborhood || "",
+            municipality: row.municipality || "",
+            city: row.city || "",
+            state: row.state || "",
+          },
+          pricing: {
+            dailyRate: row.dailyRate || "0",
+            monthlyRent: row.monthlyRent || "0",
+          },
+          images: [],
+        });
+      }
+
+      // Adicionar imagem se existir
+      if (row.imageUrl) {
+        const property = propertiesMap.get(row.id)!;
+        property.images.push({
+          imageUrl: row.imageUrl,
+          altText: null,
+          isMain: row.isMain || false,
+        });
+      }
+    }
+
+    return Array.from(propertiesMap.values());
+  } catch (error) {
+    console.error("Erro ao buscar todos os imóveis para admin:", error);
     return [];
   }
 }

@@ -70,7 +70,7 @@ export async function getProperties(limit = 20, offset = 0) {
       propertyLocationTable,
       eq(propertiesTable.id, propertyLocationTable.propertyId),
     )
-    .where(eq(propertiesTable.status, "active"))
+    .where(eq(propertiesTable.status, "ativo"))
     .orderBy(desc(propertiesTable.createdAt))
     .limit(limit)
     .offset(offset);
@@ -101,7 +101,7 @@ export async function getPropertiesByCity(city: string, limit = 20) {
     )
     .where(
       and(
-        eq(propertiesTable.status, "active"),
+        eq(propertiesTable.status, "ativo"),
         ilike(propertyLocationTable.city, `%${city}%`),
       ),
     )

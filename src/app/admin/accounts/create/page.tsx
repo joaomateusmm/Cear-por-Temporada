@@ -1,9 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
-
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function AccountsCreateRedirect() {
   useEffect(() => {
@@ -13,12 +10,12 @@ export default function AccountsCreateRedirect() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-      <Card className="w-full max-w-md border-slate-700 bg-slate-800">
-        <CardContent className="flex flex-col items-center justify-center py-8">
-          <Loader2 className="mb-4 h-8 w-8 animate-spin text-blue-400" />
-          <p className="text-sm text-slate-300">Redirecionando para login...</p>
-        </CardContent>
-      </Card>
+      <div className="w-full max-w-md rounded-lg p-8">
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-400 border-t-transparent"></div>
+          <p className="text-sm text-slate-300">Redirecionando...</p>
+        </div>
+      </div>
     </div>
   );
 }

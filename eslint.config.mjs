@@ -19,6 +19,9 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "*.mjs",
+      "*.config.*",
+      "drizzle/**",
     ],
     plugins: {
       "simple-import-sort": simpleImportSort,

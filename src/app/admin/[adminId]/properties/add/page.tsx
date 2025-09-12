@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader, Plus, SquareCheck, SquareX, X } from "lucide-react";
+import { ArrowLeft, Loader, Plus, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -444,7 +444,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 container mx-auto px-4 py-8 pb-16">
+        <div className="relative z-10 px-4 py-8 pb-16 sm:px-6 lg:px-52">
           <div className="mb-8 flex items-center gap-4">
             <Link href={`/admin/${adminId}/properties`}>
               <Button
@@ -1078,52 +1078,122 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                     Serviços Inclusos
                   </CardTitle>
                   <span className="text-sm text-gray-200">
-                    Seleciones alguns serviços que já estão inclusos no valor do
-                    imóvel.
+                    Marque os serviços que estão inclusos no valor do aluguel.
                   </span>
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                    {[
-                      {
-                        name: "includesKitchenUtensils",
-                        label: "Utensílios de Cozinha",
-                      },
-                      { name: "includesFurniture", label: "Mobiliado" },
-                      {
-                        name: "includesElectricity",
-                        label: "Energia Elétrica",
-                      },
-                      { name: "includesInternet", label: "Internet" },
-                      { name: "includesLinens", label: "Roupas de Cama" },
-                      { name: "includesWater", label: "Água" },
-                    ].map((service) => (
-                      <FormField
-                        key={service.name}
-                        control={form.control}
-                        name={service.name as keyof PropertyFormValues}
-                        render={({ field }) => (
-                          <FormItem className="flex items-center space-x-3">
-                            <FormControl>
-                              <button
-                                type="button"
-                                onClick={() => field.onChange(!field.value)}
-                                className="flex h-5 w-5 items-center justify-center rounded border border-slate-600 transition-colors hover:border-blue-400"
-                              >
-                                {field.value ? (
-                                  <SquareCheck className="h-4 w-4 text-green-500" />
-                                ) : (
-                                  <SquareX className="h-4 w-4 text-red-500" />
-                                )}
-                              </button>
-                            </FormControl>
-                            <FormLabel className="cursor-pointer text-sm font-medium text-slate-200">
-                              {service.label}
-                            </FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    ))}
+                  <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
+                    <FormField
+                      control={form.control}
+                      name="includesKitchenUtensils"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">
+                            Utensílios de Cozinha
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="includesFurniture"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">
+                            Mobiliado
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="includesElectricity"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">
+                            Energia Elétrica
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="includesInternet"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">
+                            Internet/Wi-Fi
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="includesLinens"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">
+                            Roupas de Cama
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="includesWater"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                            />
+                          </FormControl>
+                          <FormLabel className="text-slate-300">Água</FormLabel>
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -1385,15 +1455,22 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                       >
                         Selecione as imagens do imóvel (máximo 5MB cada)
                       </label>
-                      <input
-                        id="images"
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={isUploading}
-                        className="w-full text-sm text-slate-300 transition-all duration-200 file:mr-4 file:rounded-lg file:border-0 file:bg-blue-600/20 file:px-4 file:py-2 file:font-medium file:text-blue-300 hover:file:bg-blue-600/30 disabled:opacity-50"
-                      />
+                      <label className="cursor-pointer">
+                        <div className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-100 transition-all duration-200 hover:bg-slate-600 disabled:opacity-50">
+                          {isUploading
+                            ? "Enviando..."
+                            : "Escolher Imagens do Imóvel"}
+                        </div>
+                        <input
+                          id="images"
+                          type="file"
+                          multiple
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          disabled={isUploading}
+                          className="hidden"
+                        />
+                      </label>
                       {isUploading && (
                         <p className="mt-2 flex items-center text-sm text-blue-400">
                           <div className="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-400"></div>
@@ -1423,7 +1500,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                               onClick={() => removeUploadedImage(index)}
                               variant="outline"
                               size="sm"
-                              className="absolute top-2 right-2 border-red-600 bg-red-600 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-700"
+                              className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
                             >
                               <X className="h-3 w-3" />
                             </Button>
@@ -1490,22 +1567,14 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="transform rounded-lg bg-[#182334] px-12 py-4 text-lg font-semibold text-white shadow-xl transition-all duration-200 hover:scale-105 hover:from-blue-700 hover:to-cyan-700 hover:shadow-2xl disabled:transform-none disabled:opacity-50"
+                  className="transform rounded-lg bg-[#182334] px-12 py-6 text-lg font-semibold text-white shadow-xl transition-all duration-500 hover:scale-[1.02] hover:bg-[#182334] hover:shadow-2xl disabled:transform-none disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <>
-                      <div className="mx-auto mr-3 h-5 w-5 animate-spin text-center">
-                        <Loader />
-                      </div>
-                    </>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
-                    <>
-                      <span className="mr-2">
-                        <Plus />
-                      </span>
-                      Criar Imóvel
-                    </>
+                    <Plus className="mr-2 h-4 w-4" />
                   )}
+                  {isSubmitting ? "Cadastrando..." : "Cadastrar Imóvel"}
                 </Button>
               </div>
             </form>

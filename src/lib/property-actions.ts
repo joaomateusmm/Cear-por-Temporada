@@ -8,6 +8,7 @@ import path from "path";
 import { db } from "@/app/db";
 import {
   amenitiesTable,
+  ownersTable,
   propertiesTable,
   propertyAmenitiesTable,
   propertyAvailabilityTable,
@@ -32,6 +33,7 @@ interface PropertyLocation {
   zipCode: string;
   latitude: string | null;
   longitude: string | null;
+  popularDestination: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,6 +73,7 @@ interface PropertyClass {
 
 interface FullProperty {
   id: string;
+  ownerId: number | null;
   title: string;
   shortDescription: string;
   fullDescription: string | null;
@@ -91,6 +94,8 @@ interface FullProperty {
   cancellationPolicy: string | null;
   externalLink: string | null;
   status: string;
+  nearbyRegion: string | null;
+  aboutBuilding: string | null;
   createdAt: Date;
   updatedAt: Date;
   location: PropertyLocation | null;
@@ -98,9 +103,29 @@ interface FullProperty {
   amenities: PropertyAmenity[];
   images: PropertyImage[];
   classes: PropertyClass[];
+  owner?: {
+    id: number;
+    fullName: string;
+    email: string;
+    phone?: string;
+    instagram?: string;
+    website?: string;
+    profileImage?: string;
+  } | null;
 }
 
 export type PropertyFormData = {
+  // ID do proprietário
+  ownerId?: number;
+
+  // Dados do proprietário
+  ownerName?: string;
+  ownerPhone?: string;
+  ownerEmail?: string;
+  ownerInstagram?: string;
+  ownerWebsite?: string;
+  ownerProfileImage?: string;
+
   // Dados básicos do imóvel
   title: string;
   shortDescription: string;
@@ -198,6 +223,7 @@ export async function createProperty(data: PropertyFormData) {
       .insert(propertiesTable)
       .values({
         id: propertyId,
+        ownerId: data.ownerId || null, // Adicionar o ownerId
         title: data.title,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
@@ -214,7 +240,7 @@ export async function createProperty(data: PropertyFormData) {
         maximumStay: data.maximumStay,
         checkInTime: data.checkInTime,
         checkOutTime: data.checkOutTime,
-        status: "active",
+        status: "pendente",
       })
       .returning({ id: propertiesTable.id });
 
@@ -288,6 +314,46 @@ export async function createProperty(data: PropertyFormData) {
       }));
 
       await db.insert(propertyAmenitiesTable).values(amenityData);
+    }
+
+    // 6. Atualizar dados do proprietário se fornecidos
+    if (
+      data.ownerId &&
+      (data.ownerName ||
+        data.ownerPhone ||
+        data.ownerEmail ||
+        data.ownerInstagram ||
+        data.ownerWebsite ||
+        data.ownerProfileImage)
+    ) {
+      const ownerUpdateData: {
+        fullName?: string;
+        phone?: string;
+        email?: string;
+        instagram?: string | null;
+        website?: string | null;
+        profileImage?: string | null;
+        updatedAt?: Date;
+      } = {};
+
+      if (data.ownerName) ownerUpdateData.fullName = data.ownerName;
+      if (data.ownerPhone) ownerUpdateData.phone = data.ownerPhone;
+      if (data.ownerEmail) ownerUpdateData.email = data.ownerEmail;
+      if (data.ownerInstagram !== undefined)
+        ownerUpdateData.instagram = data.ownerInstagram || null;
+      if (data.ownerWebsite !== undefined)
+        ownerUpdateData.website = data.ownerWebsite || null;
+      if (data.ownerProfileImage !== undefined)
+        ownerUpdateData.profileImage = data.ownerProfileImage || null;
+
+      if (Object.keys(ownerUpdateData).length > 0) {
+        ownerUpdateData.updatedAt = new Date();
+
+        await db
+          .update(ownersTable)
+          .set(ownerUpdateData)
+          .where(eq(ownersTable.id, data.ownerId));
+      }
     }
 
     return { success: true, propertyId };
@@ -402,6 +468,28 @@ export async function getPropertiesByOwner(ownerId: number) {
     return [];
   }
 }
+
+// Função para alterar status do imóvel (para admins)
+export async function updatePropertyStatus(
+  propertyId: string,
+  status: "ativo" | "pendente",
+) {
+  try {
+    await db
+      .update(propertiesTable)
+      .set({
+        status: status,
+        updatedAt: new Date(),
+      })
+      .where(eq(propertiesTable.id, propertyId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Erro ao atualizar status do imóvel:", error);
+    return { success: false, error: "Erro ao atualizar status do imóvel" };
+  }
+}
+
 export async function getAmenities() {
   try {
     const amenities = await db
@@ -552,6 +640,36 @@ export async function getPropertyById(
       .from(propertyPropertyClassesTable)
       .where(eq(propertyPropertyClassesTable.propertyId, propertyId));
 
+    // Buscar dados do proprietário
+    let owner = null;
+    if (propertyData.ownerId) {
+      const ownerData = await db
+        .select({
+          id: ownersTable.id,
+          fullName: ownersTable.fullName,
+          email: ownersTable.email,
+          phone: ownersTable.phone,
+          instagram: ownersTable.instagram,
+          website: ownersTable.website,
+          profileImage: ownersTable.profileImage,
+        })
+        .from(ownersTable)
+        .where(eq(ownersTable.id, propertyData.ownerId))
+        .limit(1);
+
+      if (ownerData.length > 0) {
+        owner = {
+          id: ownerData[0].id,
+          fullName: ownerData[0].fullName,
+          email: ownerData[0].email,
+          phone: ownerData[0].phone || undefined,
+          instagram: ownerData[0].instagram || undefined,
+          website: ownerData[0].website || undefined,
+          profileImage: ownerData[0].profileImage || undefined,
+        };
+      }
+    }
+
     return {
       ...propertyData,
       location: location[0] || null,
@@ -568,6 +686,7 @@ export async function getPropertyById(
           },
         })) || [],
       classes: classes || [],
+      owner: owner,
     };
   } catch (error) {
     console.error("Erro ao buscar imóvel:", error);
@@ -601,10 +720,50 @@ export async function updateProperty(
         checkInTime: data.checkInTime,
         checkOutTime: data.checkOutTime,
         propertyStyle: data.propertyStyle,
-        status: data.status || "active",
+        status: data.status || "pendente",
         updatedAt: new Date(),
       })
       .where(eq(propertiesTable.id, propertyId));
+
+    // Atualizar dados do proprietário se fornecidos
+    if (
+      data.ownerId &&
+      (data.ownerName ||
+        data.ownerPhone ||
+        data.ownerEmail ||
+        data.ownerInstagram ||
+        data.ownerWebsite ||
+        data.ownerProfileImage)
+    ) {
+      const ownerUpdateData: {
+        fullName?: string;
+        phone?: string;
+        email?: string;
+        instagram?: string | null;
+        website?: string | null;
+        profileImage?: string | null;
+        updatedAt?: Date;
+      } = {};
+
+      if (data.ownerName) ownerUpdateData.fullName = data.ownerName;
+      if (data.ownerPhone) ownerUpdateData.phone = data.ownerPhone;
+      if (data.ownerEmail) ownerUpdateData.email = data.ownerEmail;
+      if (data.ownerInstagram !== undefined)
+        ownerUpdateData.instagram = data.ownerInstagram || null;
+      if (data.ownerWebsite !== undefined)
+        ownerUpdateData.website = data.ownerWebsite || null;
+      if (data.ownerProfileImage !== undefined)
+        ownerUpdateData.profileImage = data.ownerProfileImage || null;
+
+      if (Object.keys(ownerUpdateData).length > 0) {
+        ownerUpdateData.updatedAt = new Date();
+
+        await db
+          .update(ownersTable)
+          .set(ownerUpdateData)
+          .where(eq(ownersTable.id, data.ownerId));
+      }
+    }
 
     // Atualizar localização
     await db

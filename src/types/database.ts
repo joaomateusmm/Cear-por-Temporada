@@ -72,7 +72,7 @@ export type ReservationWithDetails = Reservation & {
 };
 
 // Enum-like types para garantir consistência
-export type PropertyStatus = "active" | "inactive" | "maintenance";
+export type PropertyStatus = "ativo" | "pendente";
 export type ReservationStatus =
   | "pending"
   | "confirmed"

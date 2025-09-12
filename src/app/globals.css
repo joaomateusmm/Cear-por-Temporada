@@ -13,6 +13,13 @@ html,
 body {
   overflow-x: hidden;
   max-width: 100vw;
+  width: 100%;
+}
+
+/* Garantir que o body principal nunca exceda a viewport */
+body {
+  position: relative;
+  overflow-x: hidden !important;
 }
 
 /* Garantir que nenhum elemento ultrapasse a largura da tela */
@@ -147,4 +154,51 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Prevenir overflow causado por dropdowns e selects */
+[role="dialog"],
+[role="menu"],
+[role="listbox"],
+.dropdown-content,
+[data-radix-popper-content-wrapper],
+[data-side] {
+  max-width: calc(100vw - 16px) !important;
+  overflow-x: hidden !important;
+}
+
+/* Garantir que popovers não causem overflow horizontal */
+[data-radix-popper-content-wrapper] {
+  max-width: 100vw !important;
+  overflow: hidden !important;
+}
+
+/* Containers principais sem overflow */
+#__next,
+main,
+.page-container {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+/* Prevenir qualquer elemento de causar scroll horizontal */
+* {
+  box-sizing: border-box;
+}
+
+/* Garantir que a viewport nunca seja ultrapassada */
+body,
+html {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+}
+
+/* Forçar todos os popovers e dropdowns a respeitarem a viewport */
+[data-radix-popper-content-wrapper],
+[data-radix-dropdown-menu-content],
+[data-radix-select-content],
+[data-radix-popover-content],
+[data-radix-tooltip-content] {
+  max-width: calc(100vw - 16px) !important;
+  overflow-x: hidden !important;
 }

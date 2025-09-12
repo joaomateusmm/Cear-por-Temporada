@@ -31,6 +31,9 @@ export const ownersTable = pgTable("owners", {
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }),
+  instagram: varchar("instagram", { length: 255 }),
+  website: varchar("website", { length: 255 }),
+  profileImage: varchar("profile_image", { length: 500 }),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -65,7 +68,7 @@ export const propertiesTable = pgTable("properties", {
   petPolicy: text("pet_policy"),
   cancellationPolicy: text("cancellation_policy"),
   externalLink: varchar("external_link", { length: 500 }),
-  status: varchar("status", { length: 20 }).default("active").notNull(), // active, inactive, maintenance
+  status: varchar("status", { length: 20 }).default("pending").notNull(), // ativo, pendente
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

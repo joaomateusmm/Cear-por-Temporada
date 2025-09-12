@@ -26,6 +26,9 @@ export async function GET(
         fullName: ownersTable.fullName,
         email: ownersTable.email,
         phone: ownersTable.phone,
+        instagram: ownersTable.instagram,
+        website: ownersTable.website,
+        profileImage: ownersTable.profileImage,
         isActive: ownersTable.isActive,
       })
       .from(ownersTable)
@@ -49,6 +52,9 @@ export async function GET(
       fullName: owner.fullName,
       email: owner.email,
       phone: owner.phone,
+      instagram: owner.instagram,
+      website: owner.website,
+      profileImage: owner.profileImage,
     });
   } catch (error) {
     console.error("Erro ao buscar proprietário:", error);

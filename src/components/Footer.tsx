@@ -10,7 +10,7 @@ export default function Footer() {
       id="footer"
       className="border-t border-gray-800 bg-gray-900 py-16 text-white"
     >
-      <div className="md:mx-26 max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl px-4 sm:px-6 md:mx-26 lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:justify-between lg:grid-cols-4">
           <div className="md:col-span-2 lg:col-span-1">
             <div className="-mt-8 mb-6 text-2xl font-bold">
@@ -118,14 +118,6 @@ export default function Footer() {
                   className="transition-colors hover:text-white"
                 >
                   Área do Proprietário
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/proprietario/login"
-                  className="transition-colors hover:text-white"
-                >
-                  Entrar
                 </Link>
               </li>
               <li>
