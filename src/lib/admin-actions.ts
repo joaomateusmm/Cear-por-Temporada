@@ -2,9 +2,10 @@
 
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 import { db } from "@/app/db/index";
-import { usersTable } from "@/app/db/schema";
+import { ownersTable, propertiesTable, usersTable } from "@/app/db/schema";
 import type { NewUser } from "@/types/database";
 
 interface CreateAdminUserData {
@@ -144,6 +145,184 @@ export async function toggleUserStatus(userId: number, isActive: boolean) {
     return updatedUser;
   } catch (error) {
     console.error("Erro ao atualizar status do usuário:", error);
+    throw error;
+  }
+}
+
+// Funções para gerenciar proprietários
+export async function getAllOwners() {
+  try {
+    const owners = await db
+      .select({
+        id: ownersTable.id,
+        fullName: ownersTable.fullName,
+        email: ownersTable.email,
+        phone: ownersTable.phone,
+        instagram: ownersTable.instagram,
+        website: ownersTable.website,
+        profileImage: ownersTable.profileImage,
+        isActive: ownersTable.isActive,
+        createdAt: ownersTable.createdAt,
+        updatedAt: ownersTable.updatedAt,
+        properties: sql<number>`count(distinct ${propertiesTable.id})`.as(
+          "properties",
+        ),
+      })
+      .from(ownersTable)
+      .leftJoin(propertiesTable, eq(ownersTable.id, propertiesTable.ownerId))
+      .groupBy(
+        ownersTable.id,
+        ownersTable.fullName,
+        ownersTable.email,
+        ownersTable.phone,
+        ownersTable.instagram,
+        ownersTable.website,
+        ownersTable.profileImage,
+        ownersTable.isActive,
+        ownersTable.createdAt,
+        ownersTable.updatedAt,
+      )
+      .orderBy(ownersTable.createdAt);
+
+    return owners.map((owner) => ({
+      ...owner,
+      _count: {
+        properties: Number(owner.properties) || 0,
+      },
+    }));
+  } catch (error) {
+    console.error("Erro ao buscar proprietários:", error);
+    throw error;
+  }
+}
+
+export async function toggleOwnerStatus(ownerId: string, isActive: boolean) {
+  try {
+    const [updatedOwner] = await db
+      .update(ownersTable)
+      .set({
+        isActive,
+        updatedAt: new Date(),
+      })
+      .where(eq(ownersTable.id, ownerId))
+      .returning({
+        id: ownersTable.id,
+        fullName: ownersTable.fullName,
+        email: ownersTable.email,
+        isActive: ownersTable.isActive,
+      });
+
+    return updatedOwner;
+  } catch (error) {
+    console.error("Erro ao atualizar status do proprietário:", error);
+    throw error;
+  }
+}
+
+export async function deleteOwner(ownerId: string) {
+  try {
+    // Primeiro, verificar se o proprietário tem imóveis
+    const properties = await db
+      .select({ id: propertiesTable.id })
+      .from(propertiesTable)
+      .where(eq(propertiesTable.ownerId, ownerId))
+      .limit(1);
+
+    if (properties.length > 0) {
+      throw new Error(
+        "Não é possível excluir proprietário que possui imóveis cadastrados",
+      );
+    }
+
+    // Excluir o proprietário
+    const [deletedOwner] = await db
+      .delete(ownersTable)
+      .where(eq(ownersTable.id, ownerId))
+      .returning({
+        id: ownersTable.id,
+        fullName: ownersTable.fullName,
+        email: ownersTable.email,
+      });
+
+    return deletedOwner;
+  } catch (error) {
+    console.error("Erro ao excluir proprietário:", error);
+    throw error;
+  }
+}
+
+export async function bulkDeleteOwners(ownerIds: string[]) {
+  try {
+    // Verificar se algum proprietário tem imóveis
+    const properties = await db
+      .select({ id: propertiesTable.id, ownerId: propertiesTable.ownerId })
+      .from(propertiesTable)
+      .where(
+        sql`${propertiesTable.ownerId} IN (${sql.join(
+          ownerIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})`,
+      )
+      .limit(1);
+
+    if (properties.length > 0) {
+      throw new Error(
+        "Não é possível excluir proprietários que possuem imóveis cadastrados",
+      );
+    }
+
+    // Excluir os proprietários
+    const deletedOwners = await db
+      .delete(ownersTable)
+      .where(
+        sql`${ownersTable.id} IN (${sql.join(
+          ownerIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})`,
+      )
+      .returning({
+        id: ownersTable.id,
+        fullName: ownersTable.fullName,
+        email: ownersTable.email,
+      });
+
+    return deletedOwners;
+  } catch (error) {
+    console.error("Erro ao excluir proprietários em massa:", error);
+    throw error;
+  }
+}
+
+export async function bulkToggleOwnerStatus(
+  ownerIds: string[],
+  isActive: boolean,
+) {
+  try {
+    const updatedOwners = await db
+      .update(ownersTable)
+      .set({
+        isActive,
+        updatedAt: new Date(),
+      })
+      .where(
+        sql`${ownersTable.id} IN (${sql.join(
+          ownerIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})`,
+      )
+      .returning({
+        id: ownersTable.id,
+        fullName: ownersTable.fullName,
+        email: ownersTable.email,
+        isActive: ownersTable.isActive,
+      });
+
+    return updatedOwners;
+  } catch (error) {
+    console.error(
+      "Erro ao atualizar status dos proprietários em massa:",
+      error,
+    );
     throw error;
   }
 }

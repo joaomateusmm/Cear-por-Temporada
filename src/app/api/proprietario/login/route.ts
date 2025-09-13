@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
         fullName: ownersTable.fullName,
         email: ownersTable.email,
         phone: ownersTable.phone,
+        instagram: ownersTable.instagram,
+        website: ownersTable.website,
+        profileImage: ownersTable.profileImage,
         password: ownersTable.password,
         isActive: ownersTable.isActive,
       })
@@ -59,6 +62,9 @@ export async function POST(req: NextRequest) {
       fullName: owner.fullName,
       email: owner.email,
       phone: owner.phone,
+      instagram: owner.instagram,
+      website: owner.website,
+      profileImage: owner.profileImage,
     });
   } catch (error) {
     console.error("Erro no login do proprietário:", error);

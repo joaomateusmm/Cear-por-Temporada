@@ -54,7 +54,7 @@ export default function Header() {
               : "-translate-y-full opacity-0"
           }`}
         >
-          <div className="mx-4 flex h-16 items-center justify-between md:mx-60">
+          <div className="mx-4 flex h-16 items-center justify-between scroll-smooth md:mx-60">
             <div className="flex items-center gap-3">
               <Link href="/" className="cursor-pointer">
                 <Image
@@ -272,8 +272,8 @@ export default function Header() {
             </nav>
 
             <div className="flex flex-shrink-0 items-center">
-              <Link href="/">
-                <Button className="rounded-3xl bg-gray-300/20 p-1 px-4 text-sm backdrop-blur-md duration-500 hover:bg-gray-300/40 md:p-2 md:px-8 md:text-base">
+              <Link href="#pesquisa">
+                <Button className="rounded-full bg-gray-300/20 p-1 text-sm backdrop-blur-md duration-500 hover:bg-gray-300/40 md:p-2 md:px-3 md:text-base">
                   <Search className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </Link>

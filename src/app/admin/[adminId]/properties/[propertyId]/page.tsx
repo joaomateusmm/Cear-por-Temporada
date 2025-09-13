@@ -655,16 +655,14 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {["Apartamento", "Casa", "Sítio"].map(
-                                (propertyType) => (
-                                  <SelectItem
-                                    key={propertyType}
-                                    value={propertyType}
-                                  >
-                                    {propertyType}
-                                  </SelectItem>
-                                ),
-                              )}
+                              {["Apartamento", "Casa"].map((propertyType) => (
+                                <SelectItem
+                                  key={propertyType}
+                                  value={propertyType}
+                                >
+                                  {propertyType}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                           <FormMessage />

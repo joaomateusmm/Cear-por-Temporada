@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 
 import { db } from "@/app/db";
 import { ownersTable } from "@/app/db/schema";
@@ -17,7 +18,7 @@ interface OwnerRegisterData {
 }
 
 interface OwnerResponse {
-  id: number;
+  id: string;
   fullName: string;
   email: string;
   phone?: string;
@@ -97,6 +98,7 @@ export async function registerOwner(
     const [newOwner] = await db
       .insert(ownersTable)
       .values({
+        id: nanoid(),
         fullName: data.fullName,
         email: data.email,
         password: hashedPassword,
@@ -115,7 +117,7 @@ export async function registerOwner(
   }
 }
 
-export async function getOwnerById(id: number): Promise<OwnerResponse | null> {
+export async function getOwnerById(id: string): Promise<OwnerResponse | null> {
   try {
     const [owner] = await db
       .select({
@@ -149,7 +151,7 @@ export async function getOwnerById(id: number): Promise<OwnerResponse | null> {
 }
 
 export async function updateOwnerProfile(
-  ownerId: number,
+  ownerId: string,
   data: OwnerProfileData,
 ): Promise<{ success: boolean; error?: string }> {
   try {

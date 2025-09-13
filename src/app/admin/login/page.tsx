@@ -99,12 +99,12 @@ export default function AdminLogin() {
   if (isCheckingSession) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex flex-col items-center justify-center py-8">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-gray-400" />
-            <p className="text-sm text-slate-300">Verificando sessão...</p>
-          </CardContent>
-        </Card>
+        <div className="w-full max-w-md rounded-lg p-8">
+          <div className="flex flex-col items-center justify-center text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-gray-400 border-t-transparent"></div>
+            <p className="text-sm text-slate-300">Verificando acesso...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -112,7 +112,7 @@ export default function AdminLogin() {
   return (
     <>
       <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-        <Card className="w-[85vw] border-slate-700 bg-slate-800 md:w-[450px]">
+        <Card className="w-[92vw] border-slate-700 bg-slate-800 md:w-[450px]">
           <CardHeader className="space-y-2 text-start">
             <CardTitle className="text-slate-100">
               Entrar na Área Administrativa

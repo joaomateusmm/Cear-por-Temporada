@@ -106,6 +106,14 @@ export default function Footer() {
                   Tira dúvidas
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/admin/login"
+                  className="transition-colors hover:text-white"
+                >
+                  Administrativo
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -132,14 +140,6 @@ export default function Footer() {
                 <a href="#" className="transition-colors hover:text-white">
                   Como funciona?
                 </a>
-              </li>
-              <li>
-                <Link
-                  href="/admin/login"
-                  className="transition-colors hover:text-white"
-                >
-                  Administrativo
-                </Link>
               </li>
             </ul>
           </div>

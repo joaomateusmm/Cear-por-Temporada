@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, Loader2, UserPlus } from "lucide-react";
+import { ArrowLeft, CheckCircle, Loader2, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { use, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -110,39 +110,94 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
 
   if (isSuccess && createdUser) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+      <div className="mt-32 space-y-6 md:mx-52">
+        {/* Header da página */}
+        <div className="">
+          {/* Layout para mobile */}
+          <div className="block md:hidden">
+            <Link
+              href={`/admin/${adminId}/accounts`}
+              className="mb-4 inline-block"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar
+              </Button>
+            </Link>
+            <h1 className="mb-4 text-2xl font-bold text-slate-100">
+              Conta Criada com Sucesso!
+            </h1>
+          </div>
+
+          {/* Layout para desktop */}
+          <div className="hidden md:block">
+            <h1 className="mb-4 text-2xl font-bold text-slate-100">
+              Conta Criada com Sucesso!
+            </h1>
+            <div className="flex flex-row items-center gap-8">
+              <Link href={`/admin/${adminId}/accounts`}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Voltar
+                </Button>
+              </Link>
+              <p className="text-slate-300">
+                A conta administrativa foi criada com sucesso
+              </p>
             </div>
-            <CardTitle className="text-green-600">Conta Criada!</CardTitle>
-            <CardDescription>
-              A conta administrativa foi criada com sucesso.
+          </div>
+        </div>
+
+        {/* Card de sucesso */}
+        <Card className="border-slate-700 bg-slate-800">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-green-600/50 bg-green-800/20">
+              <CheckCircle className="h-6 w-6 text-green-400" />
+            </div>
+            <CardTitle className="text-green-400">Conta Criada!</CardTitle>
+            <CardDescription className="text-slate-300">
+              A conta administrativa foi criada com sucesso e já pode ser usada.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-              <h4 className="mb-2 text-sm font-medium text-green-800">
+            <div className="rounded-lg border border-green-600/30 bg-green-800/10 p-4">
+              <h4 className="mb-3 text-sm font-medium text-green-400">
                 Dados da Conta:
               </h4>
-              <p className="text-sm text-green-700">
-                <strong>ID:</strong> {createdUser.id}
-                <br />
-                <strong>Nome:</strong> {createdUser.name}
-                <br />
-                <strong>Email:</strong> {createdUser.email}
-              </p>
+              <div className="space-y-2 text-sm text-slate-200">
+                <p>
+                  <strong className="text-slate-300">ID:</strong>{" "}
+                  {createdUser.id}
+                </p>
+                <p>
+                  <strong className="text-slate-300">Nome:</strong>{" "}
+                  {createdUser.name}
+                </p>
+                <p>
+                  <strong className="text-slate-300">Email:</strong>{" "}
+                  {createdUser.email}
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Link href={`/admin/${adminId}/accounts`}>
-                <Button className="w-full">Ver Todas as Contas</Button>
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                  Ver Todas as Contas
+                </Button>
               </Link>
 
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
                 onClick={() => {
                   setIsSuccess(false);
                   setCreatedUser(null);
@@ -158,36 +213,85 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
   }
 
   return (
-    <>
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-2 text-start">
-            <CardTitle>Criar Conta de Administrador</CardTitle>
-            <CardDescription>
-              Crie uma nova conta para que outro usuário possa gerenciar imóveis
-              na plataforma Ceará por Temporada.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4"
+    <div className="mt-32 space-y-6 md:mx-52">
+      {/* Header da página */}
+      <div className="">
+        {/* Layout para mobile */}
+        <div className="block md:hidden">
+          <Link
+            href={`/admin/${adminId}/accounts`}
+            className="mb-4 inline-block"
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Voltar
+            </Button>
+          </Link>
+          <h1 className="mb-4 text-2xl font-bold text-slate-100">
+            Criar Conta de Administrador
+          </h1>
+          <p className="text-slate-300">
+            Crie uma nova conta para gerenciar imóveis na plataforma
+          </p>
+        </div>
+
+        {/* Layout para desktop */}
+        <div className="hidden md:block">
+          <h1 className="mb-4 text-2xl font-bold text-slate-100">
+            Criar Conta de Administrador
+          </h1>
+          <div className="flex flex-row items-center gap-8">
+            <Link href={`/admin/${adminId}/accounts`}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
               >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar
+              </Button>
+            </Link>
+            <p className="text-slate-300">
+              Crie uma nova conta para gerenciar imóveis na plataforma
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Formulário */}
+      <Card className="border-slate-700 bg-slate-800">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-slate-100">Dados da Nova Conta</CardTitle>
+          <CardDescription className="text-slate-400">
+            Preencha os dados abaixo para criar uma nova conta de administrador.
+            Esta conta poderá gerenciar imóveis na plataforma.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome Completo</FormLabel>
+                      <FormLabel className="text-slate-300">
+                        Nome Completo
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Digite o nome completo..."
                           {...field}
                           disabled={isLoading}
+                          className="border-slate-600 bg-slate-700 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -197,35 +301,41 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel className="text-slate-300">Email</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
                           placeholder="Digite o email..."
                           {...field}
                           disabled={isLoading}
+                          className="border-slate-600 bg-slate-700 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
+              </div>
 
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Telefone (Opcional)</FormLabel>
+                      <FormLabel className="text-slate-300">
+                        Telefone (Opcional)
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="tel"
                           placeholder="(85) 99999-9999"
                           {...field}
                           disabled={isLoading}
+                          className="border-slate-600 bg-slate-700 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -235,21 +345,39 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Senha</FormLabel>
+                      <FormLabel className="text-slate-300">Senha</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           placeholder="••••••••"
                           {...field}
                           disabled={isLoading}
+                          className="border-slate-600 bg-slate-700 text-slate-200 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
+              </div>
 
-                <Button type="submit" className="w-full" disabled={isLoading}>
+              <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:justify-end">
+                <Link href={`/admin/${adminId}/accounts`}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600 sm:w-auto"
+                    disabled={isLoading}
+                  >
+                    Cancelar
+                  </Button>
+                </Link>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700 sm:w-auto"
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -262,19 +390,11 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
                     </>
                   )}
                 </Button>
-              </form>
-            </Form>
-
-            <div className="mt-4 text-center">
-              <Link href={`/admin/${adminId}/accounts`}>
-                <Button variant="ghost" size="sm">
-                  Voltar para Contas
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

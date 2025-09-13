@@ -73,7 +73,7 @@ interface PropertyClass {
 
 interface FullProperty {
   id: string;
-  ownerId: number | null;
+  ownerId: string | null;
   title: string;
   shortDescription: string;
   fullDescription: string | null;
@@ -104,7 +104,7 @@ interface FullProperty {
   images: PropertyImage[];
   classes: PropertyClass[];
   owner?: {
-    id: number;
+    id: string;
     fullName: string;
     email: string;
     phone?: string;
@@ -116,7 +116,7 @@ interface FullProperty {
 
 export type PropertyFormData = {
   // ID do proprietário
-  ownerId?: number;
+  ownerId?: string;
 
   // Dados do proprietário
   ownerName?: string;
@@ -430,7 +430,7 @@ export async function getPropertiesByAdmin(adminId: string) {
 }
 
 // Função para buscar propriedades de um proprietário
-export async function getPropertiesByOwner(ownerId: number) {
+export async function getPropertiesByOwner(ownerId: string) {
   try {
     const properties = await db
       .select({

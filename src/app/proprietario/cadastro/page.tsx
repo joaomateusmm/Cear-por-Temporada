@@ -132,6 +132,9 @@ export default function OwnerAuth() {
         fullName: data.fullName,
         email: data.email,
         phone: data.phone,
+        instagram: data.instagram,
+        website: data.website,
+        profileImage: data.profileImage,
       });
 
       // Redireciona imediatamente para o dashboard
@@ -183,6 +186,9 @@ export default function OwnerAuth() {
         fullName: data.fullName,
         email: data.email,
         phone: data.phone,
+        instagram: data.instagram,
+        website: data.website,
+        profileImage: data.profileImage,
       });
 
       // Redireciona imediatamente para o dashboard

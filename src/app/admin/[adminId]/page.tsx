@@ -57,7 +57,7 @@ export default async function AdminDashboard({ params }: AdminDashboardProps) {
       <div className="md:mx-52">
         {/* Main Content */}
         <div>
-          <div className="mt-26 space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+          <div className="mt-26 space-y-8 px-2 py-8 sm:px-6 lg:px-8">
             {/* Welcome Section */}
             <div className="rounded-lg border border-slate-700 bg-slate-800 p-8 text-center shadow-lg">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-blue-700">
@@ -76,7 +76,7 @@ export default async function AdminDashboard({ params }: AdminDashboardProps) {
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
               <Card className="border-slate-700 bg-slate-800">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-white">
@@ -95,6 +95,28 @@ export default async function AdminDashboard({ params }: AdminDashboardProps) {
                     >
                       <Users className="text-muted-foreground-400 mr-2 h-5 w-5" />
                       Ver Contas
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+
+              <Card className="border-slate-700 bg-slate-800">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3 text-white">
+                    Gerenciar Proprietários
+                  </CardTitle>
+                  <CardDescription className="text-slate-300">
+                    Visualize e gerencie todos os proprietários cadastrados
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link href={`/admin/${adminId}/owners`}>
+                    <Button
+                      variant="outline"
+                      className="h-12 w-full border-slate-600 bg-slate-700 text-white hover:bg-slate-700/70 hover:text-white"
+                    >
+                      <Users className="text-muted-foreground-400 mr-2 h-5 w-5" />
+                      Ver Proprietários
                     </Button>
                   </Link>
                 </CardContent>

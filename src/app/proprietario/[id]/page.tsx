@@ -69,11 +69,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clearOwnerSession, getOwnerSession } from "@/lib/owner-session";
+import {
+  clearOwnerSession,
+  getOwnerSession,
+  saveOwnerSession,
+} from "@/lib/owner-session";
 import { deleteProperty, getPropertiesByOwner } from "@/lib/property-actions";
 
 interface OwnerSession {
-  userId: number;
+  userId: string;
   fullName: string;
   email: string;
   phone?: string;
@@ -120,7 +124,7 @@ export default function OwnerDashboard() {
   const [uploadedProfileImage, setUploadedProfileImage] = useState<string>("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const ownerId = parseInt(params.id as string);
+  const ownerId = params.id as string;
 
   // Formulário para edição do perfil
   const profileForm = useForm({
@@ -242,6 +246,17 @@ export default function OwnerDashboard() {
         profileImage: values.profileImage,
       };
       setOwnerData(updatedOwnerData);
+
+      // Atualizar também a sessão no localStorage
+      saveOwnerSession({
+        userId: updatedOwnerData.userId,
+        fullName: updatedOwnerData.fullName,
+        email: updatedOwnerData.email,
+        phone: updatedOwnerData.phone,
+        instagram: updatedOwnerData.instagram,
+        website: updatedOwnerData.website,
+        profileImage: updatedOwnerData.profileImage,
+      });
 
       toast.success("Perfil atualizado com sucesso!");
       setIsEditingProfile(false);

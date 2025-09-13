@@ -10,9 +10,9 @@ export async function GET(
 ) {
   try {
     const resolvedParams = await params;
-    const ownerId = parseInt(resolvedParams.id);
+    const ownerId = resolvedParams.id;
 
-    if (isNaN(ownerId)) {
+    if (!ownerId) {
       return NextResponse.json(
         { error: "ID do proprietário inválido" },
         { status: 400 },

@@ -1,10 +1,13 @@
 "use client";
 
 interface OwnerSession {
-  userId: number;
+  userId: string;
   fullName: string;
   email: string;
   phone?: string;
+  instagram?: string;
+  website?: string;
+  profileImage?: string;
 }
 
 const OWNER_SESSION_KEY = "owner_session";

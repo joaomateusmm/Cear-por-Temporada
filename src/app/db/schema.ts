@@ -26,7 +26,7 @@ export const usersTable = pgTable("users", {
 
 // Tabela de proprietários
 export const ownersTable = pgTable("owners", {
-  id: serial("id").primaryKey(),
+  id: varchar("id", { length: 21 }).primaryKey(), // nanoid generates 21 character IDs
   fullName: varchar("full_name", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
@@ -42,9 +42,12 @@ export const ownersTable = pgTable("owners", {
 // Tabela principal de imóveis
 export const propertiesTable = pgTable("properties", {
   id: varchar("id", { length: 21 }).primaryKey(), // nanoid generates 21 character IDs
-  ownerId: integer("owner_id").references(() => ownersTable.id, {
-    onDelete: "set null",
-  }),
+  ownerId: varchar("owner_id", { length: 21 }).references(
+    () => ownersTable.id,
+    {
+      onDelete: "set null",
+    },
+  ),
   title: varchar("title", { length: 255 }).notNull(),
   shortDescription: text("short_description").notNull(),
   fullDescription: text("full_description"),

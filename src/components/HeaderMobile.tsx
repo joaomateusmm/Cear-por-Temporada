@@ -30,12 +30,14 @@ export default function HeaderMobile() {
             </div>
 
             <div className="flex flex-shrink-0 items-center gap-3">
-              <Button
-                variant="default"
-                className="rounded-full border-none bg-gray-800/20 text-sm text-white shadow-md backdrop-blur-md duration-500 hover:brightness-110"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
+              <Link href="#pesquisa">
+                <Button
+                  variant="default"
+                  className="rounded-full border-none bg-gray-800/20 text-sm text-white shadow-md backdrop-blur-md duration-500 hover:brightness-110"
+                >
+                  <Search className="h-4 w-4" />
+                </Button>
+              </Link>
 
               {/* Menu hambúrguer para mobile */}
               <div>

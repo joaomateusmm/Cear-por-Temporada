@@ -117,29 +117,28 @@ interface Amenity {
 interface PropertyClass {
   id: number;
   name: string;
-  description: string | null;
 }
 
 interface OwnerSession {
-  userId: number;
+  userId: string;
   fullName: string;
   email: string;
   phone?: string;
+  instagram?: string;
+  website?: string;
+  profileImage?: string;
 }
 
 export default function EditPropertyPage() {
   const router = useRouter();
   const params = useParams();
-  const ownerId = parseInt(params.id as string);
+  const ownerId = params.id as string;
   const propertyId = params.propertyId as string;
 
   const [ownerData, setOwnerData] = useState<OwnerSession | null>(null);
   const [amenities, setAmenities] = useState<Amenity[]>([]);
   const [propertyClasses, setPropertyClasses] = useState<PropertyClass[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
-  const [selectedPropertyClasses, setSelectedPropertyClasses] = useState<
-    number[]
-  >([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedOwnerImage, setUploadedOwnerImage] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -214,7 +213,12 @@ export default function EditPropertyPage() {
 
       try {
         // Buscar dados do proprietário
-        if (!session.phone) {
+        if (
+          !session.phone ||
+          !session.instagram ||
+          !session.website ||
+          !session.profileImage
+        ) {
           try {
             const response = await fetch(`/api/proprietario/${session.userId}`);
             if (response.ok) {
@@ -224,6 +228,9 @@ export default function EditPropertyPage() {
                 fullName: userData.fullName,
                 email: userData.email,
                 phone: userData.phone,
+                instagram: userData.instagram,
+                website: userData.website,
+                profileImage: userData.profileImage,
               };
               setOwnerData(fullData);
             } else {
@@ -238,9 +245,9 @@ export default function EditPropertyPage() {
         }
 
         // Carregar dados necessários
-        const [amenitiesData, classesData, propertyData] = await Promise.all([
+        const [amenitiesData, , propertyData] = await Promise.all([
           getAmenities(),
-          getPropertyClasses(),
+          getPropertyClasses(), // Carregado mas não utilizado localmente
           getPropertyById(propertyId),
         ]);
 
@@ -259,7 +266,7 @@ export default function EditPropertyPage() {
           return;
         }
 
-        setPropertyClasses(classesData);
+        // Classes de propriedades carregadas mas não utilizadas localmente
 
         // Pré-preencher o formulário com os dados existentes
         form.setValue("title", propertyData.title);
@@ -361,7 +368,6 @@ export default function EditPropertyPage() {
 
         // Preencher classes
         const classIds = propertyData.classes?.map((c) => c.classId) || [];
-        setSelectedPropertyClasses(classIds);
         form.setValue("propertyClasses", classIds.map(String));
 
         // Preencher imagens
@@ -369,21 +375,19 @@ export default function EditPropertyPage() {
         setUploadedImages(imageUrls);
         form.setValue("images", imageUrls);
 
-        // Preencher dados do proprietário
-        if (propertyData.owner) {
-          form.setValue("ownerName", propertyData.owner.fullName);
-          form.setValue("ownerEmail", propertyData.owner.email);
+        // Preencher dados do proprietário - usar dados atualizados quando disponível
+        const ownerToUse = ownerData || propertyData.owner;
+        if (ownerToUse) {
+          form.setValue("ownerName", ownerToUse.fullName);
+          form.setValue("ownerEmail", ownerToUse.email);
           form.setValue(
             "ownerPhone",
-            formatPhoneNumber(propertyData.owner.phone || ""),
+            formatPhoneNumber(ownerToUse.phone || ""),
           );
-          form.setValue("ownerInstagram", propertyData.owner.instagram || "");
-          form.setValue("ownerWebsite", propertyData.owner.website || "");
-          form.setValue(
-            "ownerProfileImage",
-            propertyData.owner.profileImage || "",
-          );
-          setUploadedOwnerImage(propertyData.owner.profileImage || "");
+          form.setValue("ownerInstagram", ownerToUse.instagram || "");
+          form.setValue("ownerWebsite", ownerToUse.website || "");
+          form.setValue("ownerProfileImage", ownerToUse.profileImage || "");
+          setUploadedOwnerImage(ownerToUse.profileImage || "");
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -395,7 +399,26 @@ export default function EditPropertyPage() {
     };
 
     checkAuthAndLoadProperty();
-  }, [ownerId, propertyId, router, form]);
+  }, [ownerId, propertyId, router, form, ownerData]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [amenitiesData, propertyClassesData] = await Promise.all([
+          getAmenities(),
+          getPropertyClasses(),
+        ]);
+
+        setAmenities(amenitiesData);
+        setPropertyClasses(propertyClassesData);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        toast.error("Erro ao carregar dados necessários");
+      }
+    };
+
+    loadData();
+  }, []);
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -512,7 +535,7 @@ export default function EditPropertyPage() {
     try {
       // Converter os dados do formulário para o formato esperado
       const propertyData: PropertyFormData = {
-        ownerId: parseInt(params.id as string),
+        ownerId: params.id as string,
 
         // Dados do proprietário
         ownerName: values.ownerName,
@@ -535,7 +558,7 @@ export default function EditPropertyPage() {
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
         propertyStyle: values.propertyStyle,
-        propertyClasses: selectedPropertyClasses.map(String),
+        propertyClasses: values.propertyClasses,
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
@@ -800,18 +823,7 @@ export default function EditPropertyPage() {
     {} as Record<string, typeof amenities>,
   );
 
-  const propertyStyleOptions = [
-    "Casa",
-    "Apartamento",
-    "Pousada",
-    "Hotel",
-    "Resort",
-    "Flat",
-    "Loft",
-    "Chalé",
-    "Casa de praia",
-    "Cobertura",
-  ];
+  const propertyStyleOptions = ["Casa", "Apartamento"];
 
   return (
     <>
@@ -1092,12 +1104,12 @@ export default function EditPropertyPage() {
                                   <SelectValue placeholder="Selecione o tipo" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="border-slate-600 bg-slate-700">
+                              <SelectContent className="border-slate-600 bg-slate-700 text-slate-100">
                                 {propertyStyleOptions.map((type) => (
                                   <SelectItem
                                     key={type}
                                     value={type}
-                                    className="text-slate-100 focus:bg-slate-600"
+                                    className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
                                   >
                                     {type}
                                   </SelectItem>
@@ -1110,7 +1122,7 @@ export default function EditPropertyPage() {
                       />
                     </div>
 
-                    <FormField
+                    {/* <FormField
                       control={form.control}
                       name="propertyClasses"
                       render={() => (
@@ -1164,7 +1176,7 @@ export default function EditPropertyPage() {
                           <FormMessage />
                         </FormItem>
                       )}
-                    />
+                    /> */}
 
                     <FormField
                       control={form.control}
@@ -2153,6 +2165,96 @@ export default function EditPropertyPage() {
                         ))}
                       </div>
                     )}
+                  </CardContent>
+                </Card>
+
+                {/* Classes do Imóvel */}
+                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-semibold text-slate-100">
+                      Classes do Imóvel
+                    </CardTitle>
+                    <span className="text-sm text-gray-200">
+                      Selecione as classes que se aplicam ao imóvel.
+                    </span>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <FormField
+                      control={form.control}
+                      name="propertyClasses"
+                      render={() => (
+                        <FormItem>
+                          <FormLabel className="text-slate-300">
+                            Classes do Imóvel *
+                          </FormLabel>
+                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                            {propertyClasses.map((propertyClass) => {
+                              // Verificar se é uma classe de destaque (apenas para admins)
+                              const isHighlightClass = [
+                                "Imóvel em Destaque",
+                                "Destaque em Casas",
+                                "Destaque em Apartamentos",
+                              ].includes(propertyClass.name);
+
+                              return (
+                                <FormField
+                                  key={propertyClass.id}
+                                  control={form.control}
+                                  name="propertyClasses"
+                                  render={({ field }) => {
+                                    return (
+                                      <FormItem
+                                        key={propertyClass.id}
+                                        className="flex flex-row items-start space-y-0 space-x-3"
+                                      >
+                                        <FormControl>
+                                          <Checkbox
+                                            disabled={isHighlightClass}
+                                            checked={field.value?.includes(
+                                              propertyClass.id.toString(),
+                                            )}
+                                            onCheckedChange={(checked) => {
+                                              return checked
+                                                ? field.onChange([
+                                                    ...field.value,
+                                                    propertyClass.id.toString(),
+                                                  ])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                      (value) =>
+                                                        value !==
+                                                        propertyClass.id.toString(),
+                                                    ),
+                                                  );
+                                            }}
+                                            className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                          />
+                                        </FormControl>
+                                        <FormLabel
+                                          className={`text-sm font-normal ${
+                                            isHighlightClass
+                                              ? "text-slate-500"
+                                              : "text-slate-300"
+                                          }`}
+                                        >
+                                          {propertyClass.name}
+                                          {isHighlightClass && (
+                                            <span className="ml-2 text-xs text-slate-500">
+                                              (Apenas Admins)
+                                            </span>
+                                          )}
+                                        </FormLabel>
+                                      </FormItem>
+                                    );
+                                  }}
+                                />
+                              );
+                            })}
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </CardContent>
                 </Card>
 

@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/app/db";
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     const [newOwner] = await db
       .insert(ownersTable)
       .values({
+        id: nanoid(),
         fullName,
         email,
         password: hashedPassword,
@@ -47,6 +49,9 @@ export async function POST(req: NextRequest) {
         fullName: ownersTable.fullName,
         email: ownersTable.email,
         phone: ownersTable.phone,
+        instagram: ownersTable.instagram,
+        website: ownersTable.website,
+        profileImage: ownersTable.profileImage,
       });
 
     return NextResponse.json(newOwner);

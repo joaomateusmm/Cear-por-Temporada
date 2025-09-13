@@ -521,12 +521,12 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                                 <SelectValue placeholder="Selecione o tipo" />
                               </SelectTrigger>
                             </FormControl>
-                            <SelectContent className="border-slate-600 bg-slate-800">
+                            <SelectContent className="border-slate-600 bg-slate-800 text-slate-100">
                               {propertyTypes.map((type) => (
                                 <SelectItem
                                   key={type}
                                   value={type}
-                                  className="text-slate-100 focus:bg-slate-700"
+                                  className="text-slate-100 focus:bg-slate-700 focus:text-slate-100"
                                 >
                                   {type}
                                 </SelectItem>

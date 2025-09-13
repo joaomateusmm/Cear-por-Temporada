@@ -8,10 +8,9 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
-    const ownerId = parseInt(id);
     const data = await request.json();
 
-    const result = await updateOwnerProfile(ownerId, data);
+    const result = await updateOwnerProfile(id, data);
 
     if (result.success) {
       return NextResponse.json({ success: true });

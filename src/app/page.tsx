@@ -63,12 +63,15 @@ export default async function Home() {
   ).slice(0, 8);
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-gray-50">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden scroll-smooth bg-gray-50">
       {/* Header fixo que aparece/desaparece no scroll */}
       <ScrollingHeader />
 
       {/* Banner Principal com Carrossel */}
-      <section className="relative min-h-[60vh] overflow-hidden text-white shadow-lg">
+      <section
+        id="pesquisa"
+        className="relative min-h-[60vh] overflow-hidden text-white shadow-lg"
+      >
         <AutoCarousel />
       </section>
       {/* Seções de Imóveis por Tipo */}

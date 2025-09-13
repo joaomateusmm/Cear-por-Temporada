@@ -115,26 +115,27 @@ interface Amenity {
 interface PropertyClass {
   id: number;
   name: string;
-  description: string | null;
 }
 
 interface OwnerSession {
-  userId: number;
+  userId: string;
   fullName: string;
   email: string;
   phone?: string;
+  instagram?: string;
+  website?: string;
+  profileImage?: string;
 }
 
 export default function AddPropertyPage() {
   const router = useRouter();
   const params = useParams();
-  const ownerId = parseInt(params.id as string);
+  const ownerId = params.id as string;
 
   const [ownerData, setOwnerData] = useState<OwnerSession | null>(null);
   const [amenities, setAmenities] = useState<Amenity[]>([]);
   const [propertyClasses, setPropertyClasses] = useState<PropertyClass[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
-  const [selectedPropertyClasses] = useState<number[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedOwnerImage, setUploadedOwnerImage] = useState<string>("");
   const [isUploading, setIsUploading] = useState(false);
@@ -207,7 +208,12 @@ export default function AddPropertyPage() {
       }
 
       // Buscar dados atualizados do servidor se necessário
-      if (!session.phone) {
+      if (
+        !session.phone ||
+        !session.instagram ||
+        !session.website ||
+        !session.profileImage
+      ) {
         try {
           const response = await fetch(`/api/proprietario/${session.userId}`);
           if (response.ok) {
@@ -217,6 +223,9 @@ export default function AddPropertyPage() {
               fullName: userData.fullName,
               email: userData.email,
               phone: userData.phone,
+              instagram: userData.instagram,
+              website: userData.website,
+              profileImage: userData.profileImage,
             };
             setOwnerData(fullData);
 
@@ -227,10 +236,10 @@ export default function AddPropertyPage() {
               "ownerPhone",
               fullData.phone ? formatPhoneNumber(fullData.phone) : "",
             );
-            form.setValue("ownerInstagram", userData.instagram || "");
-            form.setValue("ownerWebsite", userData.website || "");
-            form.setValue("ownerProfileImage", userData.profileImage || "");
-            setUploadedOwnerImage(userData.profileImage || "");
+            form.setValue("ownerInstagram", fullData.instagram || "");
+            form.setValue("ownerWebsite", fullData.website || "");
+            form.setValue("ownerProfileImage", fullData.profileImage || "");
+            setUploadedOwnerImage(fullData.profileImage || "");
           } else {
             setOwnerData(session);
             form.setValue("ownerName", session.fullName);
@@ -239,6 +248,10 @@ export default function AddPropertyPage() {
               "ownerPhone",
               session.phone ? formatPhoneNumber(session.phone) : "",
             );
+            form.setValue("ownerInstagram", session.instagram || "");
+            form.setValue("ownerWebsite", session.website || "");
+            form.setValue("ownerProfileImage", session.profileImage || "");
+            setUploadedOwnerImage(session.profileImage || "");
           }
         } catch (error) {
           console.error("Erro ao buscar dados do proprietário:", error);
@@ -249,6 +262,10 @@ export default function AddPropertyPage() {
             "ownerPhone",
             session.phone ? formatPhoneNumber(session.phone) : "",
           );
+          form.setValue("ownerInstagram", session.instagram || "");
+          form.setValue("ownerWebsite", session.website || "");
+          form.setValue("ownerProfileImage", session.profileImage || "");
+          setUploadedOwnerImage(session.profileImage || "");
         }
       } else {
         setOwnerData(session);
@@ -258,6 +275,10 @@ export default function AddPropertyPage() {
           "ownerPhone",
           session.phone ? formatPhoneNumber(session.phone) : "",
         );
+        form.setValue("ownerInstagram", session.instagram || "");
+        form.setValue("ownerWebsite", session.website || "");
+        form.setValue("ownerProfileImage", session.profileImage || "");
+        setUploadedOwnerImage(session.profileImage || "");
       }
     };
 
@@ -267,13 +288,21 @@ export default function AddPropertyPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [amenitiesData, classesData] = await Promise.all([
+        const [amenitiesData, propertyClassesData] = await Promise.all([
           getAmenities(),
           getPropertyClasses(),
         ]);
 
         setAmenities(amenitiesData);
-        setPropertyClasses(classesData);
+        setPropertyClasses(propertyClassesData);
+
+        // Marcar "Normal" como padrão selecionado
+        const normalClass = propertyClassesData.find(
+          (cls) => cls.name === "Normal",
+        );
+        if (normalClass) {
+          form.setValue("propertyClasses", [normalClass.id.toString()]);
+        }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast.error("Erro ao carregar dados necessários");
@@ -281,7 +310,7 @@ export default function AddPropertyPage() {
     };
 
     loadData();
-  }, []);
+  }, [form]);
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -393,12 +422,13 @@ export default function AddPropertyPage() {
   };
 
   const onSubmit = async (values: z.infer<typeof propertyFormSchema>) => {
+    console.log("Função onSubmit chamada com valores:", values);
     setIsSubmitting(true);
 
     try {
       // Converter os dados do formulário para o formato esperado
       const propertyData: PropertyFormData = {
-        ownerId: parseInt(params.id as string), // Adicionar o ID do proprietário
+        ownerId: params.id as string, // Adicionar o ID do proprietário
 
         // Dados do proprietário
         ownerName: values.ownerName,
@@ -421,7 +451,7 @@ export default function AddPropertyPage() {
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
         propertyStyle: values.propertyStyle,
-        propertyClasses: selectedPropertyClasses.map(String),
+        propertyClasses: values.propertyClasses,
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
@@ -451,7 +481,11 @@ export default function AddPropertyPage() {
         images: uploadedImages,
       };
 
+      console.log("Dados preparados para envio:", propertyData);
+
       const result = await createProperty(propertyData);
+
+      console.log("Resultado da criação:", result);
 
       if (result.success) {
         toast.success("Imóvel cadastrado com sucesso!");
@@ -493,18 +527,7 @@ export default function AddPropertyPage() {
     "Outros",
   ];
 
-  const propertyStyleOptions = [
-    "Casa",
-    "Apartamento",
-    "Pousada",
-    "Hotel",
-    "Resort",
-    "Flat",
-    "Loft",
-    "Chalé",
-    "Casa de praia",
-    "Cobertura",
-  ];
+  const propertyStyleOptions = ["Casa", "Apartamento"];
 
   // Lista completa dos 184 municípios do Ceará
   const cearaMunicipalities = [
@@ -985,12 +1008,12 @@ export default function AddPropertyPage() {
                                   <SelectValue placeholder="Selecione o tipo" />
                                 </SelectTrigger>
                               </FormControl>
-                              <SelectContent className="border-slate-600 bg-slate-700">
+                              <SelectContent className="border-slate-600 bg-slate-700 text-slate-100">
                                 {propertyStyleOptions.map((type) => (
                                   <SelectItem
                                     key={type}
                                     value={type}
-                                    className="text-slate-100 focus:bg-slate-600"
+                                    className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
                                   >
                                     {type}
                                   </SelectItem>
@@ -1012,47 +1035,68 @@ export default function AddPropertyPage() {
                             Classes do Imóvel *
                           </FormLabel>
                           <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                            {propertyClasses.map((propertyClass) => (
-                              <FormField
-                                key={propertyClass.id}
-                                control={form.control}
-                                name="propertyClasses"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem
-                                      key={propertyClass.id}
-                                      className="flex flex-row items-start space-y-0 space-x-3"
-                                    >
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(
-                                            propertyClass.id.toString(),
+                            {propertyClasses.map((propertyClass) => {
+                              // Verificar se é uma classe de destaque (apenas para admins)
+                              const isHighlightClass = [
+                                "Imóvel em Destaque",
+                                "Destaque em Casas",
+                                "Destaque em Apartamentos",
+                              ].includes(propertyClass.name);
+
+                              return (
+                                <FormField
+                                  key={propertyClass.id}
+                                  control={form.control}
+                                  name="propertyClasses"
+                                  render={({ field }) => {
+                                    return (
+                                      <FormItem
+                                        key={propertyClass.id}
+                                        className="flex flex-row items-start space-y-0 space-x-3"
+                                      >
+                                        <FormControl>
+                                          <Checkbox
+                                            disabled={isHighlightClass}
+                                            checked={field.value?.includes(
+                                              propertyClass.id.toString(),
+                                            )}
+                                            onCheckedChange={(checked) => {
+                                              return checked
+                                                ? field.onChange([
+                                                    ...field.value,
+                                                    propertyClass.id.toString(),
+                                                  ])
+                                                : field.onChange(
+                                                    field.value?.filter(
+                                                      (value) =>
+                                                        value !==
+                                                        propertyClass.id.toString(),
+                                                    ),
+                                                  );
+                                            }}
+                                            className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                          />
+                                        </FormControl>
+                                        <FormLabel
+                                          className={`text-sm font-normal ${
+                                            isHighlightClass
+                                              ? "text-slate-500"
+                                              : "text-slate-300"
+                                          }`}
+                                        >
+                                          {propertyClass.name}
+                                          {isHighlightClass && (
+                                            <span className="ml-2 text-xs text-slate-500">
+                                              (Apenas Admins)
+                                            </span>
                                           )}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([
-                                                  ...field.value,
-                                                  propertyClass.id.toString(),
-                                                ])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) =>
-                                                      value !==
-                                                      propertyClass.id.toString(),
-                                                  ),
-                                                );
-                                          }}
-                                          className="border-slate-600 data-[state=checked]:bg-blue-600"
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="text-sm font-normal text-slate-300">
-                                        {propertyClass.name}
-                                      </FormLabel>
-                                    </FormItem>
-                                  );
-                                }}
-                              />
-                            ))}
+                                        </FormLabel>
+                                      </FormItem>
+                                    );
+                                  }}
+                                />
+                              );
+                            })}
                           </div>
                           <FormMessage />
                         </FormItem>
