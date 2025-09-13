@@ -270,7 +270,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
       <div className="mt-30 flex items-center justify-center py-12">
         <div className="text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-slate-400"></div>
-          <p className="mt-2 text-slate-300">Carregando propriedades...</p>
+          <p className="mt-2 text-slate-300">Carregando Propriedades...</p>
         </div>
       </div>
     );

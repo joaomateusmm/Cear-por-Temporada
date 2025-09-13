@@ -280,10 +280,10 @@ export default function OwnersPage({ params }: OwnerPageProps) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="mt-30 flex items-center justify-center py-12">
         <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
-          <p className="mt-2 text-slate-400">Carregando proprietários...</p>
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-slate-400"></div>
+          <p className="mt-2 text-slate-300">Carregando Proprietários...</p>
         </div>
       </div>
     );
