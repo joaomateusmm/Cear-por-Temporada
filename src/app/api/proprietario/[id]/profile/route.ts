@@ -10,14 +10,23 @@ export async function PUT(
     const { id } = await params;
     const data = await request.json();
 
-    console.log("Dados recebidos para atualização de perfil:", data);
-    console.log("ID do proprietário:", id);
+    // Logs que funcionam em produção (retornados na resposta em desenvolvimento)
+    const debugInfo = {
+      environment: process.env.NODE_ENV,
+      receivedId: id,
+      receivedData: data,
+      timestamp: new Date().toISOString(),
+    };
+
+    console.log("Debug Profile Update:", debugInfo);
 
     // Validar dados básicos
     if (!data.fullName || data.fullName.trim() === "") {
-      console.error("Nome completo é obrigatório");
       return NextResponse.json(
-        { error: "Nome completo é obrigatório" },
+        {
+          error: "Nome completo é obrigatório",
+          debug: process.env.NODE_ENV === "development" ? debugInfo : undefined,
+        },
         { status: 400 },
       );
     }
@@ -25,15 +34,38 @@ export async function PUT(
     const result = await updateOwnerProfile(id, data);
 
     if (result.success) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({
+        success: true,
+        debug: process.env.NODE_ENV === "development" ? debugInfo : undefined,
+      });
     } else {
-      console.error("Erro da função updateOwnerProfile:", result.error);
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: result.error,
+          debug:
+            process.env.NODE_ENV === "development"
+              ? { ...debugInfo, updateResult: result }
+              : undefined,
+        },
+        { status: 400 },
+      );
     }
   } catch (error) {
-    console.error("Erro ao atualizar perfil:", error);
+    const errorInfo = {
+      message: error instanceof Error ? error.message : "Erro desconhecido",
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    console.error("Erro ao atualizar perfil:", errorInfo);
+
     return NextResponse.json(
-      { error: "Erro interno do servidor" },
+      {
+        error: "Erro interno do servidor",
+        debug: process.env.NODE_ENV === "development" ? errorInfo : undefined,
+        productionError:
+          process.env.NODE_ENV === "production" ? errorInfo.message : undefined,
+      },
       { status: 500 },
     );
   }

@@ -269,7 +269,23 @@ export default function OwnerDashboard() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("Erro da API:", errorData);
-        throw new Error(errorData.error || "Erro ao atualizar perfil");
+
+        // Exibir informações detalhadas do erro
+        let errorMessage = "Erro ao atualizar perfil";
+        if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+
+        // Em produção, exibir informações de debug se disponíveis
+        if (errorData.debug || errorData.productionError) {
+          console.error(
+            "Informações de debug:",
+            errorData.debug || errorData.productionError,
+          );
+          errorMessage += " (Verifique o console para detalhes)";
+        }
+
+        throw new Error(errorMessage);
       }
 
       // Atualizar os dados locais
