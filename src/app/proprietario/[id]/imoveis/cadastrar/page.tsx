@@ -326,6 +326,10 @@ export default function AddPropertyPage() {
       formData.append("files", file);
     });
 
+    // Determinar tipo baseado no isOwnerImage
+    const type = isOwnerImage ? "profiles" : "properties";
+    formData.append("type", type);
+
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -363,8 +367,12 @@ export default function AddPropertyPage() {
 
       toast.success(
         isOwnerImage
-          ? "Foto de perfil enviada com sucesso!"
-          : `${data.urls.length} imagem(ns) enviada(s) com sucesso!`,
+          ? data.mode === "base64"
+            ? "Foto de perfil enviada com sucesso! (modo produção)"
+            : "Foto de perfil enviada com sucesso!"
+          : data.mode === "base64"
+            ? `${data.urls.length} imagem(ns) enviada(s) com sucesso! (modo produção)`
+            : `${data.urls.length} imagem(ns) enviada(s) com sucesso!`,
       );
     } catch (error) {
       console.error("Erro no upload:", error);

@@ -163,25 +163,52 @@ export default function OwnerDashboard() {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
+    console.log("Iniciando upload de foto de perfil...");
     setIsUploadingImage(true);
     const formData = new FormData();
     formData.append("files", files[0]);
+    formData.append("type", "profiles"); // Especificar que é upload de perfil
 
     try {
+      console.log(
+        "Enviando arquivo:",
+        files[0].name,
+        files[0].size,
+        files[0].type,
+      );
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
+      console.log(
+        "Resposta do servidor:",
+        response.status,
+        response.statusText,
+      );
+
       if (!response.ok) {
-        throw new Error("Erro no upload");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Erro na resposta:", errorData);
+        throw new Error(errorData.error || "Erro no upload");
       }
 
       const data = await response.json();
+      console.log("Dados recebidos:", data);
+
       if (data.urls && data.urls.length > 0) {
         setUploadedProfileImage(data.urls[0]);
         profileForm.setValue("profileImage", data.urls[0]);
-        toast.success("Foto de perfil enviada com sucesso!");
+
+        // Mensagem específica para produção vs desenvolvimento
+        if (data.mode === "base64") {
+          toast.success("Foto de perfil enviada com sucesso! (modo produção)");
+        } else {
+          toast.success("Foto de perfil enviada com sucesso!");
+        }
+      } else {
+        throw new Error("Nenhuma URL retornada pelo servidor");
       }
     } catch (error) {
       console.error("Erro no upload:", error);
