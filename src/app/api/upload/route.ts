@@ -42,14 +42,6 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Validar tamanho do arquivo (máximo 1MB para base64 em produção)
-        if (file.size > 1 * 1024 * 1024) {
-          return NextResponse.json(
-            { error: "Arquivo muito grande. Máximo 1MB em produção" },
-            { status: 400 },
-          );
-        }
-
         const bytes = await file.arrayBuffer();
         const base64 = Buffer.from(bytes).toString("base64");
         const dataUrl = `data:${file.type};base64,${base64}`;
@@ -82,14 +74,6 @@ export async function POST(request: NextRequest) {
       if (!file.type.startsWith("image/")) {
         return NextResponse.json(
           { error: "Apenas imagens são permitidas" },
-          { status: 400 },
-        );
-      }
-
-      // Validar tamanho do arquivo (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        return NextResponse.json(
-          { error: "Arquivo muito grande. Máximo 5MB" },
           { status: 400 },
         );
       }
