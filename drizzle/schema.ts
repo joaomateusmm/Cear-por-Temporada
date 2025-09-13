@@ -44,6 +44,31 @@ export const propertyImages = pgTable("property_images", {
 		}).onDelete("cascade"),
 ]);
 
+export const propertyPricing = pgTable("property_pricing", {
+	id: serial().primaryKey().notNull(),
+	propertyId: varchar("property_id", { length: 21 }).notNull(),
+	monthlyRent: numeric("monthly_rent", { precision: 10, scale:  2 }).notNull(),
+	dailyRate: numeric("daily_rate", { precision: 10, scale:  2 }).notNull(),
+	condominiumFee: numeric("condominium_fee", { precision: 10, scale:  2 }).default('0'),
+	iptuFee: numeric("iptu_fee", { precision: 10, scale:  2 }).default('0'),
+	monthlyCleaningFee: numeric("monthly_cleaning_fee", { precision: 10, scale:  2 }).default('0'),
+	otherFees: numeric("other_fees", { precision: 10, scale:  2 }).default('0'),
+	includesKitchenUtensils: boolean("includes_kitchen_utensils").default(false),
+	includesFurniture: boolean("includes_furniture").default(false),
+	includesElectricity: boolean("includes_electricity").default(false),
+	includesInternet: boolean("includes_internet").default(false),
+	includesLinens: boolean("includes_linens").default(false),
+	includesWater: boolean("includes_water").default(false),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.propertyId],
+			foreignColumns: [properties.id],
+			name: "property_pricing_property_id_properties_id_fk"
+		}).onDelete("cascade"),
+]);
+
 export const properties = pgTable("properties", {
 	id: varchar({ length: 21 }).primaryKey().notNull(),
 	title: varchar({ length: 255 }).notNull(),
@@ -70,38 +95,13 @@ export const properties = pgTable("properties", {
 	maximumStay: integer("maximum_stay"),
 	nearbyRegion: text("nearby_region"),
 	aboutBuilding: text("about_building"),
-	ownerId: integer("owner_id"),
+	ownerId: varchar("owner_id", { length: 21 }),
 }, (table) => [
 	foreignKey({
 			columns: [table.ownerId],
 			foreignColumns: [owners.id],
 			name: "properties_owner_id_owners_id_fk"
 		}).onDelete("set null"),
-]);
-
-export const propertyPricing = pgTable("property_pricing", {
-	id: serial().primaryKey().notNull(),
-	propertyId: varchar("property_id", { length: 21 }).notNull(),
-	monthlyRent: numeric("monthly_rent", { precision: 10, scale:  2 }).notNull(),
-	dailyRate: numeric("daily_rate", { precision: 10, scale:  2 }).notNull(),
-	condominiumFee: numeric("condominium_fee", { precision: 10, scale:  2 }).default('0'),
-	iptuFee: numeric("iptu_fee", { precision: 10, scale:  2 }).default('0'),
-	monthlyCleaningFee: numeric("monthly_cleaning_fee", { precision: 10, scale:  2 }).default('0'),
-	otherFees: numeric("other_fees", { precision: 10, scale:  2 }).default('0'),
-	includesKitchenUtensils: boolean("includes_kitchen_utensils").default(false),
-	includesFurniture: boolean("includes_furniture").default(false),
-	includesElectricity: boolean("includes_electricity").default(false),
-	includesInternet: boolean("includes_internet").default(false),
-	includesLinens: boolean("includes_linens").default(false),
-	includesWater: boolean("includes_water").default(false),
-	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
-	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
-}, (table) => [
-	foreignKey({
-			columns: [table.propertyId],
-			foreignColumns: [properties.id],
-			name: "property_pricing_property_id_properties_id_fk"
-		}).onDelete("cascade"),
 ]);
 
 export const reservations = pgTable("reservations", {
@@ -166,7 +166,7 @@ export const propertyClasses = pgTable("property_classes", {
 ]);
 
 export const owners = pgTable("owners", {
-	id: serial().primaryKey().notNull(),
+	id: varchar({ length: 21 }).primaryKey().notNull(),
 	fullName: varchar("full_name", { length: 255 }).notNull(),
 	email: varchar({ length: 255 }).notNull(),
 	password: varchar({ length: 255 }).notNull(),
@@ -176,7 +176,7 @@ export const owners = pgTable("owners", {
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	instagram: varchar({ length: 255 }),
 	website: varchar({ length: 255 }),
-	profileImage: varchar("profile_image", { length: 500 }),
+	profileImage: text("profile_image"),
 }, (table) => [
 	unique("owners_email_unique").on(table.email),
 ]);

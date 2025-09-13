@@ -155,31 +155,46 @@ export async function updateOwnerProfile(
   data: OwnerProfileData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    console.log("updateOwnerProfile chamada com:", { ownerId, data });
+    console.log("updateOwnerProfile chamada com:", {
+      ownerId,
+      dataKeys: Object.keys(data),
+      imageSize: data.profileImage ? data.profileImage.length : 0,
+    });
 
     const updateData = {
       fullName: data.fullName,
-      phone: data.phone,
-      instagram: data.instagram,
-      website: data.website,
-      profileImage: data.profileImage,
+      phone: data.phone || null,
+      instagram: data.instagram || null,
+      website: data.website || null,
+      profileImage: data.profileImage || null,
       updatedAt: new Date(),
     };
 
-    console.log("Dados que serão atualizados:", updateData);
+    console.log("Dados que serão atualizados:", {
+      ...updateData,
+      profileImage: updateData.profileImage
+        ? `[BASE64 ${updateData.profileImage.length} chars]`
+        : null,
+    });
 
-    await db
+    const result = await db
       .update(ownersTable)
       .set(updateData)
-      .where(eq(ownersTable.id, ownerId));
+      .where(eq(ownersTable.id, ownerId))
+      .returning({ id: ownersTable.id });
 
-    console.log("Atualização realizada com sucesso");
+    console.log("Atualização realizada com sucesso:", result);
     return { success: true };
   } catch (error) {
-    console.error("Erro ao atualizar perfil do proprietário:", error);
+    console.error("Erro detalhado ao atualizar perfil:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      ownerId,
+      dataKeys: Object.keys(data),
+    });
     return {
       success: false,
-      error: "Erro interno do servidor",
+      error: `Erro interno do servidor: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
 }

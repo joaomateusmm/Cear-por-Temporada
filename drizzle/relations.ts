@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { properties, propertyImages, owners, propertyPricing, reservations, users, propertyLocation, propertyAmenities, amenities, propertyPropertyClasses, propertyClasses, propertyAvailability } from "./schema";
+import { properties, propertyImages, propertyPricing, owners, reservations, users, propertyLocation, propertyAmenities, amenities, propertyPropertyClasses, propertyClasses, propertyAvailability } from "./schema";
 
 export const propertyImagesRelations = relations(propertyImages, ({one}) => ({
 	property: one(properties, {
@@ -10,11 +10,11 @@ export const propertyImagesRelations = relations(propertyImages, ({one}) => ({
 
 export const propertiesRelations = relations(properties, ({one, many}) => ({
 	propertyImages: many(propertyImages),
+	propertyPricings: many(propertyPricing),
 	owner: one(owners, {
 		fields: [properties.ownerId],
 		references: [owners.id]
 	}),
-	propertyPricings: many(propertyPricing),
 	reservations: many(reservations),
 	propertyLocations: many(propertyLocation),
 	propertyAmenities: many(propertyAmenities),
@@ -22,15 +22,15 @@ export const propertiesRelations = relations(properties, ({one, many}) => ({
 	propertyAvailabilities: many(propertyAvailability),
 }));
 
-export const ownersRelations = relations(owners, ({many}) => ({
-	properties: many(properties),
-}));
-
 export const propertyPricingRelations = relations(propertyPricing, ({one}) => ({
 	property: one(properties, {
 		fields: [propertyPricing.propertyId],
 		references: [properties.id]
 	}),
+}));
+
+export const ownersRelations = relations(owners, ({many}) => ({
+	properties: many(properties),
 }));
 
 export const reservationsRelations = relations(reservations, ({one}) => ({

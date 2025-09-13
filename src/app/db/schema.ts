@@ -33,7 +33,7 @@ export const ownersTable = pgTable("owners", {
   phone: varchar("phone", { length: 20 }),
   instagram: varchar("instagram", { length: 255 }),
   website: varchar("website", { length: 255 }),
-  profileImage: varchar("profile_image", { length: 500 }),
+  profileImage: text("profile_image"),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
