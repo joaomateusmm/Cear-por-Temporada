@@ -10,11 +10,24 @@ export async function PUT(
     const { id } = await params;
     const data = await request.json();
 
+    console.log("Dados recebidos para atualização de perfil:", data);
+    console.log("ID do proprietário:", id);
+
+    // Validar dados básicos
+    if (!data.fullName || data.fullName.trim() === "") {
+      console.error("Nome completo é obrigatório");
+      return NextResponse.json(
+        { error: "Nome completo é obrigatório" },
+        { status: 400 },
+      );
+    }
+
     const result = await updateOwnerProfile(id, data);
 
     if (result.success) {
       return NextResponse.json({ success: true });
     } else {
+      console.error("Erro da função updateOwnerProfile:", result.error);
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
   } catch (error) {

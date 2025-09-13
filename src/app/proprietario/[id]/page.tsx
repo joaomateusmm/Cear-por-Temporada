@@ -245,22 +245,31 @@ export default function OwnerDashboard() {
     setIsUpdatingProfile(true);
 
     try {
+      const dataToSend = {
+        fullName: values.fullName,
+        phone: values.phone,
+        instagram: values.instagram || null,
+        website: values.website || null,
+        profileImage: values.profileImage || null,
+      };
+
+      console.log("Dados que serão enviados:", dataToSend);
+      console.log("URL da requisição:", `/api/proprietario/${ownerId}/profile`);
+
       const response = await fetch(`/api/proprietario/${ownerId}/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          fullName: values.fullName,
-          phone: values.phone,
-          instagram: values.instagram || null,
-          website: values.website || null,
-          profileImage: values.profileImage || null,
-        }),
+        body: JSON.stringify(dataToSend),
       });
 
+      console.log("Status da resposta:", response.status);
+
       if (!response.ok) {
-        throw new Error("Erro ao atualizar perfil");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Erro da API:", errorData);
+        throw new Error(errorData.error || "Erro ao atualizar perfil");
       }
 
       // Atualizar os dados locais

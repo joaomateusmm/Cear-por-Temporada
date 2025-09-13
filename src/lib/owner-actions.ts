@@ -155,18 +155,25 @@ export async function updateOwnerProfile(
   data: OwnerProfileData,
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    console.log("updateOwnerProfile chamada com:", { ownerId, data });
+
+    const updateData = {
+      fullName: data.fullName,
+      phone: data.phone,
+      instagram: data.instagram,
+      website: data.website,
+      profileImage: data.profileImage,
+      updatedAt: new Date(),
+    };
+
+    console.log("Dados que serão atualizados:", updateData);
+
     await db
       .update(ownersTable)
-      .set({
-        fullName: data.fullName,
-        phone: data.phone,
-        instagram: data.instagram,
-        website: data.website,
-        profileImage: data.profileImage,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(ownersTable.id, ownerId));
 
+    console.log("Atualização realizada com sucesso");
     return { success: true };
   } catch (error) {
     console.error("Erro ao atualizar perfil do proprietário:", error);
