@@ -136,11 +136,11 @@ export default function Footer() {
                   Cadastrar-se
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <a href="#" className="transition-colors hover:text-white">
                   Como funciona?
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
         </div>
