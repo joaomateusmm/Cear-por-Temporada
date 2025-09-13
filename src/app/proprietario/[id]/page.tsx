@@ -156,6 +156,35 @@ export default function OwnerDashboard() {
     }
   };
 
+  // Função para redimensionar imagem antes do upload
+  const resizeImage = (
+    file: File,
+    maxWidth: number = 400,
+    quality: number = 0.7,
+  ): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
+      const img = document.createElement("img");
+
+      img.onload = () => {
+        // Calcular novas dimensões mantendo proporção
+        const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+
+        // Desenhar imagem redimensionada
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Converter para base64 com qualidade reduzida
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl);
+      };
+
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   // Função para upload de imagem de perfil
   const handleProfileImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -165,17 +194,30 @@ export default function OwnerDashboard() {
 
     console.log("Iniciando upload de foto de perfil...");
     setIsUploadingImage(true);
-    const formData = new FormData();
-    formData.append("files", files[0]);
-    formData.append("type", "profiles"); // Especificar que é upload de perfil
 
     try {
-      console.log(
-        "Enviando arquivo:",
-        files[0].name,
-        files[0].size,
-        files[0].type,
-      );
+      const file = files[0];
+      console.log("Arquivo original:", file.name, file.size, file.type);
+
+      // Se for muito grande, redimensionar antes do upload
+      if (file.size > 500 * 1024) {
+        // 500KB
+        console.log("Arquivo grande detectado, redimensionando...");
+        const resizedDataUrl = await resizeImage(file, 400, 0.6);
+
+        // Usar imagem redimensionada diretamente
+        setUploadedProfileImage(resizedDataUrl);
+        profileForm.setValue("profileImage", resizedDataUrl);
+        toast.success("Foto de perfil otimizada e enviada com sucesso!");
+        return;
+      }
+
+      // Para arquivos pequenos, usar upload normal
+      const formData = new FormData();
+      formData.append("files", file);
+      formData.append("type", "profiles");
+
+      console.log("Enviando arquivo:", file.name, file.size, file.type);
 
       const response = await fetch("/api/upload", {
         method: "POST",

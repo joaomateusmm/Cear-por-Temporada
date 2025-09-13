@@ -13,8 +13,10 @@ export async function PUT(
     // Logs que funcionam em produção (retornados na resposta em desenvolvimento)
     const debugInfo = {
       environment: process.env.NODE_ENV,
+      vercel: process.env.VERCEL,
+      payloadSize: JSON.stringify(data).length,
+      imageSize: data.profileImage ? data.profileImage.length : 0,
       receivedId: id,
-      receivedData: data,
       timestamp: new Date().toISOString(),
     };
 
@@ -25,6 +27,31 @@ export async function PUT(
       return NextResponse.json(
         {
           error: "Nome completo é obrigatório",
+          debug: process.env.NODE_ENV === "development" ? debugInfo : undefined,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Validar tamanho da imagem em produção
+    if (data.profileImage && data.profileImage.length > 100000) {
+      // ~75KB base64
+      return NextResponse.json(
+        {
+          error: "Imagem muito grande. Por favor, use uma imagem menor.",
+          debug: process.env.NODE_ENV === "development" ? debugInfo : undefined,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Validar tamanho total do payload
+    const payloadSize = JSON.stringify(data).length;
+    if (payloadSize > 500000) {
+      // 500KB total
+      return NextResponse.json(
+        {
+          error: "Dados muito grandes. Por favor, reduza o tamanho da imagem.",
           debug: process.env.NODE_ENV === "development" ? debugInfo : undefined,
         },
         { status: 400 },

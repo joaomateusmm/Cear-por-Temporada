@@ -42,10 +42,10 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Validar tamanho do arquivo (máximo 2MB para base64)
-        if (file.size > 2 * 1024 * 1024) {
+        // Validar tamanho do arquivo (máximo 1MB para base64 em produção)
+        if (file.size > 1 * 1024 * 1024) {
           return NextResponse.json(
-            { error: "Arquivo muito grande. Máximo 2MB em produção" },
+            { error: "Arquivo muito grande. Máximo 1MB em produção" },
             { status: 400 },
           );
         }
