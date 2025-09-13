@@ -10,6 +10,7 @@ import {
   Car,
   Check,
   Coffee,
+  Copy,
   Dog,
   Dumbbell,
   GlassWater,
@@ -47,6 +48,16 @@ import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import HeaderMobile from "@/components/HeaderMobile";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -57,6 +68,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getPropertyById } from "@/lib/property-actions";
@@ -85,6 +103,11 @@ export default function PropertyPage() {
   const [checkOut, setCheckOut] = useState("");
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [copiedPropertyId, setCopiedPropertyId] = useState<string | null>(null);
+
+  // URL base para compartilhamento
+  const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
 
   useEffect(() => {
     if (!api) return;
@@ -323,34 +346,160 @@ export default function PropertyPage() {
           <div className="space-y-8 lg:col-span-2">
             {/* Galeria de Imagens */}
             <div className="space-y-4">
-              <Carousel setApi={setApi} className="w-full">
-                <CarouselContent>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {images.map((image: any, index: number) => (
-                    <CarouselItem key={index}>
-                      <div className="relative h-96 overflow-hidden rounded-lg">
-                        <Image
-                          src={image.imageUrl}
-                          alt={`${property.title} - Imagem ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-4" />
-                <CarouselNext className="right-4" />
-              </Carousel>
+              <div className="relative mx-auto w-full max-w-full">
+                <Carousel setApi={setApi} className="w-full">
+                  <CarouselContent className="-ml-2 md:-ml-4">
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                    {images.map((image: any, index: number) => (
+                      <CarouselItem key={index} className="pl-2 md:pl-4">
+                        <div className="relative h-96 w-full overflow-hidden rounded-lg">
+                          <Image
+                            src={image.imageUrl}
+                            alt={`${property.title} - Imagem ${index + 1}`}
+                            fill
+                            className="object-cover object-center"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="absolute top-1/2 left-1 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:left-4" />
+                  <CarouselNext className="absolute top-1/2 right-4 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:right-4" />
+                </Carousel>
+              </div>
 
               <div className="flex justify-center gap-3">
-                <Button variant="outline" className="gap-2 shadow-md">
-                  <ImageIcon className="h-4 w-4" />
-                  Ampliar fotos
-                </Button>
-                <Button className="bg-gray-800 shadow-md hover:bg-gray-900">
-                  <Share2 className="h-4 w-4" />
-                </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="gap-2 shadow-md">
+                      <ImageIcon className="h-4 w-4" />
+                      Ampliar fotos
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[90vh] w-[500px] overflow-hidden">
+                    <DialogHeader>
+                      <DialogTitle className="text-lg font-semibold">
+                        {property.title} - Galeria de Fotos
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto pr-2 md:grid-cols-3">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {images.map((image: any, index: number) => (
+                        <div
+                          key={index}
+                          className="relative aspect-square cursor-pointer overflow-hidden rounded-lg transition-transform"
+                          onClick={() => setSelectedImage(image.imageUrl)}
+                        >
+                          <Image
+                            src={image.imageUrl}
+                            alt={`${property.title} - Imagem ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                {/* Modal para foto em tamanho real */}
+                <Dialog
+                  open={!!selectedImage}
+                  onOpenChange={() => setSelectedImage(null)}
+                >
+                  <DialogContent className="max-h-[90vh] w-auto max-w-[90vw] border-none bg-black p-0 text-slate-50">
+                    <div className="flex h-[85vh] w-full items-center justify-center">
+                      {selectedImage && (
+                        <Image
+                          src={selectedImage}
+                          alt="Foto ampliada"
+                          width={1920}
+                          height={1080}
+                          className="max-h-full max-w-full rounded-lg object-contain"
+                          priority
+                        />
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button className="bg-gray-800 shadow-md hover:bg-gray-900">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="mx-4 w-80 max-w-xs">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-lg font-bold text-gray-900">
+                        Compartilhar este imóvel
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="text-sm text-gray-600">
+                        <div className="mb-4">
+                          <h4 className="font-medium text-gray-900">
+                            {property.title}
+                          </h4>
+                          <div className="mt-1 flex items-center gap-1">
+                            <MapPin className="h-3 w-3 text-gray-400" />
+                            <span className="text-xs text-gray-600">
+                              {location}
+                            </span>
+                          </div>
+                        </div>
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <div className="flex items-center gap-2">
+                      <Input
+                        readOnly
+                        value={`${baseUrl}/imovel/${property.id}`}
+                        className="flex-1 text-xs"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(
+                              `${baseUrl}/imovel/${property.id}`,
+                            );
+                            setCopiedPropertyId(property.id);
+                            setTimeout(() => {
+                              setCopiedPropertyId(null);
+                            }, 2000);
+                          } catch (err) {
+                            console.error("Erro ao copiar:", err);
+                          }
+                        }}
+                        className="bg-[#101828] text-white transition-all duration-300 hover:bg-[#101828]/90"
+                      >
+                        <div className="flex items-center transition-all duration-300 ease-in-out">
+                          <div
+                            className={`transition-all duration-300 ease-in-out`}
+                          >
+                            {copiedPropertyId === property.id ? (
+                              <Check className="mr-1 h-4 w-4 text-green-400" />
+                            ) : (
+                              <Copy className="mr-1 h-4 w-4" />
+                            )}
+                          </div>
+                          <span className="transition-all duration-300 ease-in-out">
+                            {copiedPropertyId === property.id
+                              ? "Copiado"
+                              : "Copiar"}
+                          </span>
+                        </div>
+                      </Button>
+                    </div>
+
+                    <div className="mt-3 border-t border-gray-300"></div>
+
+                    <AlertDialogFooter className="flex flex-row gap-2 pt-4 sm:gap-4">
+                      <AlertDialogCancel className="flex-1 bg-gray-100 text-xs shadow-md hover:bg-gray-200">
+                        Fechar
+                      </AlertDialogCancel>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
 
@@ -481,6 +630,127 @@ export default function PropertyPage() {
                   <p className="mt-4 text-center text-sm text-gray-500">
                     Você não será cobrado agora
                   </p>
+                </CardContent>
+              </Card>
+
+              {/* Card de Informações do Perfil para Mobile */}
+              <Card className="border-gray-200 bg-white shadow-md md:hidden">
+                <CardContent>
+                  <div className="space-y-4 text-start">
+                    <p className="text-lg font-semibold text-gray-900">
+                      Perfil do Proprietário
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray-300 shadow-md duration-300 hover:scale-[1.02]">
+                        {property.owner?.profileImage ? (
+                          <Image
+                            src={property.owner.profileImage}
+                            alt="Foto do proprietário"
+                            width={64}
+                            height={64}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-gray-200">
+                            <UserRound className="h-8 w-8 text-gray-600" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        {property.owner ? (
+                          <div className="space-y-2 text-sm">
+                            <p className="text-gray-500">
+                              Nome:{" "}
+                              <span className="font-medium text-gray-700">
+                                {property.owner.fullName || "Não informado"}
+                              </span>
+                            </p>
+                            <div className="flex gap-8">
+                              <div className="space-y-1">
+                                <p className="text-gray-500">Contatos:</p>
+                                <div className="ml-2 space-y-1">
+                                  <span className="block font-medium text-gray-700">
+                                    {property.owner.email || "Não informado"}
+                                  </span>
+                                  <span className="block font-medium text-gray-700">
+                                    {property.owner.phone || "Não informado"}
+                                  </span>
+                                </div>
+                              </div>
+                              {((property.owner.instagram &&
+                                property.owner.instagram.trim() !== "") ||
+                                (property.owner.website &&
+                                  property.owner.website.trim() !== "")) && (
+                                <div>
+                                  <p className="mb-2 text-gray-500">Redes:</p>
+                                  <div className="ml-2 flex gap-3">
+                                    {property.owner.instagram &&
+                                      property.owner.instagram.trim() !==
+                                        "" && (
+                                        <Link
+                                          href={
+                                            property.owner.instagram.startsWith(
+                                              "http",
+                                            )
+                                              ? property.owner.instagram
+                                              : `https://instagram.com/${property.owner.instagram.replace("@", "")}`
+                                          }
+                                          target="_blank"
+                                          className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
+                                          title="Instagram"
+                                        >
+                                          <Instagram className="h-4 w-4" />
+                                        </Link>
+                                      )}
+                                    {property.owner.website &&
+                                      property.owner.website.trim() !== "" && (
+                                        <Link
+                                          href={
+                                            property.owner.website.startsWith(
+                                              "http",
+                                            )
+                                              ? property.owner.website
+                                              : `https://${property.owner.website}`
+                                          }
+                                          target="_blank"
+                                          className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
+                                          title="Website"
+                                        >
+                                          <Link2 className="h-4 w-4" />
+                                        </Link>
+                                      )}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 text-sm">
+                            <p className="text-gray-700">
+                              Nome:{" "}
+                              <span className="font-medium text-gray-900">
+                                Não informado
+                              </span>
+                            </p>
+                            <div className="space-y-1">
+                              <p className="text-gray-700">Contatos:</p>
+                              <div className="ml-2 space-y-1">
+                                <span className="block text-gray-900">
+                                  Não informado
+                                </span>
+                                <span className="block text-gray-900">
+                                  Não informado
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-sm text-gray-500 italic">
+                              Informações do proprietário não disponíveis
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
@@ -810,7 +1080,7 @@ export default function PropertyPage() {
             </Card>
 
             {/* Card de Informações do Perfil */}
-            <Card className="border-gray-200 bg-white shadow-md">
+            <Card className="hidden border-gray-200 bg-white shadow-md md:block">
               <CardContent>
                 <div className="space-y-4 text-start">
                   <p className="text-lg font-semibold text-gray-900">
@@ -1025,7 +1295,7 @@ export default function PropertyPage() {
           </div>
         </div>
 
-        {/* Localização */}
+        {/* Localização Google Maps
         <div className="mt-6 space-y-6">
           <Card>
             <CardHeader>
@@ -1035,7 +1305,6 @@ export default function PropertyPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Placeholder para mapa */}
                 <div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-200">
                   <div className="text-center text-gray-500">
                     <MapPin className="mx-auto mb-2 h-8 w-8" />
@@ -1043,7 +1312,6 @@ export default function PropertyPage() {
                     <p className="text-sm">Integração com Google Maps</p>
                   </div>
                 </div>
-
                 {property.location && (
                   <div className="text-gray-700">
                     <p className="font-semibold">
@@ -1054,6 +1322,94 @@ export default function PropertyPage() {
                       - {property.location.state}
                     </p>
                     <p>CEP: {property.location.zipCode}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div> */}
+
+        {/* Localização Detalhada */}
+        <div className="mt-6 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl text-gray-900">
+                Localização do Imóvel
+              </CardTitle>
+              <p className="text-gray-600">
+                Informações completas sobre a localização e região
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {property.location ? (
+                  <>
+                    {/* Endereço Principal */}
+                    <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="mt-1 h-5 w-5 text-gray-600" />
+                        <div className="space-y-2">
+                          <h3 className="font-semibold text-gray-900">
+                            Endereço Completo
+                          </h3>
+                          <div className="space-y-1 text-gray-700">
+                            <p className="font-medium">
+                              {property.location.fullAddress}
+                            </p>
+                            <p>
+                              {property.location.neighborhood},{" "}
+                              {property.location.city} -{" "}
+                              {property.location.state}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              CEP: {property.location.zipCode}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Informações da Região */}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div className="rounded-lg border border-gray-200 p-4">
+                        <h4 className="mb-2 font-semibold text-gray-900">
+                          Bairro
+                        </h4>
+                        <p className="text-gray-700">
+                          {property.location.neighborhood}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-600">
+                          Uma região estratégica com boa infraestrutura
+                        </p>
+                      </div>
+
+                      <div className="rounded-lg border border-gray-200 p-4">
+                        <h4 className="mb-2 font-semibold text-gray-900">
+                          Cidade
+                        </h4>
+                        <p className="text-gray-700">
+                          {property.location.city}, {property.location.state}
+                        </p>
+                        <p className="mt-1 text-sm text-gray-600">
+                          Localização privilegiada no estado do Ceará
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+                    <MapPin className="mx-auto mb-3 h-8 w-8 text-gray-400" />
+                    <h3 className="mb-2 font-semibold text-gray-900">
+                      Informações de Localização
+                    </h3>
+                    <p className="text-gray-600">
+                      As informações detalhadas da localização não estão
+                      disponíveis no momento.
+                    </p>
+                    <p className="mt-2 text-sm text-gray-500">
+                      Entre em contato conosco para mais detalhes sobre a
+                      localização.
+                    </p>
                   </div>
                 )}
               </div>

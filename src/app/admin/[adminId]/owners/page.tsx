@@ -9,7 +9,7 @@ import {
   UserX,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -35,12 +35,13 @@ import { createColumns, type Owner } from "./columns";
 import { DataTable } from "./data-table";
 
 interface OwnerPageProps {
-  params: {
+  params: Promise<{
     adminId: string;
-  };
+  }>;
 }
 
 export default function OwnersPage({ params }: OwnerPageProps) {
+  const { adminId } = use(params);
   const [owners, setOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOwners, setSelectedOwners] = useState<string[]>([]);
@@ -270,7 +271,7 @@ export default function OwnersPage({ params }: OwnerPageProps) {
   };
 
   const columns = createColumns(
-    params.adminId,
+    adminId,
     handleStatusChange,
     handleDelete,
     selectedOwners,
@@ -294,7 +295,7 @@ export default function OwnersPage({ params }: OwnerPageProps) {
       <div className="">
         {/* Layout para mobile */}
         <div className="block md:hidden">
-          <Link href={`/admin/${params.adminId}`} className="mb-4 inline-block">
+          <Link href={`/admin/${adminId}`} className="mb-4 inline-block">
             <Button
               variant="outline"
               size="sm"
@@ -319,7 +320,7 @@ export default function OwnersPage({ params }: OwnerPageProps) {
           </h1>
           <div className="flex flex-row justify-between">
             <div className="flex flex-row items-center gap-8">
-              <Link href={`/admin/${params.adminId}`}>
+              <Link href={`/admin/${adminId}`}>
                 <Button
                   variant="outline"
                   size="sm"
