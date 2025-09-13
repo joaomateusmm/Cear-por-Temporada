@@ -245,7 +245,7 @@ export default function OwnerDashboard() {
 
         // Mensagem específica para produção vs desenvolvimento
         if (data.mode === "base64") {
-          toast.success("Foto de perfil enviada com sucesso! (modo produção)");
+          toast.success("Foto de perfil enviada com sucesso!");
         } else {
           toast.success("Foto de perfil enviada com sucesso!");
         }

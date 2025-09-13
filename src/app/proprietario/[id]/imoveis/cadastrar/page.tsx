@@ -368,10 +368,10 @@ export default function AddPropertyPage() {
       toast.success(
         isOwnerImage
           ? data.mode === "base64"
-            ? "Foto de perfil enviada com sucesso! (modo produção)"
+            ? "Foto de perfil enviada com sucesso!"
             : "Foto de perfil enviada com sucesso!"
           : data.mode === "base64"
-            ? `${data.urls.length} imagem(ns) enviada(s) com sucesso! (modo produção)`
+            ? `${data.urls.length} imagem(ns) enviada(s) com sucesso!`
             : `${data.urls.length} imagem(ns) enviada(s) com sucesso!`,
       );
     } catch (error) {

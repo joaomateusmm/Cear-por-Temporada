@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         urls: processedFiles,
-        message: `${processedFiles.length} arquivo(s) processado(s) com sucesso (modo produção)`,
+        message: `${processedFiles.length} arquivo(s) processado(s) com sucesso`,
         mode: "base64",
       });
     }
