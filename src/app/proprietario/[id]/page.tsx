@@ -197,13 +197,13 @@ export default function OwnerDashboard() {
       const data = await response.json();
       console.log("Dados recebidos:", data);
 
-      if (data.urls && data.urls.length > 0) {
-        setUploadedProfileImage(data.urls[0]);
-        profileForm.setValue("profileImage", data.urls[0]);
+      if (data.files && data.files.length > 0) {
+        setUploadedProfileImage(data.files[0]);
+        profileForm.setValue("profileImage", data.files[0]);
 
-        // Mensagem específica para produção vs desenvolvimento
-        if (data.mode === "base64") {
-          toast.success("Foto de perfil enviada com sucesso! (modo produção)");
+        // Mensagem específica para Cloudinary vs outros
+        if (data.service === "cloudinary") {
+          toast.success("Foto de perfil enviada com sucesso! (Cloudinary)");
         } else {
           toast.success("Foto de perfil enviada com sucesso!");
         }

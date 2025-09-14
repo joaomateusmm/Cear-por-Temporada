@@ -580,7 +580,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 px-4 py-8 pb-16 sm:px-6 lg:px-52">
+        <div className="relative z-10 mt-10 px-4 py-8 pb-16 sm:px-6 lg:px-52">
           <div className="mb-8 flex items-center gap-4">
             <Link href={`/admin/${adminId}/properties`}>
               <Button
@@ -1661,7 +1661,7 @@ export default function EditPropertyPage({ params }: EditPropertyPageProps) {
                   ) : (
                     <Plus className="mr-2 h-4 w-4" />
                   )}
-                  {isSubmitting ? "Cadastrando..." : "Cadastrar Imóvel"}
+                  {isSubmitting ? "Atualizando..." : "Atualizar Imóvel"}
                 </Button>
               </div>
             </form>

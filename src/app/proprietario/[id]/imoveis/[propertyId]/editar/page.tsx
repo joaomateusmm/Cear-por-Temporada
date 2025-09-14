@@ -434,6 +434,10 @@ export default function EditPropertyPage() {
       formData.append("files", file);
     });
 
+    // Determinar tipo baseado no isOwnerImage
+    const type = isOwnerImage ? "profiles" : "properties";
+    formData.append("type", type);
+
     try {
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -456,23 +460,31 @@ export default function EditPropertyPage() {
 
       const data = await response.json();
 
-      if (!data.urls || !Array.isArray(data.urls) || data.urls.length === 0) {
+      if (
+        !data.files ||
+        !Array.isArray(data.files) ||
+        data.files.length === 0
+      ) {
         throw new Error("Nenhuma URL de imagem foi retornada pelo servidor");
       }
 
-      if (isOwnerImage && data.urls.length > 0) {
-        setUploadedOwnerImage(data.urls[0]);
-        form.setValue("ownerProfileImage", data.urls[0]);
+      if (isOwnerImage && data.files.length > 0) {
+        setUploadedOwnerImage(data.files[0]);
+        form.setValue("ownerProfileImage", data.files[0]);
       } else {
-        const newImages = [...uploadedImages, ...data.urls];
+        const newImages = [...uploadedImages, ...data.files];
         setUploadedImages(newImages);
         form.setValue("images", newImages);
       }
 
       toast.success(
         isOwnerImage
-          ? "Foto de perfil enviada com sucesso!"
-          : `${data.urls.length} imagem(ns) enviada(s) com sucesso!`,
+          ? data.service === "cloudinary"
+            ? "Foto de perfil enviada com sucesso! (Cloudinary)"
+            : "Foto de perfil enviada com sucesso!"
+          : data.service === "cloudinary"
+            ? `${data.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
+            : `${data.files.length} imagem(ns) enviada(s) com sucesso!`,
       );
     } catch (error) {
       console.error("Erro no upload:", error);
@@ -849,10 +861,10 @@ export default function EditPropertyPage() {
               </Link>
               <div className="ml-4 sm:ml-10">
                 <h1 className="text-2xl font-bold text-gray-100 sm:text-4xl">
-                  Cadastrar Novo Imóvel
+                  Atualizar Imóvel
                 </h1>
                 <p className="mt-2 text-sm text-gray-200 sm:text-base">
-                  Preencha as informações para cadastrar um novo imóvel
+                  Preencha as informações para atualizar o imóvel
                 </p>
               </div>
             </div>
