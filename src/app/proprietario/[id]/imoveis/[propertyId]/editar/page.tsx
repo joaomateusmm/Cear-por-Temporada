@@ -428,73 +428,54 @@ export default function EditPropertyPage() {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-
-    Array.from(files).forEach((file) => {
-      formData.append("files", file);
-    });
-
-    // Determinar tipo baseado no isOwnerImage
-    const type = isOwnerImage ? "profiles" : "properties";
-    formData.append("type", type);
 
     try {
+      const formData = new FormData();
+
+      // Adicionar todos os arquivos selecionados
+      Array.from(files).forEach((file) => {
+        formData.append("files", file);
+      });
+
+      // Determinar tipo baseado no isOwnerImage
+      const type = isOwnerImage ? "profiles" : "properties";
+      formData.append("type", type);
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      if (!response.ok) {
-        let errorMessage = "Erro no upload";
-        try {
-          const errorData = await response.json();
-          errorMessage =
-            errorData.error ||
-            errorData.message ||
-            `Erro HTTP ${response.status}`;
-        } catch {
-          errorMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
-      }
+      const result = await response.json();
 
-      const data = await response.json();
-
-      if (
-        !data.files ||
-        !Array.isArray(data.files) ||
-        data.files.length === 0
-      ) {
-        throw new Error("Nenhuma URL de imagem foi retornada pelo servidor");
-      }
-
-      if (isOwnerImage && data.files.length > 0) {
-        setUploadedOwnerImage(data.files[0]);
-        form.setValue("ownerProfileImage", data.files[0]);
-      } else {
-        const newImages = [...uploadedImages, ...data.files];
-        setUploadedImages(newImages);
-        form.setValue("images", newImages);
-      }
-
-      toast.success(
-        isOwnerImage
-          ? data.service === "cloudinary"
+      if (isOwnerImage && result.files && result.files.length > 0) {
+        setUploadedOwnerImage(result.files[0]);
+        form.setValue("ownerProfileImage", result.files[0]);
+        toast.success(
+          result.service === "cloudinary"
             ? "Foto de perfil enviada com sucesso! (Cloudinary)"
-            : "Foto de perfil enviada com sucesso!"
-          : data.service === "cloudinary"
-            ? `${data.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
-            : `${data.files.length} imagem(ns) enviada(s) com sucesso!`,
-      );
+            : "Foto de perfil enviada com sucesso!",
+        );
+      } else if (result.files) {
+        setUploadedImages([...uploadedImages, ...result.files]);
+        form.setValue("images", [...uploadedImages, ...result.files]);
+        toast.success(
+          result.service === "cloudinary"
+            ? `${result.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
+            : `${result.files.length} imagem(ns) enviada(s) com sucesso!`,
+        );
+      } else {
+        toast.error("Erro no upload: " + result.error);
+      }
     } catch (error) {
       console.error("Erro no upload:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Erro desconhecido ao enviar imagem(ns)";
-      toast.error(errorMessage);
+      toast.error("Erro inesperado no upload");
     } finally {
       setIsUploading(false);
+      // Limpar o input
+      if (event.target) {
+        event.target.value = "";
+      }
     }
   };
 
@@ -504,23 +485,9 @@ export default function EditPropertyPage() {
   };
 
   const removeImage = (index: number) => {
-    console.log("removeImage chamada com index:", index);
-    console.log("uploadedImages antes:", uploadedImages);
-
-    if (index < 0 || index >= uploadedImages.length) {
-      console.error("Índice inválido:", index);
-      toast.error("Erro ao remover imagem: índice inválido");
-      return;
-    }
-
     const newImages = uploadedImages.filter((_, i) => i !== index);
-    console.log("newImages após filtro:", newImages);
-
-    // Forçar atualização usando uma nova referência de array
-    setUploadedImages([...newImages]);
-    form.setValue("images", [...newImages]);
-
-    toast.success("Imagem removida com sucesso!");
+    setUploadedImages(newImages);
+    form.setValue("images", newImages);
   };
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
     let newSelectedAmenities;
@@ -2139,71 +2106,61 @@ export default function EditPropertyPage() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-4 p-6">
-                    <div className="flex items-center gap-4">
-                      <label
-                        htmlFor="property-images-upload"
-                        className="cursor-pointer"
-                      >
-                        <Button
-                          type="button"
-                          variant="outline"
-                          disabled={isUploading}
-                          className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
-                          onClick={() =>
-                            document
-                              .getElementById("property-images-upload")
-                              ?.click()
-                          }
+                    <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="property-images"
+                          className="-mt-5 mb-4 block text-sm font-medium text-slate-200"
                         >
-                          {isUploading ? "Enviando..." : "Escolher Imagens"}
-                        </Button>
-                      </label>
-                      <input
-                        id="property-images-upload"
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={(e) => handleImageUpload(e, false)}
-                        disabled={isUploading}
-                        className="hidden"
-                      />
-                      {isUploading && (
-                        <Loader className="h-6 w-6 animate-spin text-blue-400" />
-                      )}
+                          Adicionar Imagens
+                        </label>
+                        <label className="cursor-pointer">
+                          <div className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-100 transition-all duration-200 hover:bg-slate-600 disabled:opacity-50">
+                            {isUploading ? "Enviando..." : "Escolher Imagens"}
+                          </div>
+                          <input
+                            id="property-images"
+                            type="file"
+                            multiple
+                            accept="image/*"
+                            onChange={(e) => handleImageUpload(e, false)}
+                            disabled={isUploading}
+                            className="hidden"
+                          />
+                        </label>
+                        {isUploading && (
+                          <p className="mt-2 text-sm text-blue-400">
+                            Fazendo upload...
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     {uploadedImages.length > 0 && (
-                      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                        {uploadedImages.map((imageUrl, index) => (
-                          <div key={imageUrl} className="relative">
-                            <Image
-                              src={imageUrl}
-                              alt={`Imagem ${index + 1}`}
-                              width={200}
-                              height={150}
-                              className="rounded-lg object-cover"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="sm"
-                              className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log(
-                                  "Removendo imagem:",
-                                  index,
-                                  "URL:",
-                                  imageUrl,
-                                );
-                                removeImage(index);
-                              }}
-                            >
-                              <X className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ))}
+                      <div className="space-y-4">
+                        <h4 className="text-lg font-medium text-slate-200">
+                          Imagens Carregadas ({uploadedImages.length})
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                          {uploadedImages.map((imageUrl, index) => (
+                            <div key={index} className="group relative">
+                              <Image
+                                src={imageUrl}
+                                alt={`Imagem ${index + 1}`}
+                                width={200}
+                                height={200}
+                                className="h-24 w-full rounded-lg border border-slate-600 object-cover"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
+                              >
+                                <X className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </CardContent>
