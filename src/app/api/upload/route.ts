@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        urls: processedFiles,
+        files: processedFiles,
         message: `${processedFiles.length} arquivo(s) processado(s) com sucesso (modo produção)`,
         mode: "base64",
       });
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      urls: uploadedFiles,
+      files: uploadedFiles,
       message: `${uploadedFiles.length} arquivo(s) enviado(s) com sucesso`,
     });
   } catch (error) {
