@@ -352,27 +352,31 @@ export default function AddPropertyPage() {
 
       const data = await response.json();
 
-      if (!data.urls || !Array.isArray(data.urls) || data.urls.length === 0) {
+      if (
+        !data.files ||
+        !Array.isArray(data.files) ||
+        data.files.length === 0
+      ) {
         throw new Error("Nenhuma URL de imagem foi retornada pelo servidor");
       }
 
-      if (isOwnerImage && data.urls.length > 0) {
-        setUploadedOwnerImage(data.urls[0]);
-        form.setValue("ownerProfileImage", data.urls[0]);
+      if (isOwnerImage && data.files.length > 0) {
+        setUploadedOwnerImage(data.files[0]);
+        form.setValue("ownerProfileImage", data.files[0]);
       } else {
-        const newImages = [...uploadedImages, ...data.urls];
+        const newImages = [...uploadedImages, ...data.files];
         setUploadedImages(newImages);
         form.setValue("images", newImages);
       }
 
       toast.success(
         isOwnerImage
-          ? data.mode === "base64"
-            ? "Foto de perfil enviada com sucesso! (modo produção)"
+          ? data.service === "cloudinary"
+            ? "Foto de perfil enviada com sucesso! (Cloudinary)"
             : "Foto de perfil enviada com sucesso!"
-          : data.mode === "base64"
-            ? `${data.urls.length} imagem(ns) enviada(s) com sucesso! (modo produção)`
-            : `${data.urls.length} imagem(ns) enviada(s) com sucesso!`,
+          : data.service === "cloudinary"
+            ? `${data.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
+            : `${data.files.length} imagem(ns) enviada(s) com sucesso!`,
       );
     } catch (error) {
       console.error("Erro no upload:", error);
