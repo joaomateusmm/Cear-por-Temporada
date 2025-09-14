@@ -144,6 +144,7 @@ export default function EditPropertyPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(propertyFormSchema),
@@ -198,6 +199,9 @@ export default function EditPropertyPage() {
   });
 
   useEffect(() => {
+    // Evitar recarregar dados se já foram carregados
+    if (dataLoaded) return;
+
     const checkAuthAndLoadProperty = async () => {
       const session = getOwnerSession();
 
@@ -395,11 +399,13 @@ export default function EditPropertyPage() {
         router.push(`/proprietario/${ownerId}`);
       } finally {
         setIsLoading(false);
+        setDataLoaded(true); // Marcar dados como carregados
       }
     };
 
     checkAuthAndLoadProperty();
-  }, [ownerId, propertyId, router, form, ownerData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ownerId, propertyId, router, form, dataLoaded]);
 
   useEffect(() => {
     const loadData = async () => {
