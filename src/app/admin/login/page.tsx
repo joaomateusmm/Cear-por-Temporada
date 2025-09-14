@@ -187,18 +187,6 @@ export default function AdminLogin() {
                 </Button>
               </form>
             </Form>
-
-            {/* Informações para teste */}
-            <div className="mt-6 rounded-lg border border-blue-800 bg-blue-900/30 p-3">
-              <h4 className="mb-2 text-sm font-medium text-blue-300">
-                Conta de Teste:
-              </h4>
-              <p className="text-sm text-blue-200">
-                <strong>Email:</strong> test1@gmail.com
-                <br />
-                <strong>Senha:</strong> 13IAmb13
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>
