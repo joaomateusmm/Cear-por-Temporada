@@ -516,12 +516,12 @@ export default function EditPropertyPage() {
     const newImages = uploadedImages.filter((_, i) => i !== index);
     console.log("newImages após filtro:", newImages);
 
-    setUploadedImages(newImages);
-    form.setValue("images", newImages);
+    // Forçar atualização usando uma nova referência de array
+    setUploadedImages([...newImages]);
+    form.setValue("images", [...newImages]);
 
     toast.success("Imagem removida com sucesso!");
   };
-
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
     let newSelectedAmenities;
     if (checked) {
@@ -2175,10 +2175,7 @@ export default function EditPropertyPage() {
                     {uploadedImages.length > 0 && (
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {uploadedImages.map((imageUrl, index) => (
-                          <div
-                            key={`image-${index}-${imageUrl.slice(-10)}`}
-                            className="relative"
-                          >
+                          <div key={imageUrl} className="relative">
                             <Image
                               src={imageUrl}
                               alt={`Imagem ${index + 1}`}
