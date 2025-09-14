@@ -427,6 +427,7 @@ export default function EditPropertyPage() {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
+    console.log("🚀 Iniciando upload:", { files: files.length, isOwnerImage });
     setIsUploading(true);
 
     try {
@@ -441,14 +442,24 @@ export default function EditPropertyPage() {
       const type = isOwnerImage ? "profiles" : "properties";
       formData.append("type", type);
 
+      console.log("📤 Enviando para API:", { type, filesCount: files.length });
+
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
+      console.log("📨 Resposta da API:", {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+      });
+
       const result = await response.json();
+      console.log("📋 Dados da resposta:", result);
 
       if (isOwnerImage && result.files && result.files.length > 0) {
+        console.log("👤 Atualizando foto do owner:", result.files[0]);
         setUploadedOwnerImage(result.files[0]);
         form.setValue("ownerProfileImage", result.files[0]);
         toast.success(
@@ -456,19 +467,27 @@ export default function EditPropertyPage() {
             ? "Foto de perfil enviada com sucesso! (Cloudinary)"
             : "Foto de perfil enviada com sucesso!",
         );
-      } else if (result.files) {
-        setUploadedImages([...uploadedImages, ...result.files]);
-        form.setValue("images", [...uploadedImages, ...result.files]);
+      } else if (result.files && result.files.length > 0) {
+        console.log("🏠 Atualizando imagens do imóvel:", {
+          antigas: uploadedImages.length,
+          novas: result.files.length,
+          total: uploadedImages.length + result.files.length,
+        });
+        const newImages = [...uploadedImages, ...result.files];
+        setUploadedImages(newImages);
+        form.setValue("images", newImages);
+        console.log("✅ Estado atualizado:", { uploadedImages: newImages });
         toast.success(
           result.service === "cloudinary"
             ? `${result.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
             : `${result.files.length} imagem(ns) enviada(s) com sucesso!`,
         );
       } else {
-        toast.error("Erro no upload: " + result.error);
+        console.error("❌ Erro na resposta:", result);
+        toast.error("Erro no upload: " + (result.error || "Resposta inválida"));
       }
     } catch (error) {
-      console.error("Erro no upload:", error);
+      console.error("💥 Erro no upload:", error);
       toast.error("Erro inesperado no upload");
     } finally {
       setIsUploading(false);
@@ -485,9 +504,24 @@ export default function EditPropertyPage() {
   };
 
   const removeImage = (index: number) => {
+    console.log("🗑️ Removendo imagem:", {
+      index,
+      totalImages: uploadedImages.length,
+      imageUrl: uploadedImages[index],
+    });
+
     const newImages = uploadedImages.filter((_, i) => i !== index);
+    console.log("📝 Novas imagens após remoção:", {
+      antes: uploadedImages.length,
+      depois: newImages.length,
+      newImages,
+    });
+
     setUploadedImages(newImages);
     form.setValue("images", newImages);
+
+    console.log("✅ Estado atualizado após remoção");
+    toast.success(`Imagem ${index + 1} removida com sucesso!`);
   };
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
     let newSelectedAmenities;
