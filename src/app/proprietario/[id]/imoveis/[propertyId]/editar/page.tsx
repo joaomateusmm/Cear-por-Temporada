@@ -504,9 +504,22 @@ export default function EditPropertyPage() {
   };
 
   const removeImage = (index: number) => {
+    console.log("removeImage chamada com index:", index);
+    console.log("uploadedImages antes:", uploadedImages);
+
+    if (index < 0 || index >= uploadedImages.length) {
+      console.error("Índice inválido:", index);
+      toast.error("Erro ao remover imagem: índice inválido");
+      return;
+    }
+
     const newImages = uploadedImages.filter((_, i) => i !== index);
+    console.log("newImages após filtro:", newImages);
+
     setUploadedImages(newImages);
     form.setValue("images", newImages);
+
+    toast.success("Imagem removida com sucesso!");
   };
 
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
@@ -2127,27 +2140,33 @@ export default function EditPropertyPage() {
                   </CardHeader>
                   <CardContent className="space-y-4 p-6">
                     <div className="flex items-center gap-4">
-                      <label className="cursor-pointer">
+                      <label
+                        htmlFor="property-images-upload"
+                        className="cursor-pointer"
+                      >
                         <Button
                           type="button"
                           variant="outline"
                           disabled={isUploading}
                           className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
-                          asChild
+                          onClick={() =>
+                            document
+                              .getElementById("property-images-upload")
+                              ?.click()
+                          }
                         >
-                          <span>
-                            {isUploading ? "Enviando..." : "Escolher Imagens"}
-                          </span>
+                          {isUploading ? "Enviando..." : "Escolher Imagens"}
                         </Button>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          onChange={handleImageUpload}
-                          disabled={isUploading}
-                          className="hidden"
-                        />
                       </label>
+                      <input
+                        id="property-images-upload"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => handleImageUpload(e, false)}
+                        disabled={isUploading}
+                        className="hidden"
+                      />
                       {isUploading && (
                         <Loader className="h-6 w-6 animate-spin text-blue-400" />
                       )}
@@ -2157,7 +2176,7 @@ export default function EditPropertyPage() {
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {uploadedImages.map((imageUrl, index) => (
                           <div
-                            key={`${imageUrl}-${index}`}
+                            key={`image-${index}-${imageUrl.slice(-10)}`}
                             className="relative"
                           >
                             <Image
@@ -2172,8 +2191,15 @@ export default function EditPropertyPage() {
                               variant="destructive"
                               size="sm"
                               className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
-                              onClick={() => {
-                                console.log("Removendo imagem:", index);
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log(
+                                  "Removendo imagem:",
+                                  index,
+                                  "URL:",
+                                  imageUrl,
+                                );
                                 removeImage(index);
                               }}
                             >
