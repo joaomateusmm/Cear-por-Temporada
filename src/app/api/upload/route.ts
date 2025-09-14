@@ -1,7 +1,6 @@
-import { existsSync } from "fs";
-import { mkdir, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
-import path from "path";
+
+import cloudinary from "@/lib/cloudinary";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,16 +8,9 @@ export async function POST(request: NextRequest) {
     const files = data.getAll("files") as File[];
     const uploadType = (data.get("type") as string) || "properties";
 
-    // Detectar ambiente
-    const isProduction = process.env.NODE_ENV === "production";
-    const isVercel = process.env.VERCEL === "1";
-
     console.log("Upload iniciado:", {
       filesCount: files.length,
       uploadType,
-      isProduction,
-      isVercel,
-      environment: process.env.NODE_ENV,
       files: files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
     });
 
@@ -29,54 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Em produção (especialmente Vercel), usar estratégia alternativa
-    if (isProduction || isVercel) {
-      // Converter para base64 e retornar data URL (solução temporária)
-      const processedFiles: string[] = [];
-
-      for (const file of files) {
-        if (!file.type.startsWith("image/")) {
-          return NextResponse.json(
-            { error: "Apenas imagens são permitidas" },
-            { status: 400 },
-          );
-        }
-
-        // Validar tamanho do arquivo (máximo 2MB para base64)
-        if (file.size > 2 * 1024 * 1024) {
-          return NextResponse.json(
-            { error: "Arquivo muito grande. Máximo 2MB em produção" },
-            { status: 400 },
-          );
-        }
-
-        const bytes = await file.arrayBuffer();
-        const base64 = Buffer.from(bytes).toString("base64");
-        const dataUrl = `data:${file.type};base64,${base64}`;
-
-        processedFiles.push(dataUrl);
-      }
-
-      return NextResponse.json({
-        success: true,
-        files: processedFiles,
-        message: `${processedFiles.length} arquivo(s) processado(s) com sucesso (modo produção)`,
-        mode: "base64",
-      });
-    }
-
     const uploadedFiles: string[] = [];
-
-    // Caminho onde os arquivos serão salvos - dinamico baseado no tipo
-    const subDir = uploadType === "profiles" ? "profiles" : "properties";
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", subDir);
-
-    console.log("Diretório de upload:", uploadsDir);
-
-    // Criar diretório se não existir
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
 
     for (const file of files) {
       if (!file.type.startsWith("image/")) {
@@ -86,52 +31,79 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Validar tamanho do arquivo (máximo 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validar tamanho do arquivo (máximo 10MB com Cloudinary)
+      if (file.size > 10 * 1024 * 1024) {
         return NextResponse.json(
-          { error: "Arquivo muito grande. Máximo 5MB" },
+          { error: "Arquivo muito grande. Máximo 10MB" },
           { status: 400 },
         );
       }
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+      try {
+        // Converter arquivo para buffer
+        const bytes = await file.arrayBuffer();
+        const buffer = Buffer.from(bytes);
 
-      // Gerar nome único para o arquivo - baseado no tipo
-      const timestamp = Date.now();
-      const randomSuffix = Math.random().toString(36).substring(2, 15);
-      const fileExtension = path.extname(file.name);
-      const prefix = uploadType === "profiles" ? "profile" : "property";
-      const fileName = `${prefix}_${timestamp}_${randomSuffix}${fileExtension}`;
+        // Upload para Cloudinary
+        const uploadResult = await new Promise((resolve, reject) => {
+          cloudinary.uploader
+            .upload_stream(
+              {
+                resource_type: "image",
+                folder: `ceara-por-temporada/${uploadType}`, // Organizar em pastas
+                transformation: [
+                  {
+                    width: 1200,
+                    height: 800,
+                    crop: "limit",
+                    quality: "auto:good",
+                    format: "webp", // Converter para WebP para melhor performance
+                  },
+                ],
+                public_id: `${uploadType}_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`,
+              },
+              (error, result) => {
+                if (error) {
+                  console.error("Erro no upload para Cloudinary:", error);
+                  reject(error);
+                } else {
+                  resolve(result);
+                }
+              },
+            )
+            .end(buffer);
+        });
 
-      console.log("Salvando arquivo:", fileName);
-
-      const filePath = path.join(uploadsDir, fileName);
-
-      // Salvar o arquivo
-      await writeFile(filePath, buffer);
-
-      // Adicionar à lista de arquivos enviados (caminho relativo para o frontend)
-      uploadedFiles.push(`/uploads/${subDir}/${fileName}`);
+        if (
+          uploadResult &&
+          typeof uploadResult === "object" &&
+          "secure_url" in uploadResult
+        ) {
+          uploadedFiles.push(uploadResult.secure_url as string);
+          console.log(
+            "Upload bem-sucedido para Cloudinary:",
+            uploadResult.secure_url,
+          );
+        } else {
+          throw new Error("Resposta inválida do Cloudinary");
+        }
+      } catch (uploadError) {
+        console.error("Erro no upload individual:", uploadError);
+        return NextResponse.json(
+          { error: `Erro ao fazer upload do arquivo ${file.name}` },
+          { status: 500 },
+        );
+      }
     }
 
     return NextResponse.json({
       success: true,
       files: uploadedFiles,
-      message: `${uploadedFiles.length} arquivo(s) enviado(s) com sucesso`,
+      message: `${uploadedFiles.length} arquivo(s) enviado(s) com sucesso para Cloudinary`,
+      service: "cloudinary",
     });
   } catch (error) {
     console.error("Erro detalhado no upload:", error);
-    console.error(
-      "Stack trace:",
-      error instanceof Error ? error.stack : "Erro desconhecido",
-    );
-
-    // Log mais detalhado para debug
-    if (error instanceof Error) {
-      console.error("Nome do erro:", error.name);
-      console.error("Mensagem do erro:", error.message);
-    }
 
     return NextResponse.json(
       {
