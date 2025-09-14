@@ -215,51 +215,34 @@ export type PropertyFormData = {
 
 export async function createProperty(data: PropertyFormData) {
   try {
-    console.log("=== INÍCIO CREATE PROPERTY ===");
-    console.log("Dados recebidos:", {
-      keys: Object.keys(data),
-      ownerId: data.ownerId,
-      title: data.title,
-      hasImages: data.images?.length > 0,
-      hasAmenities: data.amenities?.length > 0,
-      propertyClasses: data.propertyClasses,
-    });
-
     // Gerar ID único com nanoid
     const propertyId = nanoid();
-    console.log("PropertyId gerado:", propertyId);
 
     // 1. Criar o imóvel principal
-    console.log("=== STEP 1: Criando imóvel principal ===");
-    const propertyData = {
-      id: propertyId,
-      ownerId: data.ownerId || null,
-      title: data.title,
-      shortDescription: data.shortDescription,
-      fullDescription: data.fullDescription,
-      nearbyRegion: data.nearbyRegion,
-      aboutBuilding: data.aboutBuilding,
-      maxGuests: data.maxGuests,
-      bedrooms: data.bedrooms,
-      bathrooms: data.bathrooms,
-      parkingSpaces: data.parkingSpaces,
-      areaM2: data.areaM2?.toString(),
-      allowsPets: data.allowsPets,
-      propertyStyle: data.propertyStyle,
-      minimumStay: data.minimumStay,
-      maximumStay: data.maximumStay,
-      checkInTime: data.checkInTime,
-      checkOutTime: data.checkOutTime,
-      status: "pendente",
-    };
-    console.log("Dados para inserção do imóvel:", propertyData);
-
     const [property] = await db
       .insert(propertiesTable)
-      .values(propertyData)
+      .values({
+        id: propertyId,
+        ownerId: data.ownerId || null, // Adicionar o ownerId
+        title: data.title,
+        shortDescription: data.shortDescription,
+        fullDescription: data.fullDescription,
+        nearbyRegion: data.nearbyRegion,
+        aboutBuilding: data.aboutBuilding,
+        maxGuests: data.maxGuests,
+        bedrooms: data.bedrooms,
+        bathrooms: data.bathrooms,
+        parkingSpaces: data.parkingSpaces,
+        areaM2: data.areaM2?.toString(),
+        allowsPets: data.allowsPets,
+        propertyStyle: data.propertyStyle,
+        minimumStay: data.minimumStay,
+        maximumStay: data.maximumStay,
+        checkInTime: data.checkInTime,
+        checkOutTime: data.checkOutTime,
+        status: "pendente",
+      })
       .returning({ id: propertiesTable.id });
-
-    console.log("Imóvel criado:", property);
 
     if (!property) {
       throw new Error("Falha ao criar imóvel");
@@ -375,30 +358,8 @@ export async function createProperty(data: PropertyFormData) {
 
     return { success: true, propertyId };
   } catch (error) {
-    console.error("=== ERRO DETALHADO AO CRIAR IMÓVEL ===");
-    console.error("Tipo do erro:", typeof error);
-    console.error("Error object:", error);
-    console.error(
-      "Error message:",
-      error instanceof Error ? error.message : String(error),
-    );
-    console.error(
-      "Error stack:",
-      error instanceof Error ? error.stack : undefined,
-    );
-    console.error(
-      "Error name:",
-      error instanceof Error ? error.name : undefined,
-    );
-
-    if (error && typeof error === "object" && "code" in error) {
-      console.error("Database error code:", error.code);
-    }
-
-    return {
-      success: false,
-      error: `Erro interno do servidor: ${error instanceof Error ? error.message : String(error)}`,
-    };
+    console.error("Erro ao criar imóvel:", error);
+    return { success: false, error: "Erro interno do servidor" };
   }
 }
 

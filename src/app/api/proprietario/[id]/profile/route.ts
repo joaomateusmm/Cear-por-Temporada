@@ -13,10 +13,8 @@ export async function PUT(
     // Logs que funcionam em produção (retornados na resposta em desenvolvimento)
     const debugInfo = {
       environment: process.env.NODE_ENV,
-      vercel: process.env.VERCEL,
-      payloadSize: JSON.stringify(data).length,
-      imageSize: data.profileImage ? data.profileImage.length : 0,
       receivedId: id,
+      receivedData: data,
       timestamp: new Date().toISOString(),
     };
 

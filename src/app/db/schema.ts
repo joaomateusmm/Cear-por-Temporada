@@ -33,7 +33,7 @@ export const ownersTable = pgTable("owners", {
   phone: varchar("phone", { length: 20 }),
   instagram: varchar("instagram", { length: 255 }),
   website: varchar("website", { length: 255 }),
-  profileImage: text("profile_image"),
+  profileImage: varchar("profile_image", { length: 500 }),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -186,7 +186,7 @@ export const propertyImagesTable = pgTable("property_images", {
   propertyId: varchar("property_id", { length: 21 })
     .notNull()
     .references(() => propertiesTable.id, { onDelete: "cascade" }),
-  imageUrl: varchar("image_url", { length: 500 }).notNull(),
+  imageUrl: text("image_url").notNull(),
   altText: varchar("alt_text", { length: 255 }),
   displayOrder: integer("display_order").default(0).notNull(),
   isMain: boolean("is_main").default(false).notNull(), // imagem principal

@@ -31,7 +31,7 @@ export const amenities = pgTable("amenities", {
 export const propertyImages = pgTable("property_images", {
 	id: serial().primaryKey().notNull(),
 	propertyId: varchar("property_id", { length: 21 }).notNull(),
-	imageUrl: varchar("image_url", { length: 500 }).notNull(),
+	imageUrl: text("image_url").notNull(),
 	altText: varchar("alt_text", { length: 255 }),
 	displayOrder: integer("display_order").default(0).notNull(),
 	isMain: boolean("is_main").default(false).notNull(),
