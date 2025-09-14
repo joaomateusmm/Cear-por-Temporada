@@ -2156,7 +2156,10 @@ export default function EditPropertyPage() {
                     {uploadedImages.length > 0 && (
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {uploadedImages.map((imageUrl, index) => (
-                          <div key={index} className="relative">
+                          <div
+                            key={`${imageUrl}-${index}`}
+                            className="relative"
+                          >
                             <Image
                               src={imageUrl}
                               alt={`Imagem ${index + 1}`}
@@ -2169,7 +2172,10 @@ export default function EditPropertyPage() {
                               variant="destructive"
                               size="sm"
                               className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
-                              onClick={() => removeImage(index)}
+                              onClick={() => {
+                                console.log("Removendo imagem:", index);
+                                removeImage(index);
+                              }}
                             >
                               <X className="h-3 w-3" />
                             </Button>
