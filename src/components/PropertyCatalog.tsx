@@ -161,7 +161,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                       Ver Rapidamente
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="mx-auto max-h-[90vh] w-[400px] overflow-y-auto">
+                  <AlertDialogContent className="mx-auto max-h-[90vh] w-[90vw] overflow-y-auto md:w-[400px]">
                     <AlertDialogHeader>
                       <AlertDialogTitle className="text-lg font-bold text-gray-900">
                         {property.title}
@@ -287,7 +287,7 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                         <Share2 />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="mx-4 w-80 max-w-xs">
+                    <AlertDialogContent className="mx-auto max-h-[90vh] w-[90vw] overflow-y-auto md:w-[400px]">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-lg font-bold text-gray-900">
                           Compartilhar este imóvel

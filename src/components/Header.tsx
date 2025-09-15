@@ -208,7 +208,7 @@ export default function Header() {
         </div>
         {/* Header azul */}
         <div
-          className={`mx-auto max-w-full bg-[#101828]/50 px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
+          className={`mx-auto max-w-full bg-[#101828]/70 px-4 transition-all duration-300 sm:px-6 lg:px-8 ${
             isVisible ? "translate-y-0" : "-translate-y-16"
           }`}
         >
@@ -235,37 +235,37 @@ export default function Header() {
             <nav className="absolute top-1/2 left-1/2 ml-2 hidden -translate-x-1/2 -translate-y-1/2 transform items-center gap-8 font-medium md:flex">
               <Link
                 href="/destino/Fortaleza"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Fortaleza
               </Link>
               <Link
                 href="/destino/Cumbuco"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Cumbuco
               </Link>
               <Link
                 href="/destino/Jericoacoara"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Jericoacoara
               </Link>
               <Link
                 href="/destino/Canoa%20Quebrada"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Canoa Quebrada
               </Link>
               <Link
                 href="/destino/Beach%20Park"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Beach Park
               </Link>
               <Link
                 href="/destinos"
-                className="text-base whitespace-nowrap text-white/90 transition-colors hover:text-white"
+                className="text-base whitespace-nowrap text-white transition-colors hover:text-white"
               >
                 Todos os Destinos
               </Link>

@@ -189,7 +189,7 @@ export function PropertyCarousel({
                             Ver Rapidamente
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="mx-4 max-h-[90vh] w-[400px] overflow-y-auto">
+                        <AlertDialogContent className="mx-auto w-[90vw] max-h-[90vh] overflow-y-auto md:w-[400px]">
                           <AlertDialogHeader>
                             <AlertDialogTitle className="text-lg font-bold text-gray-900">
                               {property.title}
@@ -268,7 +268,7 @@ export function PropertyCarousel({
                                 </div>
                                 <div className="space-y-1">
                                   <span className="font-medium text-gray-700">
-                                    Mensal:{""}
+                                    Mensal:{" "}
                                   </span>
                                   <span className="font-semibold text-green-600">
                                     {parseFloat(
@@ -319,7 +319,7 @@ export function PropertyCarousel({
                               <Share2 />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="mx-4 w-80 max-w-xs">
+                          <AlertDialogContent className="mx-auto w-[90vw] max-h-[90vh] overflow-y-auto md:w-[400px]">
                             <AlertDialogHeader>
                               <AlertDialogTitle className="text-lg font-bold text-gray-900">
                                 Compartilhar este imóvel

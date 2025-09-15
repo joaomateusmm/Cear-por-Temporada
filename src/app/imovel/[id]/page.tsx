@@ -512,7 +512,7 @@ export default function PropertyPage() {
                       <Share2 className="h-4 w-4" />
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="mx-4 w-80 max-w-xs">
+                  <AlertDialogContent className="mx-auto max-h-[90vh] w-[90vw] overflow-y-auto md:w-[400px]">
                     <AlertDialogHeader>
                       <AlertDialogTitle className="text-lg font-bold text-gray-900">
                         Compartilhar este imóvel
