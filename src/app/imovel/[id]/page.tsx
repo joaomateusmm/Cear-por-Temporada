@@ -42,7 +42,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import Footer from "@/components/Footer";
@@ -83,6 +83,12 @@ import { Amenity, PropertyAmenity } from "@/types/database";
 const fallbackImage =
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop";
 
+// Interface para tipagem das imagens
+interface PropertyImage {
+  imageUrl: string;
+  isMain: boolean;
+}
+
 // Interface para tipagem das comodidades
 interface AmenityWithIcon {
   icon: React.ComponentType<{ className?: string }>;
@@ -98,6 +104,7 @@ export default function PropertyPage() {
   const [property, setProperty] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [api, setApi] = useState<CarouselApi>();
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [guests, setGuests] = useState(1);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
@@ -105,17 +112,47 @@ export default function PropertyPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [copiedPropertyId, setCopiedPropertyId] = useState<string | null>(null);
+  const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   // URL base para compartilhamento
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+
+  // Função para rolar as miniaturas e manter a selecionada visível
+  const scrollThumbnailIntoView = useCallback((slideIndex: number) => {
+    if (!thumbnailContainerRef.current) return;
+
+    const container = thumbnailContainerRef.current;
+    const thumbnails = container.children;
+
+    if (slideIndex >= 0 && slideIndex < thumbnails.length) {
+      const selectedThumbnail = thumbnails[slideIndex] as HTMLElement;
+
+      // Calcula a posição para centralizar a miniatura
+      const containerWidth = container.offsetWidth;
+      const thumbnailWidth = selectedThumbnail.offsetWidth;
+      const thumbnailLeft = selectedThumbnail.offsetLeft;
+
+      // Posição ideal para centralizar a miniatura
+      const idealScrollPosition =
+        thumbnailLeft - containerWidth / 2 + thumbnailWidth / 2;
+
+      // Aplica o scroll suave
+      container.scrollTo({
+        left: idealScrollPosition,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   useEffect(() => {
     if (!api) return;
 
     api.on("select", () => {
-      // Código para controle do carrossel se necessário
+      const newSlide = api.selectedScrollSnap();
+      setCurrentSlide(newSlide);
+      scrollThumbnailIntoView(newSlide);
     });
-  }, [api]);
+  }, [api, scrollThumbnailIntoView]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -352,21 +389,67 @@ export default function PropertyPage() {
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {images.map((image: any, index: number) => (
                       <CarouselItem key={index} className="pl-2 md:pl-4">
-                        <div className="relative h-96 w-full overflow-hidden rounded-lg">
+                        <div className="relative h-64 w-full overflow-hidden rounded-lg sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem]">
                           <Image
                             src={image.imageUrl}
                             alt={`${property.title} - Imagem ${index + 1}`}
                             fill
-                            className="object-cover object-center"
+                            className="object-cover object-center transition-transform"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
+                            priority={index === 0}
                           />
                         </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
                   <CarouselPrevious className="absolute top-1/2 left-1 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:left-4" />
-                  <CarouselNext className="absolute top-1/2 right-4 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:right-4" />
+                  <CarouselNext className="absolute top-1/2 right-1 mr-4 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:right-4" />
                 </Carousel>
               </div>
+
+              {/* Carrossel de Miniaturas */}
+              {images.length > 1 && (
+                <div className="mx-auto max-w-full">
+                  <div className="flex justify-center">
+                    <div
+                      ref={thumbnailContainerRef}
+                      className="scrollbar-hide flex gap-2 overflow-x-auto pb-2 md:gap-3"
+                    >
+                      {images.map((image: PropertyImage, index: number) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            api?.scrollTo(index);
+                            setCurrentSlide(index);
+                            scrollThumbnailIntoView(index);
+                          }}
+                          className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-300 hover:scale-110 hover:shadow-md md:h-20 md:w-20 ${
+                            currentSlide === index
+                              ? "border-gray-800 shadow-md ring-2 ring-blue-200"
+                              : "border-gray-300 opacity-70 hover:border-gray-400 hover:opacity-100"
+                          }`}
+                        >
+                          <Image
+                            src={image.imageUrl}
+                            alt={`${property.title} - Miniatura ${index + 1}`}
+                            fill
+                            className="object-cover transition-transform duration-300"
+                            sizes="80px"
+                          />
+                          {currentSlide === index && (
+                            <div className="absolute inset-0 bg-blue-500/10"></div>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mt-2 text-center">
+                    <span className="text-sm text-gray-600">
+                      {currentSlide + 1} / {images.length}
+                    </span>
+                  </div>
+                </div>
+              )}
 
               <div className="flex justify-center gap-3">
                 <Dialog>
@@ -382,12 +465,12 @@ export default function PropertyPage() {
                         {property.title} - Galeria de Fotos
                       </DialogTitle>
                     </DialogHeader>
-                    <div className="grid max-h-[60vh] grid-cols-2 gap-4 overflow-y-auto pr-2 md:grid-cols-3">
+                    <div className="grid max-h-[60vh] grid-cols-2 gap-x-4 gap-y-40 overflow-y-auto p-4 pr-6 md:grid-cols-3 md:gap-y-28">
                       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                       {images.map((image: any, index: number) => (
                         <div
                           key={index}
-                          className="relative aspect-square cursor-pointer overflow-hidden rounded-lg transition-transform"
+                          className="relative aspect-square cursor-pointer overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                           onClick={() => setSelectedImage(image.imageUrl)}
                         >
                           <Image
@@ -407,15 +490,15 @@ export default function PropertyPage() {
                   open={!!selectedImage}
                   onOpenChange={() => setSelectedImage(null)}
                 >
-                  <DialogContent className="max-h-[90vh] w-auto max-w-[90vw] border-none bg-black p-0 text-slate-50">
-                    <div className="flex h-[85vh] w-full items-center justify-center">
+                  <DialogContent className="h-[95vh] w-[95vw] max-w-[95vw] border-none bg-transparent p-2 text-2xl text-white md:h-[90vh] md:w-auto md:max-w-[90vw]">
+                    <div className="flex h-full w-full items-center justify-center">
                       {selectedImage && (
                         <Image
                           src={selectedImage}
                           alt="Foto ampliada"
                           width={1920}
                           height={1080}
-                          className="max-h-full max-w-full rounded-lg object-contain"
+                          className="h-full max-h-full w-full max-w-full rounded-lg object-contain"
                           priority
                         />
                       )}
