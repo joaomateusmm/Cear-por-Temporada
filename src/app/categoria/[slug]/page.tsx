@@ -139,7 +139,7 @@ function CategoryContent() {
                 </p>
               </div>
             </div>
-            <div className="mt-10 mb-8 flex items-center justify-start gap-4">
+            {/* <div className="mt-10 mb-8 flex items-center justify-start gap-4">
               <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
                 <ArrowLeft className="h-4 w-4" />
                 Filtros
@@ -147,7 +147,7 @@ function CategoryContent() {
               <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
                 A - Z
               </Button>
-            </div>
+            </div> */}
           </div>
 
           {isLoading ? (

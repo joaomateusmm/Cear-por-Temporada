@@ -1,12 +1,14 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import Footer from "@/components/Footer";
-import Header from "@/components/Header";
-import HeaderMobile from "@/components/HeaderMobile";
 import PropertyCatalog from "@/components/PropertyCatalog";
+import ScrollingHeader from "@/components/ScrollingHeader";
+import { Button } from "@/components/ui/button";
 import { getAllProperties, PropertyWithDetails } from "@/lib/get-properties";
 
 export default function AllCategoriesPage() {
@@ -32,39 +34,44 @@ export default function AllCategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      <HeaderMobile />
+      <ScrollingHeader />
 
-      {/* Conteúdo Principal */}
-      <div className="container mx-auto mt-15 px-4 py-8">
-        <div className="mb-8 text-center">
-          <h1 className="mb-4 text-4xl font-bold text-gray-900">
-            Todos os Imóveis
-          </h1>
-          <p className="text-xl text-gray-600">
-            Explore nossa coleção completa de imóveis disponíveis para temporada
-            no Ceará
-          </p>
-          {!isLoading && (
-            <p className="mt-2 text-sm text-gray-500">
-              {properties.length}{" "}
-              {properties.length === 1
-                ? "imóvel encontrado"
-                : "imóveis encontrados"}
-            </p>
+      {/* Results Section */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-between">
+            <div className="mt-10 mb-8 flex items-center justify-start gap-4">
+              <Link href="/">
+                <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar
+                </Button>
+              </Link>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {isLoading
+                    ? "Carregando..."
+                    : `${properties.length} imóveis disponíveis`}
+                </h2>
+                <p className="text-gray-600">
+                  Explore nossa coleção completa de imóveis disponíveis para
+                  temporada no Ceará
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Catálogo de Imóveis */}
+          {isLoading ? (
+            <div className="py-12 text-center">
+              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-400"></div>
+              <p className="mt-2 text-gray-600">Carregando imóveis...</p>
+            </div>
+          ) : (
+            <PropertyCatalog properties={properties} />
           )}
         </div>
-
-        {/* Catálogo de Imóveis */}
-        {isLoading ? (
-          <div className="py-12 text-center">
-            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-gray-400"></div>
-            <p className="mt-2 text-gray-600">Carregando imóveis...</p>
-          </div>
-        ) : (
-          <PropertyCatalog properties={properties} />
-        )}
-      </div>
+      </section>
 
       <Footer />
     </div>

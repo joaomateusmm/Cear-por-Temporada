@@ -3,6 +3,7 @@
 import { desc, eq } from "drizzle-orm";
 import fs from "fs/promises";
 import { nanoid } from "nanoid";
+import { revalidatePath, revalidateTag } from "next/cache";
 import path from "path";
 
 import { db } from "@/app/db";
@@ -482,6 +483,17 @@ export async function updatePropertyStatus(
         updatedAt: new Date(),
       })
       .where(eq(propertiesTable.id, propertyId));
+
+    // Invalidar cache quando aprovar imóveis
+    if (status === "ativo") {
+      revalidateTag("properties");
+      revalidateTag("featured-properties");
+      revalidateTag("apartments");
+      revalidateTag("houses");
+      revalidatePath("/");
+
+      console.log(`✅ Cache invalidado após aprovação do imóvel ${propertyId}`);
+    }
 
     return { success: true };
   } catch (error) {

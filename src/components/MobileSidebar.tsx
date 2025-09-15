@@ -54,17 +54,15 @@ export function MobileSidebar({
                 >
                   Início
                 </Link>
-                <a
-                  href="#"
+                <Link
+                  href="/sobre-nos"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                  onClick={handleLinkClick}
                 >
-                  Sobre
-                </a>
+                  Sobre Nós
+                </Link>
                 <a
-                  href="#"
+                  href="https://api.whatsapp.com/send/?phone=5585992718222&text&type=phone_number&app_absent=0"
                   className="block rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                  onClick={handleLinkClick}
                 >
                   Contato
                 </a>
@@ -161,48 +159,43 @@ export function MobileSidebar({
                   <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="space-y-1 pl-3">
-                  <a
-                    href="#casas"
+                  <Link
+                    href="/categoria"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                    onClick={handleLinkClick}
                   >
-                    Casas
-                  </a>
-                  <a
-                    href="#apartamentos"
+                    Todos
+                  </Link>
+                  <Link
+                      href="/categoria/casas"
+                      className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                    >
+                      Casas
+                    </Link>
+                  <Link
+                    href="/categoria/apartamentos"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     onClick={handleLinkClick}
                   >
                     Apartamentos
-                  </a>
-                  <a
-                    href="#imoveis-destaque"
+                  </Link>
+                  <Link
+                    href="/categoria/imoveis-destaque"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                    onClick={handleLinkClick}
                   >
                     Imóveis em Destaque
-                  </a>
-                  <a
-                    href="#casas-destaque"
+                  </Link>
+                  <Link
+                    href="/categoria/casas-destaque"
                     className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                    onClick={handleLinkClick}
                   >
                     Casas em Destaque
-                  </a>
-                  <a
-                    href="#apartamentos-destaque"
-                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                    onClick={handleLinkClick}
-                  >
-                    Apartamentos em Destaque
-                  </a>
-                  <a
-                    href="#casas-destaque"
-                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                    onClick={handleLinkClick}
-                  >
-                    Experiência a Dois
-                  </a>
+                  </Link>
+                  <Link
+                  href="/categoria/apartamentos-destaque"
+                  className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                >
+                  Apartamentos em Destaque
+                </Link>
                 </CollapsibleContent>
               </Collapsible>
             </div>

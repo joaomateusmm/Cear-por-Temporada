@@ -55,27 +55,36 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-4 font-semibold">Destinos</h4>
+            <h4 className="mb-4 font-semibold">Categorias</h4>
             <ul className="space-y-3 text-gray-300">
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Fortaleza
-                </a>
+                <Link href="/categoria" className="w-full scroll-smooth">
+                  Todos
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Jericoacoara
-                </a>
+                <Link
+                  href="/categoria/casas-destaque"
+                  className="w-full scroll-smooth"
+                >
+                  Casas em Destaque
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Canoa Quebrada
-                </a>
+                <Link
+                  href="/categoria/imoveis-destaque"
+                  className="w-full scroll-smooth"
+                >
+                  Imóveis em Destaque
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition-colors hover:text-white">
-                  Cumbuco
-                </a>
+                <Link
+                  href="/categoria/apartamentos-destaque"
+                  className="w-full scroll-smooth"
+                >
+                  Apartamentos em Destaque
+                </Link>
               </li>
             </ul>
           </div>
@@ -136,11 +145,11 @@ export default function Footer() {
                   Cadastrar-se
                 </Link>
               </li>
-              {/* <li>
+              <li>
                 <a href="#" className="transition-colors hover:text-white">
                   Como funciona?
                 </a>
-              </li> */}
+              </li>
             </ul>
           </div>
         </div>
