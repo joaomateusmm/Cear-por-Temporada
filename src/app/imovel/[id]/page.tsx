@@ -389,12 +389,12 @@ export default function PropertyPage() {
                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                     {images.map((image: any, index: number) => (
                       <CarouselItem key={index} className="pl-2 md:pl-4">
-                        <div className="relative h-64 w-full overflow-hidden rounded-lg sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem]">
+                        <div className="relative h-64 w-full overflow-hidden rounded-lg bg-gray-50 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem]">
                           <Image
                             src={image.imageUrl}
                             alt={`${property.title} - Imagem ${index + 1}`}
                             fill
-                            className="object-cover object-center transition-transform"
+                            className="object-contain transition-transform"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 50vw"
                             priority={index === 0}
                           />
@@ -402,8 +402,8 @@ export default function PropertyPage() {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="absolute top-1/2 left-1 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:left-4" />
-                  <CarouselNext className="absolute top-1/2 right-1 mr-4 -translate-y-1/2 border-gray-200 bg-white/80 shadow-lg hover:bg-white/90 md:right-4" />
+                  <CarouselPrevious className="absolute top-1/2 left-1 h-10 w-10 -translate-y-1/2 border-gray-600 bg-gray-800/90 text-white shadow-lg hover:bg-gray-800 hover:text-white md:left-4" />
+                  <CarouselNext className="absolute top-1/2 right-1 mr-4 h-10 w-10 -translate-y-1/2 border-gray-600 bg-gray-800/90 text-white shadow-lg hover:bg-gray-800 hover:text-white md:right-4" />
                 </Carousel>
               </div>
 
