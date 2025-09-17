@@ -9,6 +9,7 @@ import {
   Building2,
   Car,
   Check,
+  CircleQuestionMark,
   Coffee,
   Copy,
   Dog,
@@ -77,6 +78,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { getPropertyById } from "@/lib/property-actions";
 import { Amenity, PropertyAmenity } from "@/types/database";
 
@@ -105,7 +111,9 @@ export default function PropertyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [api, setApi] = useState<CarouselApi>();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [guests, setGuests] = useState(1);
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [rooms, setRooms] = useState(property?.bedrooms || 1);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [showAllAmenities, setShowAllAmenities] = useState(false);
@@ -165,7 +173,6 @@ export default function PropertyPage() {
         const data = await getPropertyById(id);
         if (data) {
           setProperty(data);
-          setGuests(1); // Valor padrão
         } else {
           toast.error("Imóvel não encontrado");
         }
@@ -600,20 +607,37 @@ export default function PropertyPage() {
 
               {/* Personalizar Moradia */}
               <Card className="sticky top-4 md:hidden">
-                <CardHeader>
-                  <CardTitle className="text-lg text-gray-900">
-                    Personalize sua moradia
+                <CardHeader className="flex justify-between">
+                  <CardTitle className="mb-3 text-lg text-gray-900">
+                    Personalize sua estadia
                   </CardTitle>
+                  <div>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <CircleQuestionMark className="h-5 w-5 text-gray-900" />
+                      </TooltipTrigger>
+                      {/* Prevent any internal scrollbar: make overflow visible and remove max-height constraints */}
+                      <TooltipContent className="max-h-none overflow-visible border border-gray-300/50 bg-white">
+                        <p className="py-3 text-sm leading-relaxed text-gray-900">
+                          Cada imóvel tem políticas diferentes, leia em <br />
+                          &apos;Regras da casa&apos; para mais informações.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Datas */}
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <Label htmlFor="checkin" className="text-sm font-medium">
+                      <Label
+                        htmlFor="checkin-mobile"
+                        className="text-sm font-medium"
+                      >
                         Data de entrada
                       </Label>
                       <Input
-                        id="checkin"
+                        id="checkin-mobile"
                         type="date"
                         value={checkIn}
                         onChange={(e) => setCheckIn(e.target.value)}
@@ -621,11 +645,14 @@ export default function PropertyPage() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="checkout" className="text-sm font-medium">
+                      <Label
+                        htmlFor="checkout-mobile"
+                        className="text-sm font-medium"
+                      >
                         Saída
                       </Label>
                       <Input
-                        id="checkout"
+                        id="checkout-mobile"
                         type="date"
                         value={checkOut}
                         onChange={(e) => setCheckOut(e.target.value)}
@@ -634,31 +661,93 @@ export default function PropertyPage() {
                     </div>
                   </div>
 
-                  {/* Número de Pessoas */}
-                  <div>
-                    <Label className="text-sm font-medium">
-                      Número de pessoas
-                    </Label>
-                    <div className="mt-2 flex items-center justify-between">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setGuests(Math.max(1, guests - 1))}
-                        disabled={guests <= 1}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="text-lg font-semibold">{guests}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setGuests(Math.min(property.maxGuests, guests + 1))
-                        }
-                        disabled={guests >= property.maxGuests}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                  <div className="mt-6 border-t"></div>
+
+                  {/* Capacidade: Adultos / Crianças / Cômodos */}
+                  <div className="space-y-3">
+                    <div className="">
+                      <Label className="text-sm font-medium">Adultos</Label>
+                      <div className="mt-2 flex items-center justify-between">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setAdults(Math.max(1, adults - 1))}
+                          disabled={adults <= 1}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="mx-4 text-lg font-semibold">
+                          {adults}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setAdults(adults + 1)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <Label className="mt-3 text-sm font-medium">
+                        Crianças
+                      </Label>
+                      <div className="mt-2 flex items-center justify-between">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setChildren(Math.max(0, children - 1))}
+                          disabled={children <= 0}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="mx-4 text-lg font-semibold">
+                          {children}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setChildren(children + 1)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    {/* Aviso só aparece quando exceder o limite recomendado */}
+                    {adults + children > property.maxGuests && (
+                      <p className="mt-2 text-xs text-gray-500">
+                        O recomendado pelo anfitrião é no máx.{" "}
+                        {property.maxGuests} hóspedes.
+                      </p>
+                    )}
+
+                    <div>
+                      <Label className="text-sm font-medium">Cômodos</Label>
+                      <div className="mt-2 flex items-center justify-between">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setRooms(Math.max(1, rooms - 1))}
+                          disabled={rooms <= 1}
+                        >
+                          <Minus className="h-4 w-4" />
+                        </Button>
+                        <span className="text-lg font-semibold">{rooms}</span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            setRooms(
+                              Math.min(property.bedrooms || 1, rooms + 1),
+                            )
+                          }
+                          disabled={rooms >= (property.bedrooms || 1)}
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <p className="mt-2 text-xs text-gray-500">
+                        Máx. {property.bedrooms} cômodos
+                      </p>
                     </div>
                   </div>
 
@@ -687,153 +776,31 @@ export default function PropertyPage() {
                     </div>
 
                     <div className="border-t pt-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Até 29 noites</span>
-                        <div className="text-right">
-                          <div className="text-xl font-bold">
-                            {nightlyRate > 0
-                              ? `R$ ${nightlyRate.toFixed(0)}/Noite`
-                              : "A combinar"}
-                          </div>
-                        </div>
-                      </div>
+                      <div className="flex items-center justify-between"></div>
                     </div>
                   </div>
 
                   {/* Botão Reservar */}
-                  <Link
-                    href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Número de hóspedes: ${guests}\n📅 Check-in: ${checkIn || "A definir"}\n📅 Check-out: ${checkOut || "A definir"}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`}
-                    target="_blank"
-                  >
-                    <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
-                      Reservar Agora
-                    </Button>
-                  </Link>
+                  <Button
+                    className="w-full bg-green-500 py-7 text-lg text-white shadow-md duration-200 active:scale-95 hover:bg-green-600"
+                    onClick={() => {
+                      if (!checkIn || !checkOut) {
+                        toast.error(
+                          "Por favor, preencha check-in e check-out antes de reservar.",
+                        );
+                        return;
+                      }
 
-                  <p className="mt-4 text-center text-sm text-gray-500">
+                      const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
+                      window.open(whatsappUrl, "_blank");
+                    }}
+                  >
+                    Reservar Agora
+                  </Button>
+
+                  <p className="mt-2 text-center text-sm text-gray-500">
                     Você não será cobrado agora
                   </p>
-                </CardContent>
-              </Card>
-
-              {/* Card de Informações do Perfil para Mobile */}
-              <Card className="border-gray-200 bg-white shadow-md md:hidden">
-                <CardContent>
-                  <div className="space-y-4 text-start">
-                    <p className="text-lg font-semibold text-gray-900">
-                      Perfil do Proprietário
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray-300 shadow-md duration-300 hover:scale-[1.02]">
-                        {property.owner?.profileImage ? (
-                          <Image
-                            src={property.owner.profileImage}
-                            alt="Foto do proprietário"
-                            width={64}
-                            height={64}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                            <UserRound className="h-8 w-8 text-gray-600" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        {property.owner ? (
-                          <div className="space-y-2 text-sm">
-                            <p className="text-gray-500">
-                              Nome:{" "}
-                              <span className="font-medium text-gray-700">
-                                {property.owner.fullName || "Não informado"}
-                              </span>
-                            </p>
-                            <div className="flex gap-8">
-                              <div className="space-y-1">
-                                <p className="text-gray-500">Contatos:</p>
-                                <div className="ml-2 space-y-1">
-                                  <span className="block font-medium text-gray-700">
-                                    {property.owner.email || "Não informado"}
-                                  </span>
-                                  <span className="block font-medium text-gray-700">
-                                    {property.owner.phone || "Não informado"}
-                                  </span>
-                                </div>
-                              </div>
-                              {((property.owner.instagram &&
-                                property.owner.instagram.trim() !== "") ||
-                                (property.owner.website &&
-                                  property.owner.website.trim() !== "")) && (
-                                <div>
-                                  <p className="mb-2 text-gray-500">Redes:</p>
-                                  <div className="ml-2 flex gap-3">
-                                    {property.owner.instagram &&
-                                      property.owner.instagram.trim() !==
-                                        "" && (
-                                        <Link
-                                          href={
-                                            property.owner.instagram.startsWith(
-                                              "http",
-                                            )
-                                              ? property.owner.instagram
-                                              : `https://instagram.com/${property.owner.instagram.replace("@", "")}`
-                                          }
-                                          target="_blank"
-                                          className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
-                                          title="Instagram"
-                                        >
-                                          <Instagram className="h-4 w-4" />
-                                        </Link>
-                                      )}
-                                    {property.owner.website &&
-                                      property.owner.website.trim() !== "" && (
-                                        <Link
-                                          href={
-                                            property.owner.website.startsWith(
-                                              "http",
-                                            )
-                                              ? property.owner.website
-                                              : `https://${property.owner.website}`
-                                          }
-                                          target="_blank"
-                                          className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
-                                          title="Website"
-                                        >
-                                          <Link2 className="h-4 w-4" />
-                                        </Link>
-                                      )}
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-2 text-sm">
-                            <p className="text-gray-700">
-                              Nome:{" "}
-                              <span className="font-medium text-gray-900">
-                                Não informado
-                              </span>
-                            </p>
-                            <div className="space-y-1">
-                              <p className="text-gray-700">Contatos:</p>
-                              <div className="ml-2 space-y-1">
-                                <span className="block text-gray-900">
-                                  Não informado
-                                </span>
-                                <span className="block text-gray-900">
-                                  Não informado
-                                </span>
-                              </div>
-                            </div>
-                            <p className="text-sm text-gray-500 italic">
-                              Informações do proprietário não disponíveis
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
 
@@ -1046,10 +1013,24 @@ export default function PropertyPage() {
           <div className="space-y-6">
             {/* Personalizar Moradia */}
             <Card className="sticky top-4 hidden md:block">
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-900">
-                  Personalize sua moradia
+              <CardHeader className="flex justify-between">
+                <CardTitle className="mb-3 text-lg text-gray-900">
+                  Personalize sua estadia
                 </CardTitle>
+                <div>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <CircleQuestionMark className="h-5 w-5 text-gray-900" />
+                    </TooltipTrigger>
+                    {/* Prevent any internal scrollbar: make overflow visible and remove max-height constraints */}
+                    <TooltipContent className="max-h-none overflow-visible border border-gray-300/50 bg-white">
+                      <p className="py-3 text-sm leading-relaxed text-gray-900">
+                        Cada imóvel tem políticas diferentes, leia em <br />
+                        &apos;Regras da casa&apos; para mais informações.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Datas */}
@@ -1080,31 +1061,86 @@ export default function PropertyPage() {
                   </div>
                 </div>
 
-                {/* Número de Pessoas */}
-                <div>
-                  <Label className="text-sm font-medium">
-                    Número de pessoas
-                  </Label>
-                  <div className="mt-2 flex items-center justify-between">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setGuests(Math.max(1, guests - 1))}
-                      disabled={guests <= 1}
-                    >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="text-lg font-semibold">{guests}</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() =>
-                        setGuests(Math.min(property.maxGuests, guests + 1))
-                      }
-                      disabled={guests >= property.maxGuests}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                {/* Capacidade: Adultos / Crianças / Cômodos */}
+                <div className="space-y-3">
+                  <div className="">
+                    <Label className="text-sm font-medium">Adultos</Label>
+                    <div className="mt-2 flex items-center justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAdults(Math.max(1, adults - 1))}
+                        disabled={adults <= 1}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="mx-4 text-lg font-semibold">
+                        {adults}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAdults(adults + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+
+                    <Label className="text-sm font-medium mt-3">Crianças</Label>
+                    <div className="mt-2 flex items-center justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setChildren(Math.max(0, children - 1))}
+                        disabled={children <= 0}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="mx-4 text-lg font-semibold">
+                        {children}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setChildren(children + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  {adults + children > property.maxGuests && (
+                    <p className="mt-2 text-xs text-gray-500">
+                      O recomendado pelo anfitrião é no máx.{" "}
+                      {property.maxGuests} hóspedes.
+                    </p>
+                  )}
+
+                  <div>
+                    <Label className="text-sm font-medium">Cômodos</Label>
+                    <div className="mt-2 flex items-center justify-between">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setRooms(Math.max(1, rooms - 1))}
+                        disabled={rooms <= 1}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="text-lg font-semibold">{rooms}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          setRooms(Math.min(property.bedrooms || 1, rooms + 1))
+                        }
+                        disabled={rooms >= (property.bedrooms || 1)}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                      Máx. {property.bedrooms} cômodos
+                    </p>
                   </div>
                 </div>
 
@@ -1112,12 +1148,7 @@ export default function PropertyPage() {
                 <div className="space-y-3 border-t pt-4">
                   <div className="flex justify-between">
                     <span>Aluguel</span>
-                    <span>
-                      R${" "}
-                      {monthlyRent > 0
-                        ? monthlyRent.toFixed(2)
-                        : dailyPrice.toFixed(2)}
-                    </span>
+                    <span>A combinar</span>
                   </div>
 
                   {cleaningFee > 0 && (
@@ -1132,153 +1163,30 @@ export default function PropertyPage() {
                     <span>Incluído</span>
                   </div>
 
-                  <div className="border-t pt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">Até 29 noites</span>
-                      <div className="text-right">
-                        <div className="text-xl font-bold">
-                          {nightlyRate > 0
-                            ? `R$ ${nightlyRate.toFixed(0)}/Noite`
-                            : "A combinar"}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <div className="border-t pt-3"></div>
                 </div>
 
-                {/* Botão Reservar */}
-                <Link
-                  href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Número de hóspedes: ${guests}\n📅 Check-in: ${checkIn || "A definir"}\n📅 Check-out: ${checkOut || "A definir"}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`}
-                  target="_blank"
-                >
-                  <Button className="w-full bg-green-500 py-6 text-lg text-white shadow-md duration-300 hover:bg-green-600">
-                    Reservar Agora
-                  </Button>
-                </Link>
+                {/* Botão Reservar: mantém aparência original, mas valida antes de abrir o WhatsApp */}
+                <Button
+                  className="w-full bg-green-500 py-7 text-lg text-white shadow-md duration-200 hover:scale-[1.02] hover:bg-green-600 active:scale-95"
+                  onClick={() => {
+                    if (!checkIn || !checkOut) {
+                      toast.error(
+                        "Por favor, preencha as datas de saída e entrada antes de reservar.",
+                      );
+                      return;
+                    }
 
-                <p className="mt-4 text-center text-sm text-gray-500">
+                    const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* \n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
+                    window.open(whatsappUrl, "_blank");
+                  }}
+                >
+                  Reservar Agora
+                </Button>
+
+                <p className="mt-2 text-center text-sm text-gray-500">
                   Você não será cobrado agora
                 </p>
-              </CardContent>
-            </Card>
-
-            {/* Card de Informações do Perfil */}
-            <Card className="hidden border-gray-200 bg-white shadow-md md:block">
-              <CardContent>
-                <div className="space-y-4 text-start">
-                  <p className="text-lg font-semibold text-gray-900">
-                    Perfil do Proprietário
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="h-20 w-20 overflow-hidden rounded-full border-2 border-gray-300 shadow-md duration-300 hover:scale-[1.02]">
-                      {property.owner?.profileImage ? (
-                        <Image
-                          src={property.owner.profileImage}
-                          alt="Foto do proprietário"
-                          width={64}
-                          height={64}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                          <UserRound className="h-8 w-8 text-gray-600" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      {property.owner ? (
-                        <div className="space-y-2 text-sm">
-                          <p className="text-gray-500">
-                            Nome:{" "}
-                            <span className="font-medium text-gray-700">
-                              {property.owner.fullName || "Não informado"}
-                            </span>
-                          </p>
-                          <div className="flex gap-8">
-                            <div className="space-y-1">
-                              <p className="text-gray-500">Contatos:</p>
-                              <div className="ml-2 space-y-1">
-                                <span className="block font-medium text-gray-700">
-                                  {property.owner.email || "Não informado"}
-                                </span>
-                                <span className="block font-medium text-gray-700">
-                                  {property.owner.phone || "Não informado"}
-                                </span>
-                              </div>
-                            </div>
-                            {((property.owner.instagram &&
-                              property.owner.instagram.trim() !== "") ||
-                              (property.owner.website &&
-                                property.owner.website.trim() !== "")) && (
-                              <div>
-                                <p className="mb-2 text-gray-500">Redes:</p>
-                                <div className="ml-2 flex gap-3">
-                                  {property.owner.instagram &&
-                                    property.owner.instagram.trim() !== "" && (
-                                      <Link
-                                        href={
-                                          property.owner.instagram.startsWith(
-                                            "http",
-                                          )
-                                            ? property.owner.instagram
-                                            : `https://instagram.com/${property.owner.instagram.replace("@", "")}`
-                                        }
-                                        target="_blank"
-                                        className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
-                                        title="Instagram"
-                                      >
-                                        <Instagram className="h-4 w-4" />
-                                      </Link>
-                                    )}
-                                  {property.owner.website &&
-                                    property.owner.website.trim() !== "" && (
-                                      <Link
-                                        href={
-                                          property.owner.website.startsWith(
-                                            "http",
-                                          )
-                                            ? property.owner.website
-                                            : `https://${property.owner.website}`
-                                        }
-                                        target="_blank"
-                                        className="flex items-center gap-1 text-gray-700 transition-colors hover:text-gray-800"
-                                        title="Website"
-                                      >
-                                        <Link2 className="h-4 w-4" />
-                                      </Link>
-                                    )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="space-y-2 text-sm">
-                          <p className="text-gray-700">
-                            Nome:{" "}
-                            <span className="font-medium text-gray-900">
-                              Não informado
-                            </span>
-                          </p>
-                          <div className="space-y-1">
-                            <p className="text-gray-700">Contatos:</p>
-                            <div className="ml-2 space-y-1">
-                              <span className="block text-gray-900">
-                                Não informado
-                              </span>
-                              <span className="block text-gray-900">
-                                Não informado
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-500 italic">
-                            Informações do proprietário não disponíveis
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
@@ -1293,7 +1201,7 @@ export default function PropertyPage() {
                     href={`https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`Olá! 👋\n\nEstou interessado(a) no imóvel *${property.title}* e gostaria de tirar algumas dúvidas.\n\n📍 Localização: ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\nPoderia me ajudar com mais informações?`)}&type=phone_number&app_absent=0`}
                     target="_blank"
                   >
-                    <Button className="gap-2 bg-gray-800 py-4 text-white shadow-md duration-300 hover:bg-gray-900">
+                    <Button className="gap-2 bg-gray-800 py-4 text-white shadow-md duration-300 hover:scale-[1.02] hover:bg-gray-900">
                       Fale com a gente
                     </Button>
                   </Link>

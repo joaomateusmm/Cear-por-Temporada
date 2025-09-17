@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -108,7 +107,6 @@ export function PropertyCarousel({
               property.images.find((img) => img.isMain) || property.images[0];
             const imageUrl = mainImage?.imageUrl || fallbackImage;
             const location = `${property.location.neighborhood}, ${property.location.city}`;
-            const dailyPrice = parseFloat(property.pricing.dailyRate);
 
             return (
               <CarouselItem
@@ -125,16 +123,6 @@ export function PropertyCarousel({
                           fill
                           className="object-cover shadow-md duration-1000 group-hover:scale-[1.02]"
                         />
-                        <div className="absolute top-4 right-4">
-                          <Badge
-                            variant="secondary"
-                            className="bg-white/90 text-gray-900"
-                          >
-                            {dailyPrice === 0
-                              ? "Valor a combinar"
-                              : `R$ ${dailyPrice.toFixed(0)}/noite`}
-                          </Badge>
-                        </div>
                       </div>
                     </div>
 
@@ -189,7 +177,7 @@ export function PropertyCarousel({
                             Ver Rapidamente
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="mx-auto w-[90vw] max-h-[90vh] overflow-y-auto md:w-[400px]">
+                        <AlertDialogContent className="mx-auto max-h-[90vh] w-[90vw] overflow-y-auto md:w-[400px]">
                           <AlertDialogHeader>
                             <AlertDialogTitle className="text-lg font-bold text-gray-900">
                               {property.title}
@@ -319,7 +307,7 @@ export function PropertyCarousel({
                               <Share2 />
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="mx-auto w-[90vw] max-h-[90vh] overflow-y-auto md:w-[400px]">
+                          <AlertDialogContent className="mx-auto max-h-[90vh] w-[90vw] overflow-y-auto md:w-[400px]">
                             <AlertDialogHeader>
                               <AlertDialogTitle className="text-lg font-bold text-gray-900">
                                 Compartilhar este imóvel

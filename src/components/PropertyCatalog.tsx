@@ -24,7 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -84,7 +83,6 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
             /^,\s*/,
             "",
           );
-        const dailyPrice = parseFloat(property.pricing.dailyRate || "0");
 
         return (
           <Card
@@ -100,16 +98,6 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                     fill
                     className="object-cover shadow-md"
                   />
-                  <div className="absolute top-4 right-4">
-                    <Badge
-                      variant="secondary"
-                      className="bg-white/90 text-gray-900"
-                    >
-                      {dailyPrice === 0
-                        ? "Valor a combinar"
-                        : `R$ ${dailyPrice.toFixed(0)}/noite`}
-                    </Badge>
-                  </div>
                 </div>
               </div>
 
