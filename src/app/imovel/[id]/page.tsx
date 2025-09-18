@@ -765,7 +765,7 @@ export default function PropertyPage() {
                     onClick={() => {
                       if (!checkIn || !checkOut) {
                         toast.error(
-                          "Por favor, preencha check-in e check-out antes de reservar.",
+                          "Por favor, preencha as datas de saída e entrada antes de reservar.",
                         );
                         return;
                       }
@@ -931,7 +931,7 @@ export default function PropertyPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <Label htmlFor="checkin" className="text-sm font-medium">
-                      Data de entrada
+                      Data de Entrada
                     </Label>
                     <Input
                       id="checkin"
@@ -943,7 +943,7 @@ export default function PropertyPage() {
                   </div>
                   <div>
                     <Label htmlFor="checkout" className="text-sm font-medium">
-                      Saída
+                      Data de Saída
                     </Label>
                     <Input
                       id="checkout"
@@ -1268,7 +1268,7 @@ export default function PropertyPage() {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {/* O que há por perto? */}
                 {property.nearbyPlaces && property.nearbyPlaces.length > 0 && (
-                  <div className="mr-3 space-y-3">
+                  <div className="space-y-3 md:mr-3">
                     <div className="flex items-center gap-2">
                       <MapPin className="h-5 w-5 text-gray-600" />
                       <h3 className="font-semibold text-gray-900">
@@ -1298,7 +1298,7 @@ export default function PropertyPage() {
                 {/* Praias na vizinhança */}
                 {property.nearbyBeaches &&
                   property.nearbyBeaches.length > 0 && (
-                    <div className="ml-6 space-y-3">
+                    <div className="space-y-3 md:ml-6">
                       <div className="flex items-center gap-2">
                         <Palmtree className="h-5 w-5 text-gray-600" />
                         <h3 className="font-semibold text-gray-900">
@@ -1330,7 +1330,7 @@ export default function PropertyPage() {
                 {/* Aeroportos mais próximos */}
                 {property.nearbyAirports &&
                   property.nearbyAirports.length > 0 && (
-                    <div className="mr-3 space-y-3">
+                    <div className="space-y-3 md:mr-3">
                       <div className="flex items-center gap-2">
                         <Plane className="h-5 w-5 text-gray-600" />
                         <h3 className="font-semibold text-gray-900">
@@ -1355,13 +1355,14 @@ export default function PropertyPage() {
                           ),
                         )}
                       </div>
+                      <div className="mt-6 border-t md:hidden"></div>
                     </div>
                   )}
 
                 {/* Restaurantes e cafés */}
                 {property.nearbyRestaurants &&
                   property.nearbyRestaurants.length > 0 && (
-                    <div className="ml-6 space-y-3">
+                    <div className="space-y-3 md:ml-6">
                       <div className="flex items-center gap-2">
                         <Utensils className="h-5 w-5 text-gray-600" />
                         <h3 className="font-semibold text-gray-900">
@@ -1525,7 +1526,9 @@ export default function PropertyPage() {
                         <Bed className="h-4 w-4 text-gray-800" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Camas e Berços</h4>
+                        <h4 className="font-semibold text-gray-900">
+                          Camas e Berços
+                        </h4>
                       </div>
                     </div>
                     <div className="md:w-2/3">
