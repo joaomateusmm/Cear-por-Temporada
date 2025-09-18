@@ -564,12 +564,11 @@ export default function OwnerDashboard() {
                         <TableHead className="text-slate-300">
                           Localização
                         </TableHead>
-                        <TableHead className="text-slate-300">Diária</TableHead>
                         <TableHead className="text-slate-300">
                           Capacidade
                         </TableHead>
                         <TableHead className="text-slate-300">Status</TableHead>
-                        <TableHead className="text-right text-slate-300">
+                        <TableHead className="text-center text-slate-300">
                           Ações
                         </TableHead>
                       </TableRow>
@@ -602,14 +601,6 @@ export default function OwnerDashboard() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <span className="font-medium text-slate-200">
-                              R${" "}
-                              {property.dailyRate
-                                ? Number(property.dailyRate).toFixed(2)
-                                : "0.00"}
-                            </span>
-                          </TableCell>
-                          <TableCell>
                             <span className="text-sm text-slate-300">
                               {property.maxGuests} pessoas
                             </span>
@@ -627,38 +618,50 @@ export default function OwnerDashboard() {
                                 : "Pendente"}
                             </span>
                           </TableCell>
+
                           <TableCell className="text-right">
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
+                            <div className="flex items-center justify-center gap-2">
+                              <Link href={`/imovel/${property.id}`}>
                                 <Button
                                   variant="outline"
                                   size="sm"
                                   className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
                                 >
-                                  <MoreHorizontal className="h-4 w-4" />
+                                  Ver
                                 </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent className="border-slate-600 bg-slate-800">
-                                <DropdownMenuItem asChild>
-                                  <Link
-                                    href={`/proprietario/${ownerId}/imoveis/${property.id}/editar`}
-                                    className="flex items-center text-slate-300 hover:text-slate-100"
+                              </Link>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-slate-600 bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-slate-100"
                                   >
-                                    <Edit className="mr-2 h-4 w-4 text-slate-200" />
-                                    Editar
-                                  </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    handleDeleteProperty(property.id)
-                                  }
-                                  className="flex items-center text-red-400 hover:text-red-300"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4 text-red-400" />
-                                  Excluir
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="border-slate-600 bg-slate-800">
+                                  <DropdownMenuItem asChild>
+                                    <Link
+                                      href={`/proprietario/${ownerId}/imoveis/${property.id}/editar`}
+                                      className="flex items-center text-slate-300 hover:text-slate-100"
+                                    >
+                                      <Edit className="mr-2 h-4 w-4 text-slate-200" />
+                                      Editar
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleDeleteProperty(property.id)
+                                    }
+                                    className="flex items-center text-red-400 hover:text-red-300"
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4 text-red-400" />
+                                    Excluir
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -1009,7 +1012,7 @@ export default function OwnerDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-10">
+              <div className="flex flex-col gap-4">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Imóveis cadastrados</span>
                   <span className="font-bold text-slate-100">
@@ -1020,22 +1023,6 @@ export default function OwnerDashboard() {
                   <span className="text-slate-400">Imóveis ativos</span>
                   <span className="font-bold text-slate-100">
                     {properties.filter((p) => p.status === "ativo").length}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Diária média</span>
-                  <span className="font-bold text-slate-100">
-                    R${" "}
-                    {properties.length > 0
-                      ? (
-                          properties
-                            .filter((p) => p.dailyRate)
-                            .reduce(
-                              (sum, p) => sum + Number(p.dailyRate || 0),
-                              0,
-                            ) / properties.filter((p) => p.dailyRate).length
-                        ).toFixed(0)
-                      : "0"}
                   </span>
                 </div>
               </div>

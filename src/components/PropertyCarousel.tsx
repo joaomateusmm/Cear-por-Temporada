@@ -42,7 +42,10 @@ interface PropertyCarouselProps {
     | "apartamentos"
     | "casas-destaque"
     | "apartamentos-destaque"
-    | "imoveis-destaque";
+    | "imoveis-destaque"
+    | "casas-de-praia"
+    | "flats"
+    | "pousadas";
   title?: string;
 }
 

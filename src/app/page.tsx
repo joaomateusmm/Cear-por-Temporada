@@ -24,8 +24,16 @@ function PropertySection({
     | "apartamentos"
     | "casas-destaque"
     | "apartamentos-destaque"
-    | "imoveis-destaque";
+    | "imoveis-destaque"
+    | "casas-de-praia"
+    | "flats"
+    | "pousadas";
 }) {
+  // Se não há propriedades, não renderizar a seção
+  if (!properties || properties.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -53,6 +61,9 @@ export default async function Home() {
   // Buscar imóveis por tipo específico - máximo 8
   const apartments = (await getPropertiesByType("Apartamento")).slice(0, 8);
   const houses = (await getPropertiesByType("Casa")).slice(0, 8);
+  const beachhouses = (await getPropertiesByType("Casa de Praia")).slice(0, 8);
+  const flats = (await getPropertiesByType("Flats")).slice(0, 8);
+  const inns = (await getPropertiesByType("Pousada")).slice(0, 8);
 
   // Buscar imóveis em destaque por tipo específico - máximo 8
   const featuredHouses = (
@@ -75,7 +86,7 @@ export default async function Home() {
         <AutoCarousel />
       </section>
       {/* Seções de Imóveis por Tipo */}
-      <section id="imoveis-destaque">
+      <section className="md:px-52" id="imoveis-destaque">
         <PropertySection
           title="Imóveis em Destaque"
           description="Selecionamos as melhores opções para tornar sua viagem inesquecível."
@@ -84,7 +95,25 @@ export default async function Home() {
         />
       </section>
 
-      <section id="apartamentos">
+      <section className="md:px-52" id="casas-de-praia">
+        <PropertySection
+          title="Casas de Praia"
+          description="Desfrute de nossas casas exclusivas na orla, perfeitas para quem busca tranquilidade e vista para o mar"
+          properties={beachhouses}
+          category="casas-de-praia"
+        />
+      </section>
+
+      <section className="md:px-52" id="pousadas">
+        <PropertySection
+          title="Pousadas"
+          description="Experimente a hospitalidade cearense em nossas pousadas aconchegantes com atendimento personalizado"
+          properties={inns}
+          category="pousadas"
+        />
+      </section>
+
+      <section className="md:px-52" id="apartamentos">
         <PropertySection
           title="Apartamentos"
           description=" Todos os nossos apartamentos modernos e confortáveis em localização privilegiada"
@@ -93,12 +122,21 @@ export default async function Home() {
         />
       </section>
 
-      <section id="casas">
+      <section className="md:px-52" id="casas">
         <PropertySection
           title="Casas"
           description="Todas as nossas casas espaçosas para você e sua família desfrutarem com total privacidade"
           properties={houses}
           category="casas"
+        />
+      </section>
+
+      <section className="md:px-52" id="flats">
+        <PropertySection
+          title="Flats"
+          description="Todos os nossos flats modernos e confortáveis em localização privilegiada"
+          properties={flats}
+          category="flats"
         />
       </section>
 
@@ -120,7 +158,7 @@ export default async function Home() {
       </section>
 
       {/* Novas Seções de Destaques por Tipo */}
-      <section id="casas-destaque">
+      <section className="md:px-52" id="casas-destaque">
         <PropertySection
           title="Destaque em: Casas"
           description="Nossos imóveis mais procurados pelos clientes em sua categoria"
@@ -129,7 +167,7 @@ export default async function Home() {
         />
       </section>
 
-      <section id="apartamentos-destaque">
+      <section className="md:px-52" id="apartamentos-destaque">
         <PropertySection
           title="Destaque em: Apartamentos"
           description="Nossos imóveis mais procurados pelos clientes em sua categoria"

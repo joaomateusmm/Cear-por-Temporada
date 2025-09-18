@@ -1,7 +1,19 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Camera, Loader, Plus, User, X } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  Camera,
+  Loader,
+  MapPin,
+  Palmtree,
+  Plus,
+  Trash2,
+  User,
+  Utensils,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -13,7 +25,13 @@ import * as z from "zod";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -37,7 +55,6 @@ import { getOwnerSession } from "@/lib/owner-session";
 import {
   getAmenities,
   getPropertyById,
-  getPropertyClasses,
   type PropertyFormData,
   updateProperty,
 } from "@/lib/property-actions";
@@ -66,22 +83,47 @@ const propertyFormSchema = z.object({
   parkingSpaces: z.number().min(0, "Número de vagas inválido").default(0),
   areaM2: z.number().default(0),
   allowsPets: z.boolean(),
-  propertyStyle: z.string().min(1, "Selecione o tipo do imóvel"),
-  propertyClasses: z
+  propertyStyle: z
     .array(z.string())
-    .min(1, "Selecione pelo menos uma classe"),
+    .min(1, "Selecione pelo menos um tipo do imóvel"),
   minimumStay: z.number().min(1, "Estadia mínima deve ser pelo menos 1 noite"),
   maximumStay: z.number().min(1, "Duração máxima deve ser pelo menos 1 dia"),
   checkInTime: z.string().optional(),
   checkOutTime: z.string().optional(),
 
-  // Preços
-  monthlyRent: z.number().min(0, "Valor mensal inválido").default(0),
-  dailyRate: z.number().min(0, "Valor da diária inválida").default(0),
-  condominiumFee: z.number().default(0),
-  iptuFee: z.number().default(0),
-  monthlyCleaningFee: z.number().default(0),
-  otherFees: z.number().default(0),
+  // Proximidades da região
+  nearbyPlaces: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        distance: z.string().min(1, "Distância é obrigatória"),
+      }),
+    )
+    .min(1, "Adicione pelo menos um local próximo"),
+  nearbyBeaches: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        distance: z.string().min(1, "Distância é obrigatória"),
+      }),
+    )
+    .min(1, "Adicione pelo menos uma praia próxima"),
+  nearbyAirports: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        distance: z.string().min(1, "Distância é obrigatória"),
+      }),
+    )
+    .min(1, "Adicione pelo menos um aeroporto próximo"),
+  nearbyRestaurants: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nome é obrigatório"),
+        distance: z.string().min(1, "Distância é obrigatória"),
+      }),
+    )
+    .min(1, "Adicione pelo menos um restaurante próximo"),
 
   // Serviços inclusos
   includesKitchenUtensils: z.boolean(),
@@ -105,17 +147,31 @@ const propertyFormSchema = z.object({
   // Comodidades e imagens
   amenities: z.array(z.number()).default([]),
   images: z.array(z.string()).default([]),
+
+  // Regras da Casa
+  checkInRule: z.string().optional(),
+  checkOutRule: z.string().optional(),
+  cancellationRule: z.string().optional(),
+  childrenRule: z.string().optional(),
+  bedsRule: z.string().optional(),
+  ageRestrictionRule: z.string().optional(),
+  groupsRule: z.string().optional(),
+
+  // Métodos de pagamento aceitos
+  acceptsVisa: z.boolean().default(false),
+  acceptsAmericanExpress: z.boolean().default(false),
+  acceptsMasterCard: z.boolean().default(false),
+  acceptsMaestro: z.boolean().default(false),
+  acceptsElo: z.boolean().default(false),
+  acceptsDinersClub: z.boolean().default(false),
+  acceptsPix: z.boolean().default(false),
+  acceptsCash: z.boolean().default(false),
 });
 
 interface Amenity {
   id: number;
   name: string;
   category: string;
-}
-
-interface PropertyClass {
-  id: number;
-  name: string;
 }
 
 interface OwnerSession {
@@ -136,7 +192,6 @@ export default function EditPropertyPage() {
 
   const [ownerData, setOwnerData] = useState<OwnerSession | null>(null);
   const [amenities, setAmenities] = useState<Amenity[]>([]);
-  const [propertyClasses, setPropertyClasses] = useState<PropertyClass[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedOwnerImage, setUploadedOwnerImage] = useState<string>("");
@@ -164,18 +219,15 @@ export default function EditPropertyPage() {
       parkingSpaces: 0,
       areaM2: 0,
       allowsPets: false,
-      propertyStyle: "",
-      propertyClasses: [],
+      propertyStyle: [""],
       minimumStay: 1,
       maximumStay: 365,
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      monthlyRent: 0,
-      dailyRate: 0,
-      condominiumFee: 0,
-      iptuFee: 0,
-      monthlyCleaningFee: 0,
-      otherFees: 0,
+      nearbyPlaces: [{ name: "", distance: "" }],
+      nearbyBeaches: [{ name: "", distance: "" }],
+      nearbyAirports: [{ name: "", distance: "" }],
+      nearbyRestaurants: [{ name: "", distance: "" }],
       includesKitchenUtensils: false,
       includesFurniture: false,
       includesElectricity: false,
@@ -193,6 +245,21 @@ export default function EditPropertyPage() {
       popularDestination: "",
       amenities: [],
       images: [],
+      checkInRule: "",
+      checkOutRule: "",
+      cancellationRule: "",
+      childrenRule: "",
+      bedsRule: "",
+      ageRestrictionRule: "",
+      groupsRule: "",
+      acceptsVisa: false,
+      acceptsAmericanExpress: false,
+      acceptsMasterCard: false,
+      acceptsMaestro: false,
+      acceptsElo: false,
+      acceptsDinersClub: false,
+      acceptsPix: false,
+      acceptsCash: false,
     },
   });
 
@@ -247,9 +314,8 @@ export default function EditPropertyPage() {
         }
 
         // Carregar dados necessários
-        const [amenitiesData, , propertyData] = await Promise.all([
+        const [amenitiesData, propertyData] = await Promise.all([
           getAmenities(),
-          getPropertyClasses(), // Carregado mas não utilizado localmente
           getPropertyById(propertyId),
         ]);
 
@@ -281,61 +347,125 @@ export default function EditPropertyPage() {
         form.setValue("parkingSpaces", propertyData.parkingSpaces);
         form.setValue("areaM2", parseFloat(propertyData.areaM2 || "0"));
         form.setValue("allowsPets", propertyData.allowsPets);
-        form.setValue("propertyStyle", propertyData.propertyStyle || "");
+        // Converter propertyStyle para array se for string
+        const propertyStyleValue = propertyData.propertyStyle || "";
+        form.setValue(
+          "propertyStyle",
+          propertyStyleValue ? [propertyStyleValue] : [],
+        );
         form.setValue("minimumStay", propertyData.minimumStay);
         form.setValue("maximumStay", propertyData.maximumStay || 365);
         form.setValue("checkInTime", propertyData.checkInTime || "14:00");
         form.setValue("checkOutTime", propertyData.checkOutTime || "11:00");
 
-        // Preencher preços
-        if (propertyData.pricing) {
+        // Preencher proximidades da região
+        if (propertyData.nearbyPlaces && propertyData.nearbyPlaces.length > 0) {
+          form.setValue("nearbyPlaces", propertyData.nearbyPlaces);
+        }
+        if (
+          propertyData.nearbyBeaches &&
+          propertyData.nearbyBeaches.length > 0
+        ) {
+          form.setValue("nearbyBeaches", propertyData.nearbyBeaches);
+        }
+        if (
+          propertyData.nearbyAirports &&
+          propertyData.nearbyAirports.length > 0
+        ) {
+          form.setValue("nearbyAirports", propertyData.nearbyAirports);
+        }
+        if (
+          propertyData.nearbyRestaurants &&
+          propertyData.nearbyRestaurants.length > 0
+        ) {
+          form.setValue("nearbyRestaurants", propertyData.nearbyRestaurants);
+        }
+
+        // Preencher serviços inclusos
+        form.setValue(
+          "includesKitchenUtensils",
+          propertyData.pricing?.includesKitchenUtensils || false,
+        );
+        form.setValue(
+          "includesFurniture",
+          propertyData.pricing?.includesFurniture || false,
+        );
+        form.setValue(
+          "includesElectricity",
+          propertyData.pricing?.includesElectricity || false,
+        );
+        form.setValue(
+          "includesInternet",
+          propertyData.pricing?.includesInternet || false,
+        );
+        form.setValue(
+          "includesLinens",
+          propertyData.pricing?.includesLinens || false,
+        );
+        form.setValue(
+          "includesWater",
+          propertyData.pricing?.includesWater || false,
+        );
+
+        // Preencher regras da casa
+        if (propertyData.houseRules) {
           form.setValue(
-            "monthlyRent",
-            parseFloat(propertyData.pricing.monthlyRent || "0"),
+            "checkInRule",
+            propertyData.houseRules.checkInRule || "",
           );
           form.setValue(
-            "dailyRate",
-            parseFloat(propertyData.pricing.dailyRate || "0"),
+            "checkOutRule",
+            propertyData.houseRules.checkOutRule || "",
           );
           form.setValue(
-            "condominiumFee",
-            parseFloat(propertyData.pricing.condominiumFee || "0"),
+            "cancellationRule",
+            propertyData.houseRules.cancellationRule || "",
           );
           form.setValue(
-            "iptuFee",
-            parseFloat(propertyData.pricing.iptuFee || "0"),
+            "childrenRule",
+            propertyData.houseRules.childrenRule || "",
+          );
+          form.setValue("bedsRule", propertyData.houseRules.bedsRule || "");
+          form.setValue(
+            "ageRestrictionRule",
+            propertyData.houseRules.ageRestrictionRule || "",
+          );
+          form.setValue("groupsRule", propertyData.houseRules.groupsRule || "");
+        }
+
+        // Preencher métodos de pagamento
+        if (propertyData.paymentMethods) {
+          form.setValue(
+            "acceptsVisa",
+            propertyData.paymentMethods.acceptsVisa || false,
           );
           form.setValue(
-            "monthlyCleaningFee",
-            parseFloat(propertyData.pricing.monthlyCleaningFee || "0"),
+            "acceptsAmericanExpress",
+            propertyData.paymentMethods.acceptsAmericanExpress || false,
           );
           form.setValue(
-            "otherFees",
-            parseFloat(propertyData.pricing.otherFees || "0"),
+            "acceptsMasterCard",
+            propertyData.paymentMethods.acceptsMasterCard || false,
           );
           form.setValue(
-            "includesKitchenUtensils",
-            propertyData.pricing.includesKitchenUtensils || false,
+            "acceptsMaestro",
+            propertyData.paymentMethods.acceptsMaestro || false,
           );
           form.setValue(
-            "includesFurniture",
-            propertyData.pricing.includesFurniture || false,
+            "acceptsElo",
+            propertyData.paymentMethods.acceptsElo || false,
           );
           form.setValue(
-            "includesElectricity",
-            propertyData.pricing.includesElectricity || false,
+            "acceptsDinersClub",
+            propertyData.paymentMethods.acceptsDinersClub || false,
           );
           form.setValue(
-            "includesInternet",
-            propertyData.pricing.includesInternet || false,
+            "acceptsPix",
+            propertyData.paymentMethods.acceptsPix || false,
           );
           form.setValue(
-            "includesLinens",
-            propertyData.pricing.includesLinens || false,
-          );
-          form.setValue(
-            "includesWater",
-            propertyData.pricing.includesWater || false,
+            "acceptsCash",
+            propertyData.paymentMethods.acceptsCash || false,
           );
         }
 
@@ -363,16 +493,17 @@ export default function EditPropertyPage() {
 
         // Preencher comodidades
         const amenityIds =
-          propertyData.amenities?.map((a) => a.amenityId) || [];
+          propertyData.amenities?.map(
+            (a: { amenityId: number }) => a.amenityId,
+          ) || [];
         setSelectedAmenities(amenityIds);
         form.setValue("amenities", amenityIds);
 
-        // Preencher classes
-        const classIds = propertyData.classes?.map((c) => c.classId) || [];
-        form.setValue("propertyClasses", classIds.map(String));
-
         // Preencher imagens
-        const imageUrls = propertyData.images?.map((img) => img.imageUrl) || [];
+        const imageUrls =
+          propertyData.images?.map(
+            (img: { imageUrl: string }) => img.imageUrl,
+          ) || [];
         setUploadedImages(imageUrls);
         form.setValue("images", imageUrls);
 
@@ -407,13 +538,8 @@ export default function EditPropertyPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [amenitiesData, propertyClassesData] = await Promise.all([
-          getAmenities(),
-          getPropertyClasses(),
-        ]);
-
+        const amenitiesData = await getAmenities();
         setAmenities(amenitiesData);
-        setPropertyClasses(propertyClassesData);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast.error("Erro ao carregar dados necessários");
@@ -585,12 +711,19 @@ export default function EditPropertyPage() {
         parkingSpaces: values.parkingSpaces || 0,
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
-        propertyStyle: values.propertyStyle,
-        propertyClasses: values.propertyClasses,
+        propertyStyle: values.propertyStyle.join(", "),
+        propertyClasses: ["1"], // Sempre usar classe "Normal" (ID 1)
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
         checkOutTime: values.checkOutTime,
+
+        // Proximidades da região
+        nearbyPlaces: values.nearbyPlaces,
+        nearbyBeaches: values.nearbyBeaches,
+        nearbyAirports: values.nearbyAirports,
+        nearbyRestaurants: values.nearbyRestaurants,
+
         includesKitchenUtensils: values.includesKitchenUtensils,
         includesFurniture: values.includesFurniture,
         includesElectricity: values.includesElectricity,
@@ -607,6 +740,25 @@ export default function EditPropertyPage() {
         longitude: values.longitude,
         popularDestination: values.popularDestination,
         amenities: selectedAmenities,
+
+        // Regras da Casa
+        checkInRule: values.checkInRule,
+        checkOutRule: values.checkOutRule,
+        cancellationRule: values.cancellationRule,
+        childrenRule: values.childrenRule,
+        bedsRule: values.bedsRule,
+        ageRestrictionRule: values.ageRestrictionRule,
+        groupsRule: values.groupsRule,
+
+        // Métodos de pagamento aceitos
+        acceptsVisa: values.acceptsVisa,
+        acceptsAmericanExpress: values.acceptsAmericanExpress,
+        acceptsMasterCard: values.acceptsMasterCard,
+        acceptsMaestro: values.acceptsMaestro,
+        acceptsElo: values.acceptsElo,
+        acceptsDinersClub: values.acceptsDinersClub,
+        acceptsPix: values.acceptsPix,
+        acceptsCash: values.acceptsCash,
         images: uploadedImages,
       };
 
@@ -845,7 +997,13 @@ export default function EditPropertyPage() {
     {} as Record<string, typeof amenities>,
   );
 
-  const propertyStyleOptions = ["Casa", "Apartamento"];
+  const propertyStyleOptions = [
+    "Apartamento",
+    "Casa",
+    "Casa de Praia",
+    "Flats",
+    "Pousada",
+  ];
 
   return (
     <>
@@ -1093,7 +1251,7 @@ export default function EditPropertyPage() {
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="md:col-span-2">
                             <FormLabel className="text-slate-300">
                               Título do Imóvel *
                             </FormLabel>
@@ -1113,92 +1271,73 @@ export default function EditPropertyPage() {
                         control={form.control}
                         name="propertyStyle"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="md:col-span-2">
                             <FormLabel className="text-slate-300">
-                              Tipo do Imóvel *
+                              Tipos do Imóvel *
                             </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-100">
-                                  <SelectValue placeholder="Selecione o tipo" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="border-slate-600 bg-slate-700 text-slate-100">
-                                {propertyStyleOptions.map((type) => (
-                                  <SelectItem
-                                    key={type}
-                                    value={type}
-                                    className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
+                            <div className="space-y-4">
+                              {field.value.map((style, index) => (
+                                <div key={index} className="flex gap-2">
+                                  <Select
+                                    value={style}
+                                    onValueChange={(value) => {
+                                      const newStyles = [...field.value];
+                                      newStyles[index] = value;
+                                      field.onChange(newStyles);
+                                    }}
                                   >
-                                    {type}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                                    <FormControl>
+                                      <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-100">
+                                        <SelectValue placeholder="Selecione o tipo" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="border-slate-600 bg-slate-700 text-slate-100">
+                                      {propertyStyleOptions.map((type) => (
+                                        <SelectItem
+                                          key={type}
+                                          value={type}
+                                          className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
+                                        >
+                                          {type}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  {field.value.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newStyles = field.value.filter(
+                                          (_, i) => i !== index,
+                                        );
+                                        field.onChange(newStyles);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-red-600"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([...field.value, ""]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Tipo
+                              </Button>
+                            </div>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-
-                    {/* <FormField
-                      control={form.control}
-                      name="propertyClasses"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">
-                            Classes do Imóvel *
-                          </FormLabel>
-                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                            {propertyClasses.map((propertyClass) => (
-                              <FormField
-                                key={propertyClass.id}
-                                control={form.control}
-                                name="propertyClasses"
-                                render={({ field }) => {
-                                  return (
-                                    <FormItem
-                                      key={propertyClass.id}
-                                      className="flex flex-row items-start space-y-0 space-x-3"
-                                    >
-                                      <FormControl>
-                                        <Checkbox
-                                          checked={field.value?.includes(
-                                            propertyClass.id.toString(),
-                                          )}
-                                          onCheckedChange={(checked) => {
-                                            return checked
-                                              ? field.onChange([
-                                                  ...field.value,
-                                                  propertyClass.id.toString(),
-                                                ])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) =>
-                                                      value !==
-                                                      propertyClass.id.toString(),
-                                                  ),
-                                                );
-                                          }}
-                                          className="border-slate-600 data-[state=checked]:bg-blue-600"
-                                        />
-                                      </FormControl>
-                                      <FormLabel className="text-sm font-normal text-slate-300">
-                                        {propertyClass.name}
-                                      </FormLabel>
-                                    </FormItem>
-                                  );
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    /> */}
 
                     <FormField
                       control={form.control}
@@ -1493,190 +1632,6 @@ export default function EditPropertyPage() {
                                 Aceita Pets
                               </FormLabel>
                             </div>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Preços */}
-                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-semibold text-slate-100">
-                      Preços e Tarifas
-                    </CardTitle>
-                    <span className="text-sm text-gray-200">
-                      Configure os valores de aluguel, taxas e serviços
-                      inclusos.
-                    </span>
-                  </CardHeader>
-                  <CardContent className="space-y-6 p-6">
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="monthlyRent"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Valor Mensal (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="dailyRate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Valor da Diária (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="condominiumFee"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Taxa de Condomínio (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="iptuFee"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              IPTU (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="monthlyCleaningFee"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Taxa de Limpeza Mensal (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="otherFees"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Outras Taxas (R$)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="0.00"
-                              />
-                            </FormControl>
-                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -2176,96 +2131,6 @@ export default function EditPropertyPage() {
                   </CardContent>
                 </Card>
 
-                {/* Classes do Imóvel */}
-                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-semibold text-slate-100">
-                      Classes do Imóvel
-                    </CardTitle>
-                    <span className="text-sm text-gray-200">
-                      Selecione as classes que se aplicam ao imóvel.
-                    </span>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <FormField
-                      control={form.control}
-                      name="propertyClasses"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">
-                            Classes do Imóvel *
-                          </FormLabel>
-                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                            {propertyClasses.map((propertyClass) => {
-                              // Verificar se é uma classe de destaque (apenas para admins)
-                              const isHighlightClass = [
-                                "Imóvel em Destaque",
-                                "Destaque em Casas",
-                                "Destaque em Apartamentos",
-                              ].includes(propertyClass.name);
-
-                              return (
-                                <FormField
-                                  key={propertyClass.id}
-                                  control={form.control}
-                                  name="propertyClasses"
-                                  render={({ field }) => {
-                                    return (
-                                      <FormItem
-                                        key={propertyClass.id}
-                                        className="flex flex-row items-start space-y-0 space-x-3"
-                                      >
-                                        <FormControl>
-                                          <Checkbox
-                                            disabled={isHighlightClass}
-                                            checked={field.value?.includes(
-                                              propertyClass.id.toString(),
-                                            )}
-                                            onCheckedChange={(checked) => {
-                                              return checked
-                                                ? field.onChange([
-                                                    ...field.value,
-                                                    propertyClass.id.toString(),
-                                                  ])
-                                                : field.onChange(
-                                                    field.value?.filter(
-                                                      (value) =>
-                                                        value !==
-                                                        propertyClass.id.toString(),
-                                                    ),
-                                                  );
-                                            }}
-                                            className="border-slate-600 data-[state=checked]:bg-blue-600"
-                                          />
-                                        </FormControl>
-                                        <FormLabel
-                                          className={`text-sm font-normal ${
-                                            isHighlightClass
-                                              ? "text-slate-500"
-                                              : "text-slate-300"
-                                          }`}
-                                        >
-                                          {propertyClass.name}
-                                          {isHighlightClass && (
-                                            <span className="ml-2 text-xs text-slate-500">
-                                              (Apenas Admins)
-                                            </span>
-                                          )}
-                                        </FormLabel>
-                                      </FormItem>
-                                    );
-                                  }}
-                                />
-                              );
-                            })}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CardContent>
-                </Card>
-
                 {/* Comodidades */}
                 <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
                   <CardHeader>
@@ -2312,6 +2177,671 @@ export default function EditPropertyPage() {
                           </div>
                         ),
                       )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Proximidades da Região */}
+                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-semibold text-slate-100">
+                      Proximidades da Região
+                    </CardTitle>
+                    <span className="text-sm text-gray-200">
+                      Configure os locais próximos ao imóvel para cada
+                      categoria. É obrigatório adicionar pelo menos um local em
+                      cada seção.
+                    </span>
+                  </CardHeader>
+                  <CardContent className="space-y-8 p-6">
+                    {/* O que há por perto? */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <MapPin className="h-5 w-5" />O que há por perto?
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyPlaces"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((place, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do local (ex: Centro da cidade)"
+                                      value={place.name}
+                                      onChange={(e) => {
+                                        const newPlaces = [...field.value];
+                                        newPlaces[index].name = e.target.value;
+                                        field.onChange(newPlaces);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 2,5 km)"
+                                      value={place.distance}
+                                      onChange={(e) => {
+                                        const newPlaces = [...field.value];
+                                        newPlaces[index].distance =
+                                          e.target.value;
+                                        field.onChange(newPlaces);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newPlaces = field.value.filter(
+                                            (_, i) => i !== index,
+                                          );
+                                          field.onChange(newPlaces);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Local
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Praias na vizinhança */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Palmtree className="h-5 w-5" />
+                        Praias na vizinhança
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyBeaches"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((beach, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome da praia (ex: Praia de Iracema)"
+                                      value={beach.name}
+                                      onChange={(e) => {
+                                        const newBeaches = [...field.value];
+                                        newBeaches[index].name = e.target.value;
+                                        field.onChange(newBeaches);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 2,1 km)"
+                                      value={beach.distance}
+                                      onChange={(e) => {
+                                        const newBeaches = [...field.value];
+                                        newBeaches[index].distance =
+                                          e.target.value;
+                                        field.onChange(newBeaches);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newBeaches = field.value.filter(
+                                            (_, i) => i !== index,
+                                          );
+                                          field.onChange(newBeaches);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Praia
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Aeroportos mais próximos */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Building2 className="h-5 w-5" />
+                        Aeroportos mais próximos
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyAirports"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((airport, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do aeroporto (ex: Aeroporto Internacional Pinto Martins)"
+                                      value={airport.name}
+                                      onChange={(e) => {
+                                        const newAirports = [...field.value];
+                                        newAirports[index].name =
+                                          e.target.value;
+                                        field.onChange(newAirports);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 15 km)"
+                                      value={airport.distance}
+                                      onChange={(e) => {
+                                        const newAirports = [...field.value];
+                                        newAirports[index].distance =
+                                          e.target.value;
+                                        field.onChange(newAirports);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newAirports =
+                                            field.value.filter(
+                                              (_, i) => i !== index,
+                                            );
+                                          field.onChange(newAirports);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Aeroporto
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Restaurantes e cafés */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Utensils className="h-5 w-5" />
+                        Restaurantes e cafés
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyRestaurants"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((restaurant, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do restaurante (ex: Restaurante Vila Azul)"
+                                      value={restaurant.name}
+                                      onChange={(e) => {
+                                        const newRestaurants = [...field.value];
+                                        newRestaurants[index].name =
+                                          e.target.value;
+                                        field.onChange(newRestaurants);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 650 m)"
+                                      value={restaurant.distance}
+                                      onChange={(e) => {
+                                        const newRestaurants = [...field.value];
+                                        newRestaurants[index].distance =
+                                          e.target.value;
+                                        field.onChange(newRestaurants);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newRestaurants =
+                                            field.value.filter(
+                                              (_, i) => i !== index,
+                                            );
+                                          field.onChange(newRestaurants);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Restaurante
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Regras da Casa */}
+                <Card className="border-slate-700/50 bg-slate-800/80 shadow-xl transition-all">
+                  <CardHeader className="pb-6">
+                    <CardTitle className="text-start text-2xl font-bold text-slate-100">
+                      Regras da Casa
+                    </CardTitle>
+                    <CardDescription className="text-start text-slate-100">
+                      Defina as regras específicas para seu imóvel. Estes campos
+                      são opcionais. Você não precisa preencher todos.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 pt-6">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {/* Entrada (Check-in) */}
+                      <FormField
+                        control={form.control}
+                        name="checkInRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Entrada (Check-in)
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Check-in a partir das 15:00. Apresentar documento de identificação."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Saída (Check-out) */}
+                      <FormField
+                        control={form.control}
+                        name="checkOutRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Saída (Check-out)
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Check-out até às 11:00. Deixar as chaves na portaria."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Cancelamento/Pré-pagamento */}
+                      <FormField
+                        control={form.control}
+                        name="cancellationRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Cancelamento/Pré-pagamento
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Cancelamento gratuito até 7 dias antes da chegada. Pagamento 50% na reserva."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Crianças */}
+                      <FormField
+                        control={form.control}
+                        name="childrenRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Crianças
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Crianças de todas as idades são bem-vindas. Berços disponíveis mediante solicitação."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Camas */}
+                      <FormField
+                        control={form.control}
+                        name="bedsRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Camas e Berços
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Camas extras não disponíveis. Berços disponíveis de 0 a 3 anos."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Restrição de idade */}
+                      <FormField
+                        control={form.control}
+                        name="ageRestrictionRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Restrição de Idade
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Idade mínima para check-in: 18 anos. Menores devem estar acompanhados."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Grupos */}
+                      <FormField
+                        control={form.control}
+                        name="groupsRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Grupos e Festas
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Festas não são permitidas. Grupos de até 8 pessoas são bem-vindos."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Métodos de Pagamento Aceitos */}
+                    <div className="mt-8 space-y-4">
+                      <h3 className="text-lg font-semibold text-slate-200">
+                        Métodos de Pagamento Aceitos
+                      </h3>
+                      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        <FormField
+                          control={form.control}
+                          name="acceptsVisa"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Visa
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsAmericanExpress"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                American Express
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsMasterCard"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Master Card
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsMaestro"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Maestro
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsElo"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Elo
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsDinersClub"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Diners Club
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsPix"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Pix
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="acceptsCash"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal text-slate-300">
+                                Dinheiro
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

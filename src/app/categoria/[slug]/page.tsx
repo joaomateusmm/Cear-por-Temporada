@@ -1,27 +1,35 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 import Footer from "@/components/Footer";
 import PropertyCatalog from "@/components/PropertyCatalog";
 import ScrollingHeader from "@/components/ScrollingHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { getAllProperties, PropertyWithDetails } from "@/lib/get-properties";
 
 // Mapeamento de categorias
 const categoryConfig = {
   casas: {
-    title: "Todas as Casas",
+    title: "Casas",
     description:
       "Descubra todas as casas disponíveis para aluguel por temporada no Ceará",
     filter: "casa",
   },
   apartamentos: {
-    title: "Todos os Apartamentos",
+    title: "Apartamentos",
     description:
       "Encontre todos os apartamentos disponíveis para aluguel por temporada no Ceará",
     filter: "apartamento",
@@ -47,13 +55,60 @@ const categoryConfig = {
   },
 };
 
+// Lista de destinos populares para filtro
+const popularDestinations = [
+  "Fortaleza",
+  "Jericoacoara",
+  "Canoa Quebrada",
+  "Praia de Picos",
+  "Morro Branco",
+  "Águas Belas",
+  "Cumbuco",
+  "Beach Park",
+];
+
 function CategoryContent() {
   const params = useParams();
   const slug = params.slug as string;
   const [properties, setProperties] = useState<PropertyWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedDestinations, setSelectedDestinations] = useState<string[]>(
+    [],
+  );
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // A-Z por padrão
 
   const config = categoryConfig[slug as keyof typeof categoryConfig];
+
+  // Função para alternar filtro de destino
+  const toggleDestination = (destination: string) => {
+    setSelectedDestinations((prev) =>
+      prev.includes(destination)
+        ? prev.filter((d) => d !== destination)
+        : [...prev, destination],
+    );
+  };
+
+  // Função para alternar ordem alfabética
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  // Função para ordenar propriedades alfabeticamente
+  const sortProperties = useCallback(
+    (properties: PropertyWithDetails[]) => {
+      return [...properties].sort((a, b) => {
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+
+        if (sortOrder === "asc") {
+          return titleA.localeCompare(titleB);
+        } else {
+          return titleB.localeCompare(titleA);
+        }
+      });
+    },
+    [sortOrder],
+  );
 
   useEffect(() => {
     async function loadProperties() {
@@ -70,6 +125,18 @@ function CategoryContent() {
           );
         }
 
+        // Filtrar por destinos selecionados
+        if (selectedDestinations.length > 0) {
+          filteredProperties = filteredProperties.filter(
+            (property: PropertyWithDetails) =>
+              selectedDestinations.some((destination) =>
+                property.location?.popularDestination
+                  ?.toLowerCase()
+                  .includes(destination.toLowerCase()),
+              ),
+          );
+        }
+
         // Filtrar por destaque se especificado
         if (config && "featured" in config && config.featured) {
           // Aqui você pode implementar a lógica de destaque
@@ -77,7 +144,10 @@ function CategoryContent() {
           filteredProperties = filteredProperties.slice(0, 20); // Exemplo: primeiros 20
         }
 
-        setProperties(filteredProperties);
+        // Aplicar ordenação alfabética
+        const sortedProperties = sortProperties(filteredProperties);
+
+        setProperties(sortedProperties);
       } catch (error) {
         console.error("Erro ao carregar propriedades:", error);
         setProperties([]);
@@ -89,7 +159,7 @@ function CategoryContent() {
     if (config) {
       loadProperties();
     }
-  }, [slug, config]);
+  }, [slug, config, selectedDestinations, sortOrder, sortProperties]);
 
   if (!config) {
     return (
@@ -118,7 +188,7 @@ function CategoryContent() {
       <ScrollingHeader />
 
       {/* Results Section */}
-      <section className="py-12">
+      <section className="md:px-52 py-12">
         <div className="container mx-auto px-4">
           <div className="flex justify-between">
             <div className="mt-10 mb-8 flex items-center justify-start gap-4">
@@ -135,19 +205,68 @@ function CategoryContent() {
                     : `${properties.length} imóveis disponíveis`}
                 </h2>
                 <p className="text-gray-600">
-                  Aqui está todos os imóveis nessa categoria.
+                  Aqui estão todos os imóveis na categoria &ldquo;{config.title}
+                  &rdquo;.
                 </p>
               </div>
             </div>
-            {/* <div className="mt-10 mb-8 flex items-center justify-start gap-4">
-              <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
-                <ArrowLeft className="h-4 w-4" />
-                Filtros
+            <div className="mt-10 mb-8 flex items-center justify-start gap-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Filtros{" "}
+                    {selectedDestinations.length > 0 &&
+                      `(${selectedDestinations.length})`}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56">
+                  <DropdownMenuLabel>Filtrar por Destino</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <div className="space-y-2 p-2">
+                    {popularDestinations.map((destination) => (
+                      <div
+                        key={destination}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={destination}
+                          checked={selectedDestinations.includes(destination)}
+                          onCheckedChange={() => toggleDestination(destination)}
+                        />
+                        <label
+                          htmlFor={destination}
+                          className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {destination}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  {selectedDestinations.length > 0 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <div className="p-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setSelectedDestinations([])}
+                        >
+                          Limpar Filtros
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button
+                className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95"
+                onClick={toggleSortOrder}
+              >
+                {sortOrder === "asc" ? "A - Z" : "Z - A"}
               </Button>
-              <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
-                A - Z
-              </Button>
-            </div> */}
+            </div>
           </div>
 
           {isLoading ? (

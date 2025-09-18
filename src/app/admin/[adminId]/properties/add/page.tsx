@@ -235,7 +235,13 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     }
   };
 
-  const propertyTypes = ["Apartamento", "Casa"];
+  const propertyTypes = [
+    "Apartamento",
+    "Casa",
+    "Casa de Praia",
+    "Flats",
+    "Pousada",
+  ];
 
   // Lista completa dos 184 municípios do Ceará
   const cearaMunicipalities = [

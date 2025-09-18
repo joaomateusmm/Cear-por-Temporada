@@ -54,7 +54,6 @@ import { getOwnerSession } from "@/lib/owner-session";
 import {
   createProperty,
   getAmenities,
-  getPropertyClasses,
   type PropertyFormData,
 } from "@/lib/property-actions";
 
@@ -82,10 +81,9 @@ const propertyFormSchema = z.object({
   parkingSpaces: z.number().min(0, "Número de vagas inválido").default(0),
   areaM2: z.number().default(0),
   allowsPets: z.boolean(),
-  propertyStyle: z.string().min(1, "Selecione o tipo do imóvel"),
-  propertyClasses: z
+  propertyStyle: z
     .array(z.string())
-    .min(1, "Selecione pelo menos uma classe"),
+    .min(1, "Selecione pelo menos um tipo do imóvel"),
   minimumStay: z.number().min(1, "Estadia mínima deve ser pelo menos 1 noite"),
   maximumStay: z.number().min(1, "Duração máxima deve ser pelo menos 1 dia"),
   checkInTime: z.string().optional(),
@@ -174,11 +172,6 @@ interface Amenity {
   category: string;
 }
 
-interface PropertyClass {
-  id: number;
-  name: string;
-}
-
 interface OwnerSession {
   userId: string;
   fullName: string;
@@ -196,7 +189,6 @@ export default function AddPropertyPage() {
 
   const [ownerData, setOwnerData] = useState<OwnerSession | null>(null);
   const [amenities, setAmenities] = useState<Amenity[]>([]);
-  const [propertyClasses, setPropertyClasses] = useState<PropertyClass[]>([]);
   const [selectedAmenities, setSelectedAmenities] = useState<number[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedOwnerImage, setUploadedOwnerImage] = useState<string>("");
@@ -222,8 +214,7 @@ export default function AddPropertyPage() {
       parkingSpaces: 0,
       areaM2: 0,
       allowsPets: false,
-      propertyStyle: "",
-      propertyClasses: [],
+      propertyStyle: [""],
       minimumStay: 1,
       maximumStay: 365,
       checkInTime: "14:00",
@@ -362,21 +353,8 @@ export default function AddPropertyPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [amenitiesData, propertyClassesData] = await Promise.all([
-          getAmenities(),
-          getPropertyClasses(),
-        ]);
-
+        const amenitiesData = await getAmenities();
         setAmenities(amenitiesData);
-        setPropertyClasses(propertyClassesData);
-
-        // Marcar "Normal" como padrão selecionado
-        const normalClass = propertyClassesData.find(
-          (cls) => cls.name === "Normal",
-        );
-        if (normalClass) {
-          form.setValue("propertyClasses", [normalClass.id.toString()]);
-        }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         toast.error("Erro ao carregar dados necessários");
@@ -535,8 +513,8 @@ export default function AddPropertyPage() {
         parkingSpaces: values.parkingSpaces || 0,
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
-        propertyStyle: values.propertyStyle,
-        propertyClasses: values.propertyClasses,
+        propertyStyle: values.propertyStyle.join(", "), // Converter array para string
+        propertyClasses: ["1"], // Sempre usar classe "Normal" (ID 1)
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
@@ -632,7 +610,13 @@ export default function AddPropertyPage() {
     "Outros",
   ];
 
-  const propertyStyleOptions = ["Casa", "Apartamento"];
+  const propertyStyleOptions = [
+    "Apartamento",
+    "Casa",
+    "Casa de Praia",
+    "Flats",
+    "Pousada",
+  ];
 
   // Lista completa dos 184 municípios do Ceará
   const cearaMunicipalities = [
@@ -1100,116 +1084,76 @@ export default function AddPropertyPage() {
                         control={form.control}
                         name="propertyStyle"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="md:col-span-2">
                             <FormLabel className="text-slate-300">
-                              Tipo do Imóvel *
+                              Tipos do Imóvel *
                             </FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
-                                  <SelectValue
-                                    className="text-slate-300"
-                                    placeholder="Selecione o tipo"
-                                  />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className="border-slate-600 bg-slate-700 text-slate-300">
-                                {propertyStyleOptions.map((type) => (
-                                  <SelectItem
-                                    key={type}
-                                    value={type}
-                                    className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
+                            <div className="space-y-4">
+                              {field.value.map((style, index) => (
+                                <div key={index} className="flex gap-2">
+                                  <Select
+                                    value={style}
+                                    onValueChange={(value) => {
+                                      const newStyles = [...field.value];
+                                      newStyles[index] = value;
+                                      field.onChange(newStyles);
+                                    }}
                                   >
-                                    {type}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                                    <FormControl>
+                                      <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
+                                        <SelectValue
+                                          className="text-slate-300"
+                                          placeholder="Selecione o tipo"
+                                        />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="border-slate-600 bg-slate-700 text-slate-300">
+                                      {propertyStyleOptions.map((type) => (
+                                        <SelectItem
+                                          key={type}
+                                          value={type}
+                                          className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
+                                        >
+                                          {type}
+                                        </SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                  {field.value.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newStyles = field.value.filter(
+                                          (_, i) => i !== index,
+                                        );
+                                        field.onChange(newStyles);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-red-600"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([...field.value, ""]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Tipo
+                              </Button>
+                            </div>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
-
-                    <FormField
-                      control={form.control}
-                      name="propertyClasses"
-                      render={() => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">
-                            Classes do Imóvel *
-                          </FormLabel>
-                          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                            {propertyClasses.map((propertyClass) => {
-                              // Verificar se é uma classe de destaque (apenas para admins)
-                              const isHighlightClass = [
-                                "Imóvel em Destaque",
-                                "Destaque em Casas",
-                                "Destaque em Apartamentos",
-                              ].includes(propertyClass.name);
-
-                              return (
-                                <FormField
-                                  key={propertyClass.id}
-                                  control={form.control}
-                                  name="propertyClasses"
-                                  render={({ field }) => {
-                                    return (
-                                      <FormItem
-                                        key={propertyClass.id}
-                                        className="flex flex-row items-start space-y-0 space-x-3"
-                                      >
-                                        <FormControl>
-                                          <Checkbox
-                                            disabled={isHighlightClass}
-                                            checked={field.value?.includes(
-                                              propertyClass.id.toString(),
-                                            )}
-                                            onCheckedChange={(checked) => {
-                                              return checked
-                                                ? field.onChange([
-                                                    ...field.value,
-                                                    propertyClass.id.toString(),
-                                                  ])
-                                                : field.onChange(
-                                                    field.value?.filter(
-                                                      (value) =>
-                                                        value !==
-                                                        propertyClass.id.toString(),
-                                                    ),
-                                                  );
-                                            }}
-                                            className="border-slate-600 data-[state=checked]:bg-blue-600"
-                                          />
-                                        </FormControl>
-                                        <FormLabel
-                                          className={`text-sm font-normal ${
-                                            isHighlightClass
-                                              ? "text-slate-500"
-                                              : "text-slate-300"
-                                          }`}
-                                        >
-                                          {propertyClass.name}
-                                          {isHighlightClass && (
-                                            <span className="ml-2 text-xs text-slate-500">
-                                              (Apenas Admins)
-                                            </span>
-                                          )}
-                                        </FormLabel>
-                                      </FormItem>
-                                    );
-                                  }}
-                                />
-                              );
-                            })}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
                     <FormField
                       control={form.control}

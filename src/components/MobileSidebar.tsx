@@ -166,10 +166,28 @@ export function MobileSidebar({
                     Todos
                   </Link>
                   <Link
-                      href="/categoria/casas"
+                    href="/categoria/casas"
+                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                  >
+                    Casas
+                  </Link>
+                  <Link
+                    href="/categoria/casas-de-praia"
+                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                  >
+                    Casas de praia
+                  </Link>
+                  <Link
+                      href="/categoria/flats"
                       className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
                     >
-                      Casas
+                      Flats
+                    </Link>
+                    <Link
+                      href="/categoria/pousadas"
+                      className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                    >
+                      Pousadas
                     </Link>
                   <Link
                     href="/categoria/apartamentos"
@@ -191,11 +209,11 @@ export function MobileSidebar({
                     Casas em Destaque
                   </Link>
                   <Link
-                  href="/categoria/apartamentos-destaque"
-                  className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
-                >
-                  Apartamentos em Destaque
-                </Link>
+                    href="/categoria/apartamentos-destaque"
+                    className="block rounded-md px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 hover:text-[#101828]"
+                  >
+                    Apartamentos em Destaque
+                  </Link>
                 </CollapsibleContent>
               </Collapsible>
             </div>
