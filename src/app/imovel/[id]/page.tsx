@@ -1402,255 +1402,297 @@ export default function PropertyPage() {
         )}
 
         {/* Regras da Casa */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-900">
-              Regras da Casa
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {/* Entrada */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <DoorOpen className="h-4 w-4 text-gray-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Entrada</h4>
-                    <p className="text-sm font-medium text-gray-700">
-                      Das 16:00 às 00:00
-                    </p>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    Os hóspedes devem apresentar um documento com foto e cartão
-                    de crédito no momento do check-in.
-                  </p>
-                </div>
-              </div>
-
-              {/* Saída */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <LogOut className="h-4 w-4 text-gray-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Saída</h4>
-                    <p className="text-sm font-medium text-gray-700">
-                      Até 11:00
-                    </p>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    Checkout deve ser realizado até às 11:00 da manhã.
-                  </p>
-                </div>
-              </div>
-
-              {/* Cancelamento/pré-pagamento */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <BanknoteX className="h-4 w-4 text-gray-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      Cancelamento/ pré-pagamento
-                    </h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    As políticas de cancelamento e pré-pagamento variam de
-                    acordo com o tipo de acomodação. Por favor, verifique quais
-                    condições se aplicam a cada opção quando fizer sua escolha.
-                  </p>
-                </div>
-              </div>
-
-              {/* Crianças e camas */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <Baby className="h-4 w-4 text-gray-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Crianças</h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <div className="space-y-3">
-                    <div>
-                      <p className="mb-1 text-sm font-medium text-gray-900">
-                        Políticas para crianças
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Crianças de qualquer idade são bem-vindas.
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Crianças de 0 a 12 anos não pagam taxa alguma.
-                      </p>
+        {(property.houseRules &&
+          (property.houseRules.checkInRule ||
+            property.houseRules.checkOutRule ||
+            property.houseRules.cancellationRule ||
+            property.houseRules.childrenRule ||
+            property.houseRules.bedsRule ||
+            property.houseRules.ageRestrictionRule ||
+            property.houseRules.groupsRule)) ||
+        (property.paymentMethods &&
+          (property.paymentMethods.acceptsVisa ||
+            property.paymentMethods.acceptsAmericanExpress ||
+            property.paymentMethods.acceptsMasterCard ||
+            property.paymentMethods.acceptsMaestro ||
+            property.paymentMethods.acceptsElo ||
+            property.paymentMethods.acceptsDinersClub ||
+            property.paymentMethods.acceptsPix ||
+            property.paymentMethods.acceptsCash)) ? (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="text-xl text-gray-900">
+                Regras da Casa
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Entrada */}
+                {property.houseRules?.checkInRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <DoorOpen className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Entrada</h4>
+                        {property.checkInTime && (
+                          <p className="text-sm font-medium text-gray-700">
+                            A partir das {property.checkInTime}
+                          </p>
+                        )}
+                      </div>
                     </div>
-
-                    <div>
-                      <p className="mb-2 text-sm font-medium text-gray-900">
-                        Políticas para berços
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        De 0 a 2 anos de idade é permitido a solicitação de
-                        berços.
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        Berços não estão inclusos na taxa geral e terá que ser
-                        pago por fora.
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.checkInRule}
                       </p>
                     </div>
                   </div>
-                </div>
-              </div>
+                )}
 
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <Bed className="h-4 w-4 text-gray-800" />
+                {/* Saída */}
+                {property.houseRules?.checkOutRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <LogOut className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Saída</h4>
+                        {property.checkOutTime && (
+                          <p className="text-sm font-medium text-gray-700">
+                            Até {property.checkOutTime}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.checkOutRule}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Camas</h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    Não há camas extras disponíveis nesta acomodação.
-                  </p>
-                </div>
-              </div>
+                )}
 
-              {/*  restrições de idade */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <Album className="h-4 w-4 text-gray-800" />
+                {/* Cancelamento/pré-pagamento */}
+                {property.houseRules?.cancellationRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <BanknoteX className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Cancelamento/ pré-pagamento
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.cancellationRule}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      Restrições de idade
-                    </h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    Não há exigência de idade para o check-in.
-                  </p>
-                </div>
-              </div>
+                )}
 
-              {/* Grupos */}
-              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <Users className="h-4 w-4 text-gray-800" />
+                {/* Crianças */}
+                {property.houseRules?.childrenRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Baby className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Crianças
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.childrenRule}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">Grupos</h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    Se a reserva for para mais de 4 quartos, políticas
-                    diferenciadas e taxas adicionais podem ser aplicadas.
-                  </p>
-                </div>
-              </div>
+                )}
 
-              {/* Cartões aceitos */}
-              <div className="flex flex-col gap-3 md:flex-row md:gap-8">
-                <div className="flex items-start gap-3 md:w-1/3">
-                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                    <CreditCard className="h-4 w-4 text-gray-800" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      Cartões aceitos neste imóvel
-                    </h4>
-                  </div>
-                </div>
-                <div className="md:w-2/3">
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/visa.png"
-                        alt="Visa"
-                        width={32}
-                        height={20}
-                      />
+                {/* Camas */}
+                {property.houseRules?.bedsRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Bed className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Camas e Berços</h4>
+                      </div>
                     </div>
-                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/american.png"
-                        alt="American Express"
-                        width={48}
-                        height={32}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/master.png"
-                        alt="Master Card"
-                        width={55}
-                        height={35}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/maestro.png"
-                        alt="Maestro"
-                        width={55}
-                        height={35}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/elo.png"
-                        alt="Elo"
-                        width={55}
-                        height={35}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/diners.webp"
-                        alt="Diners Club"
-                        width={55}
-                        height={35}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-50 p-1 shadow-md duration-300 hover:scale-[1.05]">
-                      <Image
-                        src="/cards/pix.svg"
-                        alt="Pix"
-                        width={55}
-                        height={35}
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex h-8 w-22 cursor-default items-center justify-center rounded border border-red-800 bg-red-600 px-2 text-xs text-white shadow-md duration-300 hover:scale-[1.05]">
-                      Dinheiro não é aceito
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.bedsRule}
+                      </p>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* Restrições de idade */}
+                {property.houseRules?.ageRestrictionRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Album className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Restrições de idade
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.ageRestrictionRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Grupos */}
+                {property.houseRules?.groupsRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Users className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Grupos</h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.groupsRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Cartões aceitos - só exibe se houver algum método de pagamento aceito */}
+                {property.paymentMethods &&
+                  (property.paymentMethods.acceptsVisa ||
+                    property.paymentMethods.acceptsAmericanExpress ||
+                    property.paymentMethods.acceptsMasterCard ||
+                    property.paymentMethods.acceptsMaestro ||
+                    property.paymentMethods.acceptsElo ||
+                    property.paymentMethods.acceptsDinersClub ||
+                    property.paymentMethods.acceptsPix ||
+                    property.paymentMethods.acceptsCash) && (
+                    <div className="flex flex-col gap-3 md:flex-row md:gap-8">
+                      <div className="flex items-start gap-3 md:w-1/3">
+                        <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                          <CreditCard className="h-4 w-4 text-gray-800" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">
+                            Cartões aceitos neste imóvel
+                          </h4>
+                        </div>
+                      </div>
+                      <div className="md:w-2/3">
+                        <div className="mb-3 flex flex-wrap gap-2">
+                          {property.paymentMethods.acceptsVisa && (
+                            <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/visa.png"
+                                alt="Visa"
+                                width={32}
+                                height={20}
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsAmericanExpress && (
+                            <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/american.png"
+                                alt="American Express"
+                                width={48}
+                                height={32}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsMasterCard && (
+                            <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/master.png"
+                                alt="Master Card"
+                                width={55}
+                                height={35}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsMaestro && (
+                            <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/maestro.png"
+                                alt="Maestro"
+                                width={55}
+                                height={35}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsElo && (
+                            <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/elo.png"
+                                alt="Elo"
+                                width={55}
+                                height={35}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsDinersClub && (
+                            <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/diners.webp"
+                                alt="Diners Club"
+                                width={55}
+                                height={35}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsPix && (
+                            <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-50 p-1 shadow-md duration-300 hover:scale-[1.05]">
+                              <Image
+                                src="/cards/pix.svg"
+                                alt="Pix"
+                                width={55}
+                                height={35}
+                                className="object-cover"
+                              />
+                            </div>
+                          )}
+                          {!property.paymentMethods.acceptsCash && (
+                            <div className="flex h-8 w-22 cursor-default items-center justify-center rounded border border-red-800 bg-red-600 px-2 text-xs text-white shadow-md duration-300 hover:scale-[1.05]">
+                              Dinheiro não é aceito
+                            </div>
+                          )}
+                          {property.paymentMethods.acceptsCash && (
+                            <div className="flex h-8 w-16 cursor-default items-center justify-center rounded border border-green-800 bg-green-600 px-2 text-xs text-white shadow-md duration-300 hover:scale-[1.05]">
+                              Dinheiro aceito
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : null}
 
         {/* Localização Detalhada */}
         <div className="mt-8 space-y-6">

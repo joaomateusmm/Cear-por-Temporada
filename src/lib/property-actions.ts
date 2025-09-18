@@ -113,6 +113,33 @@ interface FullProperty {
   nearbyBeaches?: Array<{ name: string; distance: string }>;
   nearbyAirports?: Array<{ name: string; distance: string }>;
   nearbyRestaurants?: Array<{ name: string; distance: string }>;
+  houseRules?: {
+    id: number;
+    propertyId: string;
+    checkInRule: string | null;
+    checkOutRule: string | null;
+    cancellationRule: string | null;
+    childrenRule: string | null;
+    bedsRule: string | null;
+    ageRestrictionRule: string | null;
+    groupsRule: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+  paymentMethods?: {
+    id: number;
+    propertyId: string;
+    acceptsVisa: boolean;
+    acceptsAmericanExpress: boolean;
+    acceptsMasterCard: boolean;
+    acceptsMaestro: boolean;
+    acceptsElo: boolean;
+    acceptsDinersClub: boolean;
+    acceptsPix: boolean;
+    acceptsCash: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
   owner?: {
     id: string;
     fullName: string;
@@ -768,6 +795,20 @@ export async function getPropertyById(
       .from(propertyNearbyRestaurantsTable)
       .where(eq(propertyNearbyRestaurantsTable.propertyId, propertyId));
 
+    // Buscar regras da casa
+    const houseRules = await db
+      .select()
+      .from(propertyHouseRulesTable)
+      .where(eq(propertyHouseRulesTable.propertyId, propertyId))
+      .limit(1);
+
+    // Buscar métodos de pagamento aceitos
+    const paymentMethods = await db
+      .select()
+      .from(propertyPaymentMethodsTable)
+      .where(eq(propertyPaymentMethodsTable.propertyId, propertyId))
+      .limit(1);
+
     // Buscar dados do proprietário
     let owner = null;
     if (propertyData.ownerId) {
@@ -834,6 +875,8 @@ export async function getPropertyById(
           name: restaurant.name,
           distance: restaurant.distance,
         })) || [],
+      houseRules: houseRules[0] || null,
+      paymentMethods: paymentMethods[0] || null,
       owner: owner,
     };
   } catch (error) {

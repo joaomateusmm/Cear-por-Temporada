@@ -1110,7 +1110,10 @@ export default function AddPropertyPage() {
                             >
                               <FormControl>
                                 <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
-                                  <SelectValue className="text-slate-300" placeholder="Selecione o tipo" />
+                                  <SelectValue
+                                    className="text-slate-300"
+                                    placeholder="Selecione o tipo"
+                                  />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="border-slate-600 bg-slate-700 text-slate-300">
@@ -2439,11 +2442,11 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="font-semibold text-slate-300">
-                              Camas
+                              Camas e Berços
                             </FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Ex: Camas extras não disponíveis. Roupas de cama e toalhas incluídas."
+                                placeholder="Ex: Camas extras não disponíveis. Berços disponíveis de 0 a 3 anos."
                                 className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 {...field}
                               />
@@ -2501,7 +2504,11 @@ export default function AddPropertyPage() {
                       <h3 className="font-semibold text-slate-300">
                         Cartões aceitos neste imóvel
                       </h3>
-                      <p className="text-slate-400 text-xs mb-4">Selecione as bandeiras dos cartões que são aceitos para pagamento neste imóvel, caso seu imóvel não aceite dinheiro, deixe em branco.</p>
+                      <p className="mb-4 text-xs text-slate-400">
+                        Selecione as bandeiras dos cartões que são aceitos para
+                        pagamento neste imóvel, caso seu imóvel não aceite
+                        dinheiro, deixe em branco.
+                      </p>
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         <FormField
                           control={form.control}
