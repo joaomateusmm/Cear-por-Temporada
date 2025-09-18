@@ -47,7 +47,6 @@ const propertyFormSchema = z.object({
   fullDescription: z
     .string()
     .min(10, "Descrição completa deve ter pelo menos 10 caracteres"),
-  nearbyRegion: z.string().optional(),
   aboutBuilding: z.string().optional(),
   maxGuests: z.number().min(1, "Deve aceitar pelo menos 1 hóspede"),
   bedrooms: z.number().min(0, "Número de quartos inválido"),
@@ -121,7 +120,6 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
     defaultValues: {
       allowsPets: false,
       parkingSpaces: 0,
-      nearbyRegion: "",
       aboutBuilding: "",
       minimumStay: 1,
       maximumStay: 30,
@@ -213,6 +211,10 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
       const propertyData: PropertyFormData = {
         ...values,
         parkingSpaces: values.parkingSpaces || 0,
+        nearbyPlaces: [],
+        nearbyBeaches: [],
+        nearbyAirports: [],
+        nearbyRestaurants: [],
         amenities: selectedAmenities,
         images: uploadedImages,
       };
@@ -632,27 +634,6 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                             className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
                             rows={5}
                             placeholder="Essa descrição ficará exibida APENAS na página principal do seu imóvel, a parte mais importante, aqui você precisa ser mais detalhista para o seu hóspede."
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="nearbyRegion"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-slate-200">
-                          Região Próxima (opcional)
-                        </FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            className="resize-none border-slate-600 bg-slate-700/50 text-slate-100 transition-colors placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
-                            rows={3}
-                            placeholder="Descreva aqui como é a região próxima ao imóvel alugado, se possui restaurantes bons, academia, pracinhas, pontos turísticos, lugares interessantes, etc."
                           />
                         </FormControl>
                         <FormMessage />
@@ -1096,7 +1077,7 @@ export default function AddPropertyPage({ params }: AddPropertyPageProps) {
                             />
                           </FormControl>
                           <FormLabel className="text-slate-300">
-                            Utensílios de Cozinha
+                            Café da Manhã
                           </FormLabel>
                         </FormItem>
                       )}

@@ -59,7 +59,6 @@ const propertyFormSchema = z.object({
   fullDescription: z
     .string()
     .min(10, "Descrição completa deve ter pelo menos 10 caracteres"),
-  nearbyRegion: z.string().optional(),
   aboutBuilding: z.string().optional(),
   maxGuests: z.number().min(1, "Deve aceitar pelo menos 1 hóspede"),
   bedrooms: z.number().min(0, "Número de quartos inválido"),
@@ -158,7 +157,6 @@ export default function EditPropertyPage() {
       title: "",
       shortDescription: "",
       fullDescription: "",
-      nearbyRegion: "",
       aboutBuilding: "",
       maxGuests: 1,
       bedrooms: 1,
@@ -276,7 +274,6 @@ export default function EditPropertyPage() {
         form.setValue("title", propertyData.title);
         form.setValue("shortDescription", propertyData.shortDescription);
         form.setValue("fullDescription", propertyData.fullDescription || "");
-        form.setValue("nearbyRegion", propertyData.nearbyRegion || "");
         form.setValue("aboutBuilding", propertyData.aboutBuilding || "");
         form.setValue("maxGuests", propertyData.maxGuests);
         form.setValue("bedrooms", propertyData.bedrooms);
@@ -581,7 +578,6 @@ export default function EditPropertyPage() {
         title: values.title,
         shortDescription: values.shortDescription,
         fullDescription: values.fullDescription || "",
-        nearbyRegion: values.nearbyRegion || "",
         aboutBuilding: values.aboutBuilding || "",
         maxGuests: values.maxGuests,
         bedrooms: values.bedrooms,
@@ -595,12 +591,6 @@ export default function EditPropertyPage() {
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
         checkOutTime: values.checkOutTime,
-        monthlyRent: values.monthlyRent || 0,
-        dailyRate: values.dailyRate || 0,
-        condominiumFee: values.condominiumFee,
-        iptuFee: values.iptuFee,
-        monthlyCleaningFee: values.monthlyCleaningFee,
-        otherFees: values.otherFees,
         includesKitchenUtensils: values.includesKitchenUtensils,
         includesFurniture: values.includesFurniture,
         includesElectricity: values.includesElectricity,
@@ -1252,26 +1242,6 @@ export default function EditPropertyPage() {
 
                     <FormField
                       control={form.control}
-                      name="nearbyRegion"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-slate-300">
-                            Região Próxima (Opcional)
-                          </FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
-                              placeholder="Descreva pontos de interesse próximos (praias, centros comerciais, etc.)"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
                       name="aboutBuilding"
                       render={({ field }) => (
                         <FormItem>
@@ -1739,7 +1709,7 @@ export default function EditPropertyPage() {
                               />
                             </FormControl>
                             <FormLabel className="text-slate-300">
-                              Utensílios de Cozinha
+                              Café da Manhã
                             </FormLabel>
                           </FormItem>
                         )}

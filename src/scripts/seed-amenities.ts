@@ -27,7 +27,7 @@ const defaultAmenities = [
   { name: "Cooktop", category: "apartment", icon: "cooktop" },
   { name: "Cafeteira", category: "apartment", icon: "coffee-maker" },
   {
-    name: "Utensílios de cozinha",
+    name: "Café da Manhã",
     category: "apartment",
     icon: "kitchen-utensils",
   },

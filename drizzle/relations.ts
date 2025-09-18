@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { properties, propertyImages, propertyPricing, owners, reservations, users, propertyLocation, propertyAmenities, amenities, propertyPropertyClasses, propertyClasses, propertyAvailability } from "./schema";
+import { properties, propertyImages, propertyPricing, owners, reservations, users, propertyLocation, propertyNearbyAirports, propertyNearbyBeaches, propertyNearbyPlaces, propertyNearbyRestaurants, propertyAmenities, amenities, propertyPropertyClasses, propertyClasses, propertyAvailability } from "./schema";
 
 export const propertyImagesRelations = relations(propertyImages, ({one}) => ({
 	property: one(properties, {
@@ -17,6 +17,10 @@ export const propertiesRelations = relations(properties, ({one, many}) => ({
 	}),
 	reservations: many(reservations),
 	propertyLocations: many(propertyLocation),
+	propertyNearbyAirports: many(propertyNearbyAirports),
+	propertyNearbyBeaches: many(propertyNearbyBeaches),
+	propertyNearbyPlaces: many(propertyNearbyPlaces),
+	propertyNearbyRestaurants: many(propertyNearbyRestaurants),
 	propertyAmenities: many(propertyAmenities),
 	propertyPropertyClasses: many(propertyPropertyClasses),
 	propertyAvailabilities: many(propertyAvailability),
@@ -51,6 +55,34 @@ export const usersRelations = relations(users, ({many}) => ({
 export const propertyLocationRelations = relations(propertyLocation, ({one}) => ({
 	property: one(properties, {
 		fields: [propertyLocation.propertyId],
+		references: [properties.id]
+	}),
+}));
+
+export const propertyNearbyAirportsRelations = relations(propertyNearbyAirports, ({one}) => ({
+	property: one(properties, {
+		fields: [propertyNearbyAirports.propertyId],
+		references: [properties.id]
+	}),
+}));
+
+export const propertyNearbyBeachesRelations = relations(propertyNearbyBeaches, ({one}) => ({
+	property: one(properties, {
+		fields: [propertyNearbyBeaches.propertyId],
+		references: [properties.id]
+	}),
+}));
+
+export const propertyNearbyPlacesRelations = relations(propertyNearbyPlaces, ({one}) => ({
+	property: one(properties, {
+		fields: [propertyNearbyPlaces.propertyId],
+		references: [properties.id]
+	}),
+}));
+
+export const propertyNearbyRestaurantsRelations = relations(propertyNearbyRestaurants, ({one}) => ({
+	property: one(properties, {
+		fields: [propertyNearbyRestaurants.propertyId],
 		references: [properties.id]
 	}),
 }));

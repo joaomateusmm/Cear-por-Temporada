@@ -51,7 +51,6 @@ export const propertiesTable = pgTable("properties", {
   title: varchar("title", { length: 255 }).notNull(),
   shortDescription: text("short_description").notNull(),
   fullDescription: text("full_description"),
-  nearbyRegion: text("nearby_region"),
   aboutBuilding: text("about_building"),
   maxGuests: integer("max_guests").notNull(),
   bedrooms: integer("bedrooms").notNull(),
@@ -193,6 +192,90 @@ export const propertyImagesTable = pgTable("property_images", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Tabela de proximidades - O que há por perto
+export const propertyNearbyPlacesTable = pgTable("property_nearby_places", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  distance: varchar("distance", { length: 50 }).notNull(), // ex: "2,5 km", "1.200 m"
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Tabela de proximidades - Praias na vizinhança
+export const propertyNearbyBeachesTable = pgTable("property_nearby_beaches", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  distance: varchar("distance", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Tabela de proximidades - Aeroportos mais próximos
+export const propertyNearbyAirportsTable = pgTable("property_nearby_airports", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  distance: varchar("distance", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Tabela de proximidades - Restaurantes e cafés
+export const propertyNearbyRestaurantsTable = pgTable(
+  "property_nearby_restaurants",
+  {
+    id: serial("id").primaryKey(),
+    propertyId: varchar("property_id", { length: 21 })
+      .notNull()
+      .references(() => propertiesTable.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    distance: varchar("distance", { length: 50 }).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+);
+
+// Tabela de regras da casa
+export const propertyHouseRulesTable = pgTable("property_house_rules", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  checkInRule: text("check_in_rule"), // Regra de entrada
+  checkOutRule: text("check_out_rule"), // Regra de saída
+  cancellationRule: text("cancellation_rule"), // Regra de cancelamento/pré-pagamento
+  childrenRule: text("children_rule"), // Regra sobre crianças
+  bedsRule: text("beds_rule"), // Regra sobre camas
+  ageRestrictionRule: text("age_restriction_rule"), // Restrições de idade
+  groupsRule: text("groups_rule"), // Regra sobre grupos
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Tabela de métodos de pagamento aceitos
+export const propertyPaymentMethodsTable = pgTable("property_payment_methods", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  acceptsVisa: boolean("accepts_visa").default(false).notNull(),
+  acceptsAmericanExpress: boolean("accepts_american_express")
+    .default(false)
+    .notNull(),
+  acceptsMasterCard: boolean("accepts_master_card").default(false).notNull(),
+  acceptsMaestro: boolean("accepts_maestro").default(false).notNull(),
+  acceptsElo: boolean("accepts_elo").default(false).notNull(),
+  acceptsDinersClub: boolean("accepts_diners_club").default(false).notNull(),
+  acceptsPix: boolean("accepts_pix").default(false).notNull(),
+  acceptsCash: boolean("accepts_cash").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Tabela de disponibilidade/calendário
 export const propertyAvailabilityTable = pgTable(
   "property_availability",
@@ -255,6 +338,12 @@ export const propertiesRelations = relations(
     classes: many(propertyPropertyClassesTable),
     availability: many(propertyAvailabilityTable),
     reservations: many(reservationsTable),
+    nearbyPlaces: many(propertyNearbyPlacesTable),
+    nearbyBeaches: many(propertyNearbyBeachesTable),
+    nearbyAirports: many(propertyNearbyAirportsTable),
+    nearbyRestaurants: many(propertyNearbyRestaurantsTable),
+    houseRules: one(propertyHouseRulesTable),
+    paymentMethods: one(propertyPaymentMethodsTable),
   }),
 );
 
@@ -354,3 +443,63 @@ export const reservationsRelations = relations(
 export const usersRelations = relations(usersTable, ({ many }) => ({
   reservations: many(reservationsTable),
 }));
+
+export const propertyNearbyPlacesRelations = relations(
+  propertyNearbyPlacesTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyNearbyPlacesTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyNearbyBeachesRelations = relations(
+  propertyNearbyBeachesTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyNearbyBeachesTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyNearbyAirportsRelations = relations(
+  propertyNearbyAirportsTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyNearbyAirportsTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyNearbyRestaurantsRelations = relations(
+  propertyNearbyRestaurantsTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyNearbyRestaurantsTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyHouseRulesRelations = relations(
+  propertyHouseRulesTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyHouseRulesTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyPaymentMethodsRelations = relations(
+  propertyPaymentMethodsTable,
+  ({ one }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyPaymentMethodsTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+  }),
+);

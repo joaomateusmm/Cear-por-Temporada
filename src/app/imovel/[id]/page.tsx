@@ -2,38 +2,40 @@
 
 import {
   AirVent,
-  Armchair,
+  Album,
+  Baby,
+  BanknoteX,
   Bath,
+  Bed,
   BedDouble,
   BedSingle,
-  Building2,
   Car,
   Check,
   CircleQuestionMark,
   Coffee,
   Copy,
+  CreditCard,
   Dog,
+  DoorOpen,
   Dumbbell,
   GlassWater,
   HousePlus,
   ImageIcon,
-  Instagram,
   LampCeiling,
-  Link2,
+  LogOut,
   MapPin,
   Microwave,
   Minus,
   Palmtree,
+  Plane,
   Plus,
   Refrigerator,
-  RollerCoaster,
   Share2,
   Shirt,
   SquareCheck,
   SquareM,
   Toilet,
   TvMinimal,
-  UserRound,
   Users,
   Utensils,
   WavesLadder,
@@ -93,6 +95,12 @@ const fallbackImage =
 interface PropertyImage {
   imageUrl: string;
   isMain: boolean;
+}
+
+// Interface para tipagem das proximidades
+interface NearbyItem {
+  name: string;
+  distance: string;
 }
 
 // Interface para tipagem das comodidades
@@ -256,14 +264,9 @@ export default function PropertyPage() {
 
   const includedServices = [
     {
-      icon: Utensils,
-      label: "Utensílios de cozinha",
+      icon: Coffee,
+      label: "Café da Manhã",
       included: property.pricing?.includesKitchenUtensils || false,
-    },
-    {
-      icon: Armchair,
-      label: "Mobília",
-      included: property.pricing?.includesFurniture || false,
     },
     {
       icon: LampCeiling,
@@ -334,30 +337,6 @@ export default function PropertyPage() {
     return HousePlus;
   };
 
-  // Função para obter ícone do destino popular
-  const getDestinationIcon = (destination: string) => {
-    switch (destination) {
-      case "Fortaleza":
-        return Building2; // Cidade grande
-      case "Jericoacoara":
-        return Palmtree; // Praia paradisíaca
-      case "Canoa Quebrada":
-        return Palmtree; // Praia com ondas
-      case "Praia de Picos":
-        return Palmtree; // Praia
-      case "Morro Branco":
-        return Palmtree; // Natureza/montanha
-      case "Águas Belas":
-        return Palmtree; // Águas
-      case "Cumbuco":
-        return Palmtree; // Praia
-      case "Beach Park":
-        return RollerCoaster; // Parque aquático/diversão
-      default:
-        return MapPin; // Padrão
-    }
-  };
-
   // Preparar lista de comodidades com ícones
   const amenitiesWithIcons =
     property.amenities?.map(
@@ -370,13 +349,13 @@ export default function PropertyPage() {
 
   // Lógica para exibição das comodidades
   const totalAmenities = amenitiesWithIcons.length;
-  const shouldShowViewAllButton = totalAmenities > 10;
+  const shouldShowViewAllButton = totalAmenities > 8;
 
-  // Para evitar problemas de hidratação, sempre mostra as primeiras 10 inicialmente
+  // Para evitar problemas de hidratação, sempre mostra as primeiras 8 inicialmente
   const displayedAmenities =
     isMounted && shouldShowViewAllButton && showAllAmenities
       ? amenitiesWithIcons
-      : amenitiesWithIcons.slice(0, Math.min(10, totalAmenities));
+      : amenitiesWithIcons.slice(0, Math.min(6, totalAmenities));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -430,7 +409,7 @@ export default function PropertyPage() {
                             setCurrentSlide(index);
                             scrollThumbnailIntoView(index);
                           }}
-                          className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-300 hover:scale-110 hover:shadow-md md:h-20 md:w-20 ${
+                          className={`relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-md md:h-20 md:w-20 ${
                             currentSlide === index
                               ? "border-gray-800 shadow-md ring-2 ring-blue-200"
                               : "border-gray-300 opacity-70 hover:border-gray-400 hover:opacity-100"
@@ -782,7 +761,7 @@ export default function PropertyPage() {
 
                   {/* Botão Reservar */}
                   <Button
-                    className="w-full bg-green-500 py-7 text-lg text-white shadow-md duration-200 active:scale-95 hover:bg-green-600"
+                    className="w-full bg-green-500 py-7 text-lg text-white shadow-md duration-200 hover:bg-green-600 active:scale-95"
                     onClick={() => {
                       if (!checkIn || !checkOut) {
                         toast.error(
@@ -876,47 +855,11 @@ export default function PropertyPage() {
               </div>
             </div>
 
-            {/* Pacote de Moradia Incluso */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl text-gray-900">
-                  Serviços Inclusos no imóvel
-                </CardTitle>
-                <p className="text-gray-600">
-                  No pacote de moradia dessa unidade, estão incluídas as taxas
-                  de:
-                </p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  {includedServices.map((service, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div
-                        className={`rounded-md p-2 shadow-md duration-700 hover:scale-115 ${service.included ? "bg-gray-200" : "bg-gray-100/70"}`}
-                      >
-                        <service.icon
-                          className={`h-4 w-4 ${service.included ? "text-gray-800" : "text-gray-400"}`}
-                        />
-                      </div>
-                      <span
-                        className={`${service.included ? "text-gray-900" : "text-gray-400"}`}
-                      >
-                        {service.label}
-                      </span>
-                      {service.included && (
-                        <Check className="ml-auto h-4 w-4 text-gray-600" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
             {/* O que tem no imóvel */}
             <Card>
               <CardHeader>
                 <CardTitle className="text-xl text-gray-900">
-                  O que tem nesse imóvel
+                  Comodidades de {property.title}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -947,7 +890,7 @@ export default function PropertyPage() {
                   <div className="mt-4">
                     <Button
                       variant="link"
-                      className="h-auto p-0"
+                      className="mt-2.5 h-auto p-0"
                       onClick={() => setShowAllAmenities(!showAllAmenities)}
                     >
                       {showAllAmenities
@@ -958,59 +901,10 @@ export default function PropertyPage() {
                 )}
               </CardContent>
             </Card>
-
-            {/* Sobre o imóvel */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl text-gray-900">
-                  Sobre esse imóvel
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 leading-relaxed text-gray-700">
-                  <p>{property.fullDescription}</p>
-                  <p className="text-xs text-gray-600">
-                    {property.shortDescription}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Região Próxima */}
-            {property.nearbyRegion && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl text-gray-900">
-                    Região Próxima
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="leading-relaxed text-gray-700">
-                    <p>{property.nearbyRegion}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Sobre o Prédio */}
-            {property.aboutBuilding && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl text-gray-900">
-                    Sobre o prédio
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="leading-relaxed text-gray-700">
-                    <p>{property.aboutBuilding}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
 
           {/* Coluna Direita - Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-6.5">
             {/* Personalizar Moradia */}
             <Card className="sticky top-4 hidden md:block">
               <CardHeader className="flex justify-between">
@@ -1086,7 +980,7 @@ export default function PropertyPage() {
                       </Button>
                     </div>
 
-                    <Label className="text-sm font-medium mt-3">Crianças</Label>
+                    <Label className="mt-3 text-sm font-medium">Crianças</Label>
                     <div className="mt-2 flex items-center justify-between">
                       <Button
                         variant="outline"
@@ -1249,40 +1143,41 @@ export default function PropertyPage() {
                 </div>
               </CardContent>
             </Card>
-            {/* Destino Popular */}
-            {property.location?.popularDestination &&
-              property.location.popularDestination !==
-                "Nenhum dos anteriores" && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-xl text-gray-900">
-                      Destino Popular Próximo
-                    </CardTitle>
-                    <p className="text-gray-600">
-                      Este imóvel está localizado próximo a um destino popular
-                      do Ceará
-                    </p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
-                        {(() => {
-                          const DestinationIcon = getDestinationIcon(
-                            property.location.popularDestination,
-                          );
-                          return (
-                            <DestinationIcon className="h-4 w-4 text-gray-800" />
-                          );
-                        })()}
+            {/* Pacote de Moradia Incluso */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-xl text-gray-900">
+                  Serviços Inclusos no imóvel
+                </CardTitle>
+                <p className="text-gray-600">
+                  No pacote de moradia dessa unidade, estão incluídas as taxas
+                  de:
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {includedServices.map((service, index) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <div
+                        className={`rounded-md p-2 shadow-md duration-700 hover:scale-115 ${service.included ? "bg-gray-200" : "bg-gray-100/70"}`}
+                      >
+                        <service.icon
+                          className={`h-4 w-4 ${service.included ? "text-gray-800" : "text-gray-400"}`}
+                        />
                       </div>
-                      <span className="text-gray-900">
-                        {property.location.popularDestination}
+                      <span
+                        className={`${service.included ? "text-gray-900" : "text-gray-400"}`}
+                      >
+                        {service.label}
                       </span>
-                      <Check className="ml-auto h-4 w-4 text-gray-600" />
+                      {service.included && (
+                        <Check className="ml-auto h-4 w-4 text-gray-600" />
+                      )}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -1320,8 +1215,445 @@ export default function PropertyPage() {
           </Card>
         </div> */}
 
+        {/* Sobre o imóvel */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="text-xl text-gray-900">
+              Sobre esse imóvel
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 leading-relaxed text-gray-700">
+              <p>{property.fullDescription}</p>
+              <p className="text-xs text-gray-600">
+                {property.shortDescription}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Sobre o Prédio */}
+        {property.aboutBuilding && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="text-xl text-gray-900">
+                Sobre o prédio
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="leading-relaxed text-gray-700">
+                <p>{property.aboutBuilding}</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Proximidades da região */}
+        {((property.nearbyPlaces && property.nearbyPlaces.length > 0) ||
+          (property.nearbyBeaches && property.nearbyBeaches.length > 0) ||
+          (property.nearbyAirports && property.nearbyAirports.length > 0) ||
+          (property.nearbyRestaurants &&
+            property.nearbyRestaurants.length > 0)) && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="text-2xl text-gray-900">
+                Proximidades da região
+              </CardTitle>
+              <p className="text-gray-600">
+                Os hóspedes adoraram caminhar pelo bairro! Visite os principais
+                locais próximos do imóvel.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {/* O que há por perto? */}
+                {property.nearbyPlaces && property.nearbyPlaces.length > 0 && (
+                  <div className="mr-3 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-gray-600" />
+                      <h3 className="font-semibold text-gray-900">
+                        O que há por perto?
+                      </h3>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      {property.nearbyPlaces.map(
+                        (place: NearbyItem, index: number) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between"
+                          >
+                            <span className="text-gray-700">{place.name}</span>
+                            <span className="text-gray-700/30">-----</span>
+                            <span className="text-gray-600">
+                              {place.distance}
+                            </span>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                    <div className="mt-6 border-t"></div>
+                  </div>
+                )}
+
+                {/* Praias na vizinhança */}
+                {property.nearbyBeaches &&
+                  property.nearbyBeaches.length > 0 && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Palmtree className="h-5 w-5 text-gray-600" />
+                        <h3 className="font-semibold text-gray-900">
+                          Praias na vizinhança
+                        </h3>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        {property.nearbyBeaches.map(
+                          (beach: NearbyItem, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-gray-700">
+                                {beach.name}
+                              </span>
+                              <span className="text-gray-700/30">-----</span>
+                              <span className="text-gray-600">
+                                {beach.distance}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                      <div className="mt-6 border-t"></div>
+                    </div>
+                  )}
+
+                {/* Aeroportos mais próximos */}
+                {property.nearbyAirports &&
+                  property.nearbyAirports.length > 0 && (
+                    <div className="mr-3 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Plane className="h-5 w-5 text-gray-600" />
+                        <h3 className="font-semibold text-gray-900">
+                          Aeroportos mais próximos
+                        </h3>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        {property.nearbyAirports.map(
+                          (airport: NearbyItem, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-gray-700">
+                                {airport.name}
+                              </span>
+                              <span className="text-gray-700/30">-----</span>
+                              <span className="text-gray-600">
+                                {airport.distance}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Restaurantes e cafés */}
+                {property.nearbyRestaurants &&
+                  property.nearbyRestaurants.length > 0 && (
+                    <div className="ml-6 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <Utensils className="h-5 w-5 text-gray-600" />
+                        <h3 className="font-semibold text-gray-900">
+                          Restaurantes e cafés
+                        </h3>
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        {property.nearbyRestaurants.map(
+                          (restaurant: NearbyItem, index: number) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between"
+                            >
+                              <span className="text-gray-700">
+                                {restaurant.name}
+                              </span>
+                              <span className="text-gray-700/30">-----</span>
+                              <span className="text-gray-600">
+                                {restaurant.distance}
+                              </span>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  )}
+              </div>
+
+              {/* Nota informativa */}
+              <div className="mt-6 rounded-lg bg-gray-50 p-4">
+                <p className="text-sm text-gray-600">
+                  É exibida uma estimativa das distâncias mais curtas de
+                  caminhada ou de carro. As distâncias reais podem variar.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Regras da Casa */}
+        <Card className="mt-8">
+          <CardHeader>
+            <CardTitle className="text-xl text-gray-900">
+              Regras da Casa
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {/* Entrada */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <DoorOpen className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Entrada</h4>
+                    <p className="text-sm font-medium text-gray-700">
+                      Das 16:00 às 00:00
+                    </p>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Os hóspedes devem apresentar um documento com foto e cartão
+                    de crédito no momento do check-in.
+                  </p>
+                </div>
+              </div>
+
+              {/* Saída */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <LogOut className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Saída</h4>
+                    <p className="text-sm font-medium text-gray-700">
+                      Até 11:00
+                    </p>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Checkout deve ser realizado até às 11:00 da manhã.
+                  </p>
+                </div>
+              </div>
+
+              {/* Cancelamento/pré-pagamento */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <BanknoteX className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Cancelamento/ pré-pagamento
+                    </h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    As políticas de cancelamento e pré-pagamento variam de
+                    acordo com o tipo de acomodação. Por favor, verifique quais
+                    condições se aplicam a cada opção quando fizer sua escolha.
+                  </p>
+                </div>
+              </div>
+
+              {/* Crianças e camas */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <Baby className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Crianças</h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <div className="space-y-3">
+                    <div>
+                      <p className="mb-1 text-sm font-medium text-gray-900">
+                        Políticas para crianças
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Crianças de qualquer idade são bem-vindas.
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Crianças de 0 a 12 anos não pagam taxa alguma.
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="mb-2 text-sm font-medium text-gray-900">
+                        Políticas para berços
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        De 0 a 2 anos de idade é permitido a solicitação de
+                        berços.
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        Berços não estão inclusos na taxa geral e terá que ser
+                        pago por fora.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <Bed className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Camas</h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Não há camas extras disponíveis nesta acomodação.
+                  </p>
+                </div>
+              </div>
+
+              {/*  restrições de idade */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <Album className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Restrições de idade
+                    </h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Não há exigência de idade para o check-in.
+                  </p>
+                </div>
+              </div>
+
+              {/* Grupos */}
+              <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <Users className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Grupos</h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Se a reserva for para mais de 4 quartos, políticas
+                    diferenciadas e taxas adicionais podem ser aplicadas.
+                  </p>
+                </div>
+              </div>
+
+              {/* Cartões aceitos */}
+              <div className="flex flex-col gap-3 md:flex-row md:gap-8">
+                <div className="flex items-start gap-3 md:w-1/3">
+                  <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                    <CreditCard className="h-4 w-4 text-gray-800" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      Cartões aceitos neste imóvel
+                    </h4>
+                  </div>
+                </div>
+                <div className="md:w-2/3">
+                  <div className="mb-3 flex flex-wrap gap-2">
+                    <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/visa.png"
+                        alt="Visa"
+                        width={32}
+                        height={20}
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/american.png"
+                        alt="American Express"
+                        width={48}
+                        height={32}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/master.png"
+                        alt="Master Card"
+                        width={55}
+                        height={35}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/maestro.png"
+                        alt="Maestro"
+                        width={55}
+                        height={35}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/elo.png"
+                        alt="Elo"
+                        width={55}
+                        height={35}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-100 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/diners.webp"
+                        alt="Diners Club"
+                        width={55}
+                        height={35}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-12 items-center justify-center overflow-hidden rounded border bg-gray-50 p-1 shadow-md duration-300 hover:scale-[1.05]">
+                      <Image
+                        src="/cards/pix.svg"
+                        alt="Pix"
+                        width={55}
+                        height={35}
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex h-8 w-22 cursor-default items-center justify-center rounded border border-red-800 bg-red-600 px-2 text-xs text-white shadow-md duration-300 hover:scale-[1.05]">
+                      Dinheiro não é aceito
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Localização Detalhada */}
-        <div className="mt-6 space-y-6">
+        <div className="mt-8 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl text-gray-900">

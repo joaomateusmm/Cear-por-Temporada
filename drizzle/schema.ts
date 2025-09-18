@@ -93,7 +93,6 @@ export const properties = pgTable("properties", {
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	propertyClass: varchar("property_class", { length: 50 }).default('Normal').notNull(),
 	maximumStay: integer("maximum_stay"),
-	nearbyRegion: text("nearby_region"),
 	aboutBuilding: text("about_building"),
 	ownerId: varchar("owner_id", { length: 21 }),
 }, (table) => [
@@ -165,6 +164,62 @@ export const propertyClasses = pgTable("property_classes", {
 	unique("property_classes_name_unique").on(table.name),
 ]);
 
+export const propertyNearbyAirports = pgTable("property_nearby_airports", {
+	id: serial().primaryKey().notNull(),
+	propertyId: varchar("property_id", { length: 21 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	distance: varchar({ length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.propertyId],
+			foreignColumns: [properties.id],
+			name: "property_nearby_airports_property_id_properties_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const propertyNearbyBeaches = pgTable("property_nearby_beaches", {
+	id: serial().primaryKey().notNull(),
+	propertyId: varchar("property_id", { length: 21 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	distance: varchar({ length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.propertyId],
+			foreignColumns: [properties.id],
+			name: "property_nearby_beaches_property_id_properties_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const propertyNearbyPlaces = pgTable("property_nearby_places", {
+	id: serial().primaryKey().notNull(),
+	propertyId: varchar("property_id", { length: 21 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	distance: varchar({ length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.propertyId],
+			foreignColumns: [properties.id],
+			name: "property_nearby_places_property_id_properties_id_fk"
+		}).onDelete("cascade"),
+]);
+
+export const propertyNearbyRestaurants = pgTable("property_nearby_restaurants", {
+	id: serial().primaryKey().notNull(),
+	propertyId: varchar("property_id", { length: 21 }).notNull(),
+	name: varchar({ length: 255 }).notNull(),
+	distance: varchar({ length: 50 }).notNull(),
+	createdAt: timestamp("created_at", { mode: 'string' }).defaultNow().notNull(),
+}, (table) => [
+	foreignKey({
+			columns: [table.propertyId],
+			foreignColumns: [properties.id],
+			name: "property_nearby_restaurants_property_id_properties_id_fk"
+		}).onDelete("cascade"),
+]);
+
 export const owners = pgTable("owners", {
 	id: varchar({ length: 21 }).primaryKey().notNull(),
 	fullName: varchar("full_name", { length: 255 }).notNull(),
@@ -176,7 +231,7 @@ export const owners = pgTable("owners", {
 	updatedAt: timestamp("updated_at", { mode: 'string' }).defaultNow().notNull(),
 	instagram: varchar({ length: 255 }),
 	website: varchar({ length: 255 }),
-	profileImage: text("profile_image"),
+	profileImage: varchar("profile_image", { length: 500 }),
 }, (table) => [
 	unique("owners_email_unique").on(table.email),
 ]);

@@ -14,8 +14,14 @@ import {
   propertyAmenitiesTable,
   propertyAvailabilityTable,
   propertyClassesTable,
+  propertyHouseRulesTable,
   propertyImagesTable,
   propertyLocationTable,
+  propertyNearbyAirportsTable,
+  propertyNearbyBeachesTable,
+  propertyNearbyPlacesTable,
+  propertyNearbyRestaurantsTable,
+  propertyPaymentMethodsTable,
   propertyPricingTable,
   propertyPropertyClassesTable,
   reservationsTable,
@@ -95,7 +101,6 @@ interface FullProperty {
   cancellationPolicy: string | null;
   externalLink: string | null;
   status: string;
-  nearbyRegion: string | null;
   aboutBuilding: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -104,6 +109,10 @@ interface FullProperty {
   amenities: PropertyAmenity[];
   images: PropertyImage[];
   classes: PropertyClass[];
+  nearbyPlaces?: Array<{ name: string; distance: string }>;
+  nearbyBeaches?: Array<{ name: string; distance: string }>;
+  nearbyAirports?: Array<{ name: string; distance: string }>;
+  nearbyRestaurants?: Array<{ name: string; distance: string }>;
   owner?: {
     id: string;
     fullName: string;
@@ -131,7 +140,6 @@ export type PropertyFormData = {
   title: string;
   shortDescription: string;
   fullDescription?: string;
-  nearbyRegion?: string;
   aboutBuilding?: string;
   maxGuests: number;
   bedrooms: number;
@@ -146,13 +154,11 @@ export type PropertyFormData = {
   checkInTime?: string;
   checkOutTime?: string;
 
-  // Preços
-  monthlyRent: number;
-  dailyRate: number;
-  condominiumFee?: number;
-  iptuFee?: number;
-  monthlyCleaningFee?: number;
-  otherFees?: number;
+  // Proximidades da região
+  nearbyPlaces?: Array<{ name: string; distance: string }>;
+  nearbyBeaches?: Array<{ name: string; distance: string }>;
+  nearbyAirports?: Array<{ name: string; distance: string }>;
+  nearbyRestaurants?: Array<{ name: string; distance: string }>;
 
   // Serviços inclusos
   includesKitchenUtensils: boolean;
@@ -178,6 +184,25 @@ export type PropertyFormData = {
 
   // Imagens
   images: string[];
+
+  // Regras da Casa
+  checkInRule?: string;
+  checkOutRule?: string;
+  cancellationRule?: string;
+  childrenRule?: string;
+  bedsRule?: string;
+  ageRestrictionRule?: string;
+  groupsRule?: string;
+
+  // Métodos de pagamento aceitos
+  acceptsVisa?: boolean;
+  acceptsAmericanExpress?: boolean;
+  acceptsMasterCard?: boolean;
+  acceptsMaestro?: boolean;
+  acceptsElo?: boolean;
+  acceptsDinersClub?: boolean;
+  acceptsPix?: boolean;
+  acceptsCash?: boolean;
 
   // Novos campos para edição
   allowsSmoking?: boolean;
@@ -228,7 +253,6 @@ export async function createProperty(data: PropertyFormData) {
         title: data.title,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription,
-        nearbyRegion: data.nearbyRegion,
         aboutBuilding: data.aboutBuilding,
         maxGuests: data.maxGuests,
         bedrooms: data.bedrooms,
@@ -264,15 +288,58 @@ export async function createProperty(data: PropertyFormData) {
 
       console.log("Valores para inserção:", propertyClassValues);
       await db.insert(propertyPropertyClassesTable).values(propertyClassValues);
-    } // 3. Criar informações de preços
+    }
+
+    // 3. Criar informações de proximidades
+    if (data.nearbyPlaces && data.nearbyPlaces.length > 0) {
+      const nearbyPlacesData = data.nearbyPlaces.map((place) => ({
+        propertyId,
+        name: place.name,
+        distance: place.distance,
+      }));
+      await db.insert(propertyNearbyPlacesTable).values(nearbyPlacesData);
+    }
+
+    if (data.nearbyBeaches && data.nearbyBeaches.length > 0) {
+      const nearbyBeachesData = data.nearbyBeaches.map((beach) => ({
+        propertyId,
+        name: beach.name,
+        distance: beach.distance,
+      }));
+      await db.insert(propertyNearbyBeachesTable).values(nearbyBeachesData);
+    }
+
+    if (data.nearbyAirports && data.nearbyAirports.length > 0) {
+      const nearbyAirportsData = data.nearbyAirports.map((airport) => ({
+        propertyId,
+        name: airport.name,
+        distance: airport.distance,
+      }));
+      await db.insert(propertyNearbyAirportsTable).values(nearbyAirportsData);
+    }
+
+    if (data.nearbyRestaurants && data.nearbyRestaurants.length > 0) {
+      const nearbyRestaurantsData = data.nearbyRestaurants.map(
+        (restaurant) => ({
+          propertyId,
+          name: restaurant.name,
+          distance: restaurant.distance,
+        }),
+      );
+      await db
+        .insert(propertyNearbyRestaurantsTable)
+        .values(nearbyRestaurantsData);
+    }
+
+    // 4. Criar informações de preços e serviços inclusos
     await db.insert(propertyPricingTable).values({
       propertyId,
-      monthlyRent: data.monthlyRent.toString(),
-      dailyRate: data.dailyRate.toString(),
-      condominiumFee: data.condominiumFee?.toString() || "0",
-      iptuFee: data.iptuFee?.toString() || "0",
-      monthlyCleaningFee: data.monthlyCleaningFee?.toString() || "0",
-      otherFees: data.otherFees?.toString() || "0",
+      monthlyRent: "0",
+      dailyRate: "0",
+      condominiumFee: "0",
+      iptuFee: "0",
+      monthlyCleaningFee: "0",
+      otherFees: "0",
       includesKitchenUtensils: data.includesKitchenUtensils,
       includesFurniture: data.includesFurniture,
       includesElectricity: data.includesElectricity,
@@ -281,7 +348,7 @@ export async function createProperty(data: PropertyFormData) {
       includesWater: data.includesWater,
     });
 
-    // 3. Criar informações de localização
+    // 5. Criar informações de localização
     await db.insert(propertyLocationTable).values({
       propertyId,
       fullAddress: data.fullAddress,
@@ -356,6 +423,31 @@ export async function createProperty(data: PropertyFormData) {
           .where(eq(ownersTable.id, data.ownerId));
       }
     }
+
+    // 7. Salvar regras da casa
+    await db.insert(propertyHouseRulesTable).values({
+      propertyId,
+      checkInRule: data.checkInRule || null,
+      checkOutRule: data.checkOutRule || null,
+      cancellationRule: data.cancellationRule || null,
+      childrenRule: data.childrenRule || null,
+      bedsRule: data.bedsRule || null,
+      ageRestrictionRule: data.ageRestrictionRule || null,
+      groupsRule: data.groupsRule || null,
+    });
+
+    // 8. Salvar métodos de pagamento aceitos
+    await db.insert(propertyPaymentMethodsTable).values({
+      propertyId,
+      acceptsVisa: data.acceptsVisa || false,
+      acceptsAmericanExpress: data.acceptsAmericanExpress || false,
+      acceptsMasterCard: data.acceptsMasterCard || false,
+      acceptsMaestro: data.acceptsMaestro || false,
+      acceptsElo: data.acceptsElo || false,
+      acceptsDinersClub: data.acceptsDinersClub || false,
+      acceptsPix: data.acceptsPix || false,
+      acceptsCash: data.acceptsCash || false,
+    });
 
     return { success: true, propertyId };
   } catch (error) {
@@ -652,6 +744,30 @@ export async function getPropertyById(
       .from(propertyPropertyClassesTable)
       .where(eq(propertyPropertyClassesTable.propertyId, propertyId));
 
+    // Buscar proximidades - Lugares próximos
+    const nearbyPlaces = await db
+      .select()
+      .from(propertyNearbyPlacesTable)
+      .where(eq(propertyNearbyPlacesTable.propertyId, propertyId));
+
+    // Buscar proximidades - Praias próximas
+    const nearbyBeaches = await db
+      .select()
+      .from(propertyNearbyBeachesTable)
+      .where(eq(propertyNearbyBeachesTable.propertyId, propertyId));
+
+    // Buscar proximidades - Aeroportos próximos
+    const nearbyAirports = await db
+      .select()
+      .from(propertyNearbyAirportsTable)
+      .where(eq(propertyNearbyAirportsTable.propertyId, propertyId));
+
+    // Buscar proximidades - Restaurantes próximos
+    const nearbyRestaurants = await db
+      .select()
+      .from(propertyNearbyRestaurantsTable)
+      .where(eq(propertyNearbyRestaurantsTable.propertyId, propertyId));
+
     // Buscar dados do proprietário
     let owner = null;
     if (propertyData.ownerId) {
@@ -698,6 +814,26 @@ export async function getPropertyById(
           },
         })) || [],
       classes: classes || [],
+      nearbyPlaces:
+        nearbyPlaces.map((place) => ({
+          name: place.name,
+          distance: place.distance,
+        })) || [],
+      nearbyBeaches:
+        nearbyBeaches.map((beach) => ({
+          name: beach.name,
+          distance: beach.distance,
+        })) || [],
+      nearbyAirports:
+        nearbyAirports.map((airport) => ({
+          name: airport.name,
+          distance: airport.distance,
+        })) || [],
+      nearbyRestaurants:
+        nearbyRestaurants.map((restaurant) => ({
+          name: restaurant.name,
+          distance: restaurant.distance,
+        })) || [],
       owner: owner,
     };
   } catch (error) {
@@ -719,7 +855,6 @@ export async function updateProperty(
         title: data.title,
         shortDescription: data.shortDescription,
         fullDescription: data.fullDescription || "",
-        nearbyRegion: data.nearbyRegion,
         aboutBuilding: data.aboutBuilding,
         maxGuests: data.maxGuests,
         bedrooms: data.bedrooms,
@@ -794,16 +929,10 @@ export async function updateProperty(
       })
       .where(eq(propertyLocationTable.propertyId, propertyId));
 
-    // Atualizar preços
+    // Atualizar serviços inclusos
     await db
       .update(propertyPricingTable)
       .set({
-        monthlyRent: data.monthlyRent.toString(),
-        dailyRate: data.dailyRate.toString(),
-        condominiumFee: data.condominiumFee?.toString() || "0",
-        iptuFee: data.iptuFee?.toString() || "0",
-        monthlyCleaningFee: data.monthlyCleaningFee?.toString() || "0",
-        otherFees: data.otherFees?.toString() || "0",
         includesKitchenUtensils: data.includesKitchenUtensils,
         includesFurniture: data.includesFurniture,
         includesElectricity: data.includesElectricity,
