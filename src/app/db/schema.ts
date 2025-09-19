@@ -239,6 +239,41 @@ export const propertyNearbyRestaurantsTable = pgTable(
   },
 );
 
+// Tabela de apartamentos
+export const propertyApartmentsTable = pgTable("property_apartments", {
+  id: serial("id").primaryKey(),
+  propertyId: varchar("property_id", { length: 21 })
+    .notNull()
+    .references(() => propertiesTable.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  totalBathrooms: integer("total_bathrooms").default(0).notNull(),
+  hasLivingRoom: boolean("has_living_room").default(false).notNull(),
+  livingRoomHasSofaBed: boolean("living_room_has_sofa_bed")
+    .default(false)
+    .notNull(),
+  hasKitchen: boolean("has_kitchen").default(false).notNull(),
+  kitchenHasStove: boolean("kitchen_has_stove").default(false).notNull(),
+  kitchenHasFridge: boolean("kitchen_has_fridge").default(false).notNull(),
+  kitchenHasMinibar: boolean("kitchen_has_minibar").default(false).notNull(),
+  hasBalcony: boolean("has_balcony").default(false).notNull(),
+  balconyHasSeaView: boolean("balcony_has_sea_view").default(false).notNull(),
+  hasCrib: boolean("has_crib").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Tabela de quartos dos apartamentos
+export const apartmentRoomsTable = pgTable("apartment_rooms", {
+  id: serial("id").primaryKey(),
+  apartmentId: integer("apartment_id")
+    .notNull()
+    .references(() => propertyApartmentsTable.id, { onDelete: "cascade" }),
+  roomNumber: integer("room_number").notNull(),
+  doubleBeds: integer("double_beds").default(0).notNull(),
+  singleBeds: integer("single_beds").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Tabela de regras da casa
 export const propertyHouseRulesTable = pgTable("property_house_rules", {
   id: serial("id").primaryKey(),
@@ -249,6 +284,7 @@ export const propertyHouseRulesTable = pgTable("property_house_rules", {
   checkOutRule: text("check_out_rule"), // Regra de saída
   cancellationRule: text("cancellation_rule"), // Regra de cancelamento/pré-pagamento
   childrenRule: text("children_rule"), // Regra sobre crianças
+  petsRule: text("pets_rule"), // Regra sobre pets
   bedsRule: text("beds_rule"), // Regra sobre camas
   ageRestrictionRule: text("age_restriction_rule"), // Restrições de idade
   groupsRule: text("groups_rule"), // Regra sobre grupos
@@ -344,6 +380,7 @@ export const propertiesRelations = relations(
     nearbyRestaurants: many(propertyNearbyRestaurantsTable),
     houseRules: one(propertyHouseRulesTable),
     paymentMethods: one(propertyPaymentMethodsTable),
+    apartments: many(propertyApartmentsTable),
   }),
 );
 
@@ -500,6 +537,27 @@ export const propertyPaymentMethodsRelations = relations(
     property: one(propertiesTable, {
       fields: [propertyPaymentMethodsTable.propertyId],
       references: [propertiesTable.id],
+    }),
+  }),
+);
+
+export const propertyApartmentsRelations = relations(
+  propertyApartmentsTable,
+  ({ one, many }) => ({
+    property: one(propertiesTable, {
+      fields: [propertyApartmentsTable.propertyId],
+      references: [propertiesTable.id],
+    }),
+    rooms: many(apartmentRoomsTable),
+  }),
+);
+
+export const apartmentRoomsRelations = relations(
+  apartmentRoomsTable,
+  ({ one }) => ({
+    apartment: one(propertyApartmentsTable, {
+      fields: [apartmentRoomsTable.apartmentId],
+      references: [propertyApartmentsTable.id],
     }),
   }),
 );

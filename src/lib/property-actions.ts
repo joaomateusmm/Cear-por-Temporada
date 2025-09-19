@@ -9,9 +9,11 @@ import path from "path";
 import { db } from "@/app/db";
 import {
   amenitiesTable,
+  apartmentRoomsTable,
   ownersTable,
   propertiesTable,
   propertyAmenitiesTable,
+  propertyApartmentsTable,
   propertyAvailabilityTable,
   propertyClassesTable,
   propertyHouseRulesTable,
@@ -120,6 +122,7 @@ interface FullProperty {
     checkOutRule: string | null;
     cancellationRule: string | null;
     childrenRule: string | null;
+    petsRule: string | null;
     bedsRule: string | null;
     ageRestrictionRule: string | null;
     groupsRule: string | null;
@@ -140,6 +143,26 @@ interface FullProperty {
     createdAt: Date;
     updatedAt: Date;
   } | null;
+  apartments?: Array<{
+    id?: number;
+    name: string;
+    totalBathrooms: number;
+    hasLivingRoom: boolean;
+    livingRoomHasSofaBed: boolean;
+    hasKitchen: boolean;
+    kitchenHasStove: boolean;
+    kitchenHasFridge: boolean;
+    kitchenHasMinibar: boolean;
+    hasBalcony: boolean;
+    balconyHasSeaView: boolean;
+    hasCrib: boolean;
+    rooms: Array<{
+      name: string;
+      doubleBeds: number;
+      singleBeds: number;
+      sofaBeds: number;
+    }>;
+  }>;
   owner?: {
     id: string;
     fullName: string;
@@ -212,11 +235,32 @@ export type PropertyFormData = {
   // Imagens
   images: string[];
 
+  // Apartamentos
+  apartments?: Array<{
+    name: string;
+    totalBathrooms: number;
+    hasLivingRoom: boolean;
+    livingRoomHasSofaBed: boolean;
+    hasKitchen: boolean;
+    kitchenHasStove: boolean;
+    kitchenHasFridge: boolean;
+    kitchenHasMinibar: boolean;
+    hasBalcony: boolean;
+    balconyHasSeaView: boolean;
+    hasCrib: boolean;
+    rooms: Array<{
+      roomNumber: number;
+      doubleBeds: number;
+      singleBeds: number;
+    }>;
+  }>;
+
   // Regras da Casa
   checkInRule?: string;
   checkOutRule?: string;
   cancellationRule?: string;
   childrenRule?: string;
+  petsRule?: string;
   bedsRule?: string;
   ageRestrictionRule?: string;
   groupsRule?: string;
@@ -458,6 +502,7 @@ export async function createProperty(data: PropertyFormData) {
       checkOutRule: data.checkOutRule || null,
       cancellationRule: data.cancellationRule || null,
       childrenRule: data.childrenRule || null,
+      petsRule: data.petsRule || null,
       bedsRule: data.bedsRule || null,
       ageRestrictionRule: data.ageRestrictionRule || null,
       groupsRule: data.groupsRule || null,
@@ -475,6 +520,42 @@ export async function createProperty(data: PropertyFormData) {
       acceptsPix: data.acceptsPix || false,
       acceptsCash: data.acceptsCash || false,
     });
+
+    // 9. Salvar apartamentos
+    if (data.apartments && data.apartments.length > 0) {
+      for (const apartment of data.apartments) {
+        // Inserir apartamento
+        const [insertedApartment] = await db
+          .insert(propertyApartmentsTable)
+          .values({
+            propertyId,
+            name: apartment.name,
+            totalBathrooms: apartment.totalBathrooms,
+            hasLivingRoom: apartment.hasLivingRoom,
+            livingRoomHasSofaBed: apartment.livingRoomHasSofaBed,
+            hasKitchen: apartment.hasKitchen,
+            kitchenHasStove: apartment.kitchenHasStove,
+            kitchenHasFridge: apartment.kitchenHasFridge,
+            kitchenHasMinibar: apartment.kitchenHasMinibar,
+            hasBalcony: apartment.hasBalcony,
+            balconyHasSeaView: apartment.balconyHasSeaView,
+            hasCrib: apartment.hasCrib,
+          })
+          .returning({ id: propertyApartmentsTable.id });
+
+        // Inserir quartos do apartamento
+        if (apartment.rooms && apartment.rooms.length > 0) {
+          const roomsData = apartment.rooms.map((room) => ({
+            apartmentId: insertedApartment.id,
+            roomNumber: room.roomNumber,
+            doubleBeds: room.doubleBeds,
+            singleBeds: room.singleBeds,
+          }));
+
+          await db.insert(apartmentRoomsTable).values(roomsData);
+        }
+      }
+    }
 
     return { success: true, propertyId };
   } catch (error) {
@@ -795,6 +876,32 @@ export async function getPropertyById(
       .from(propertyNearbyRestaurantsTable)
       .where(eq(propertyNearbyRestaurantsTable.propertyId, propertyId));
 
+    // Buscar apartamentos
+    const apartments = await db
+      .select()
+      .from(propertyApartmentsTable)
+      .where(eq(propertyApartmentsTable.propertyId, propertyId));
+
+    // Buscar quartos de cada apartamento
+    const apartmentsWithRooms = await Promise.all(
+      apartments.map(async (apartment) => {
+        const rooms = await db
+          .select()
+          .from(apartmentRoomsTable)
+          .where(eq(apartmentRoomsTable.apartmentId, apartment.id));
+
+        return {
+          ...apartment,
+          rooms: rooms.map((room) => ({
+            name: `Quarto ${room.roomNumber}`,
+            doubleBeds: room.doubleBeds,
+            singleBeds: room.singleBeds,
+            sofaBeds: 0, // Este campo não existe na tabela atual
+          })),
+        };
+      }),
+    );
+
     // Buscar regras da casa
     const houseRules = await db
       .select()
@@ -875,6 +982,7 @@ export async function getPropertyById(
           name: restaurant.name,
           distance: restaurant.distance,
         })) || [],
+      apartments: apartmentsWithRooms || [],
       houseRules: houseRules[0] || null,
       paymentMethods: paymentMethods[0] || null,
       owner: owner,

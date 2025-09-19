@@ -32,9 +32,8 @@ import {
   Refrigerator,
   Share2,
   Shirt,
+  Sofa,
   SquareCheck,
-  SquareM,
-  Toilet,
   TvMinimal,
   Users,
   Utensils,
@@ -110,6 +109,30 @@ interface AmenityWithIcon {
   included: boolean;
 }
 
+// Interface para tipagem dos quartos dos apartamentos
+interface ApartmentRoom {
+  name?: string;
+  doubleBeds?: number;
+  singleBeds?: number;
+  sofaBeds?: number;
+}
+
+// Interface para tipagem dos apartamentos
+interface PropertyApartment {
+  name?: string;
+  totalBathrooms?: number;
+  hasLivingRoom?: boolean;
+  livingRoomHasSofaBed?: boolean;
+  hasKitchen?: boolean;
+  kitchenHasStove?: boolean;
+  kitchenHasFridge?: boolean;
+  kitchenHasMinibar?: boolean;
+  hasBalcony?: boolean;
+  balconyHasSeaView?: boolean;
+  hasCrib?: boolean;
+  rooms?: ApartmentRoom[];
+}
+
 export default function PropertyPage() {
   const params = useParams();
   const id = params.id as string;
@@ -121,13 +144,16 @@ export default function PropertyPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
-  const [rooms, setRooms] = useState(property?.bedrooms || 1);
+  const [rooms] = useState(property?.bedrooms || 1);
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [showAllAmenities, setShowAllAmenities] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [copiedPropertyId, setCopiedPropertyId] = useState<string | null>(null);
+  const [selectedApartment, setSelectedApartment] = useState<number | null>(
+    null,
+  );
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   // URL base para compartilhamento
@@ -355,7 +381,7 @@ export default function PropertyPage() {
   const displayedAmenities =
     isMounted && shouldShowViewAllButton && showAllAmenities
       ? amenitiesWithIcons
-      : amenitiesWithIcons.slice(0, Math.min(6, totalAmenities));
+      : amenitiesWithIcons.slice(0, Math.min(10, totalAmenities));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -595,7 +621,6 @@ export default function PropertyPage() {
                       <TooltipTrigger>
                         <CircleQuestionMark className="h-5 w-5 text-gray-900" />
                       </TooltipTrigger>
-                      {/* Prevent any internal scrollbar: make overflow visible and remove max-height constraints */}
                       <TooltipContent className="max-h-none overflow-visible border border-gray-300/50 bg-white">
                         <p className="py-3 text-sm leading-relaxed text-gray-900">
                           Cada imóvel tem políticas diferentes, leia em <br />
@@ -670,7 +695,7 @@ export default function PropertyPage() {
                       <Label className="mt-3 text-sm font-medium">
                         Crianças
                       </Label>
-                      <div className="mt-2 flex items-center justify-between">
+                      <div className="mt-2 flex items-center justify-between py-3">
                         <Button
                           variant="outline"
                           size="sm"
@@ -699,35 +724,154 @@ export default function PropertyPage() {
                       </p>
                     )}
 
-                    <div>
-                      <Label className="text-sm font-medium">Cômodos</Label>
-                      <div className="mt-2 flex items-center justify-between">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setRooms(Math.max(1, rooms - 1))}
-                          disabled={rooms <= 1}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="text-lg font-semibold">{rooms}</span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setRooms(
-                              Math.min(property.bedrooms || 1, rooms + 1),
-                            )
-                          }
-                          disabled={rooms >= (property.bedrooms || 1)}
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      </div>
-                      <p className="mt-2 text-xs text-gray-500">
-                        Máx. {property.bedrooms} cômodos
-                      </p>
-                    </div>
+                    <div className="border-t pt-1"></div>
+
+                    {/* Seleção de Apartamentos Mobile */}
+                    {property.apartments && property.apartments.length > 0 && (
+                      <>
+                        <Label className="mt-3 text-sm font-medium">
+                          Selecionar Apartamento
+                        </Label>
+
+                        <div className="scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-100 hover:scrollbar-thumb-gray-100 flex gap-3 overflow-x-auto pb-2">
+                          {property.apartments.map(
+                            (
+                              apartment: PropertyApartment,
+                              apartmentIndex: number,
+                            ) => (
+                              <div
+                                key={apartmentIndex}
+                                className={`flex flex-shrink-0 cursor-pointer flex-col items-center duration-200 ${
+                                  selectedApartment === apartmentIndex
+                                    ? "opacity-100"
+                                    : "opacity-70 hover:opacity-100"
+                                }`}
+                                onClick={() =>
+                                  setSelectedApartment(apartmentIndex)
+                                }
+                              >
+                                <div
+                                  className={`flex h-auto w-auto flex-col space-y-3 rounded-lg border-2 px-2 py-3 shadow-md ${
+                                    selectedApartment === apartmentIndex
+                                      ? "border-gray-500 bg-gray-50"
+                                      : "border-gray-200"
+                                  }`}
+                                >
+                                  {/* Quartos */}
+                                  {apartment.rooms?.map(
+                                    (
+                                      room: ApartmentRoom,
+                                      roomIndex: number,
+                                    ) => (
+                                      <div key={roomIndex}>
+                                        <div className="mb-1 text-xs font-bold text-gray-800">
+                                          {room.name ||
+                                            `Quarto ${roomIndex + 1}`}
+                                          :
+                                        </div>
+                                        {(room.doubleBeds || 0) > 0 && (
+                                          <div className="mb-1 flex items-center gap-1">
+                                            {Array.from({
+                                              length: room.doubleBeds || 0,
+                                            }).map((_, index) => (
+                                              <BedDouble
+                                                key={index}
+                                                className="h-4 w-4 text-gray-500"
+                                              />
+                                            ))}
+                                            <p className="ml-1 text-xs text-gray-500">
+                                              {room.doubleBeds} cama(s) casal
+                                            </p>
+                                          </div>
+                                        )}
+                                        {(room.singleBeds || 0) > 0 && (
+                                          <div className="mb-1 flex items-center gap-1">
+                                            {Array.from({
+                                              length: room.singleBeds || 0,
+                                            }).map((_, index) => (
+                                              <Bed
+                                                key={index}
+                                                className="h-4 w-4 text-gray-500"
+                                              />
+                                            ))}
+                                            <p className="ml-1 text-xs text-gray-500">
+                                              {room.singleBeds} cama(s) solteiro
+                                            </p>
+                                          </div>
+                                        )}
+                                        {(room.sofaBeds || 0) > 0 && (
+                                          <div className="mb-1 flex items-center gap-1">
+                                            {Array.from({
+                                              length: room.sofaBeds || 0,
+                                            }).map((_, index) => (
+                                              <Sofa
+                                                key={index}
+                                                className="h-4 w-4 text-gray-500"
+                                              />
+                                            ))}
+                                            <p className="ml-1 text-xs text-gray-500">
+                                              {room.sofaBeds} sofá-cama(s)
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ),
+                                  )}
+
+                                  {/* Outras informações */}
+                                  {apartment.livingRoomHasSofaBed && (
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Sala de estar:
+                                      </p>
+                                      <Sofa className="h-4 w-4 text-gray-500" />
+                                      <p className="text-xs text-gray-500">
+                                        Com sofá-cama
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {(apartment.totalBathrooms || 0) > 0 && (
+                                    <div className="flex items-center gap-1">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Banheiros:
+                                      </p>
+                                      {Array.from({
+                                        length: apartment.totalBathrooms || 0,
+                                      }).map((_, index) => (
+                                        <Bath
+                                          key={index}
+                                          className="h-4 w-4 text-gray-500"
+                                        />
+                                      ))}
+                                      <p className="ml-1 text-xs text-gray-500">
+                                        {apartment.totalBathrooms} banheiro(s)
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {apartment.hasCrib && (
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Berço:
+                                      </p>
+                                      <Baby className="h-4 w-4 text-gray-500" />
+                                      <p className="text-xs text-gray-500">
+                                        Disponível
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                                <p className="my-2 w-35 text-center text-xs font-medium text-gray-800">
+                                  {apartment.name ||
+                                    `Apartamento ${apartmentIndex + 1}`}
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Valores */}
@@ -770,7 +914,84 @@ export default function PropertyPage() {
                         return;
                       }
 
-                      const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
+                      const generateApartmentDetails = () => {
+                        if (
+                          selectedApartment === null ||
+                          !property.apartments ||
+                          !property.apartments[selectedApartment]
+                        ) {
+                          return "";
+                        }
+
+                        const apartment =
+                          property.apartments[selectedApartment];
+                        let apartmentDetails = `\n🏠 *Apartamento: ${apartment.name || `Apartamento ${selectedApartment + 1}`}*`;
+
+                        // Quartos
+                        if (apartment.rooms && apartment.rooms.length > 0) {
+                          apartmentDetails += "\n\n🛏️ *Quartos:*";
+                          apartment.rooms.forEach(
+                            (room: ApartmentRoom, index: number) => {
+                              const roomName =
+                                room.name || `Quarto ${index + 1}`;
+                              apartmentDetails += `\n• ${roomName}:`;
+
+                              if (room.doubleBeds && room.doubleBeds > 0) {
+                                apartmentDetails += ` ${room.doubleBeds} cama(s) casal`;
+                              }
+                              if (room.singleBeds && room.singleBeds > 0) {
+                                apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
+                              }
+                              if (room.sofaBeds && room.sofaBeds > 0) {
+                                apartmentDetails += `${room.doubleBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
+                              }
+                            },
+                          );
+                        }
+
+                        // Sala de estar
+                        if (apartment.livingRoomHasSofaBed) {
+                          apartmentDetails +=
+                            "\n🛋️ *Sala de estar:* Com sofá-cama";
+                        }
+
+                        // Banheiros
+                        if (
+                          apartment.totalBathrooms &&
+                          apartment.totalBathrooms > 0
+                        ) {
+                          apartmentDetails += `\n🚿 *Banheiros:* ${apartment.totalBathrooms} banheiro(s)`;
+                        }
+
+                        // Cozinha
+                        if (apartment.hasKitchen) {
+                          apartmentDetails += "\n🍳 *Cozinha:* Disponível";
+                          if (apartment.kitchenHasStove)
+                            apartmentDetails += " (com fogão)";
+                          if (apartment.kitchenHasFridge)
+                            apartmentDetails += " (com geladeira)";
+                          if (apartment.kitchenHasMinibar)
+                            apartmentDetails += " (com frigobar)";
+                        }
+
+                        // Varanda
+                        if (apartment.hasBalcony) {
+                          apartmentDetails += "\n🌅 *Varanda:* Disponível";
+                          if (apartment.balconyHasSeaView)
+                            apartmentDetails += " (com vista para o mar)";
+                        }
+
+                        // Berço
+                        if (apartment.hasCrib) {
+                          apartmentDetails += "\n👶 *Berço:* Disponível";
+                        }
+
+                        return apartmentDetails;
+                      };
+
+                      const selectedApartmentInfo = generateApartmentDetails();
+
+                      const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* 🏠\n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}${selectedApartmentInfo}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
                       window.open(whatsappUrl, "_blank");
                     }}
                   >
@@ -782,77 +1003,6 @@ export default function PropertyPage() {
                   </p>
                 </CardContent>
               </Card>
-
-              {/* Grid de Informações */}
-              <div className="grid cursor-default grid-cols-2 gap-4 md:grid-cols-3">
-                <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                  <div className="flex items-center gap-5">
-                    <Users className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <div className="text-sm text-gray-600">Hóspedes</div>
-                      <div className="font-semibold">{property.maxGuests}</div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                  <div className="flex items-center gap-5">
-                    <BedDouble className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <div className="text-sm text-gray-600">Quartos</div>
-                      <div className="font-semibold">{property.bedrooms}</div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                  <div className="flex items-center gap-5">
-                    <Toilet className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <div className="text-sm text-gray-600">Banheiros</div>
-                      <div className="font-semibold">{property.bathrooms}</div>
-                    </div>
-                  </div>
-                </Card>
-
-                <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                  <div className="flex items-center gap-5">
-                    <Car className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <div className="text-sm text-gray-600">Vagas</div>
-                      <div className="font-semibold">
-                        {property.parkingSpaces}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-
-                {property.areaM2 && (
-                  <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                    <div className="flex items-center gap-5">
-                      <SquareM className="h-5 w-5 text-gray-600" />
-                      <div>
-                        <div className="text-sm text-gray-600">Área</div>
-                        <div className="font-semibold">{property.areaM2}m²</div>
-                      </div>
-                    </div>
-                  </Card>
-                )}
-
-                <Card className="p-4 shadow-md duration-700 hover:scale-[1.03]">
-                  <div className="flex items-center gap-5">
-                    <Dog className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <div className="text-sm text-gray-600">Aceita Pet?</div>
-                      <div
-                        className={`font-semibold ${property.allowsPets ? "text-gray-800" : "text-gray-800"}`}
-                      >
-                        {property.allowsPets ? "Sim" : "Não"}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </div>
             </div>
 
             {/* O que tem no imóvel */}
@@ -899,6 +1049,23 @@ export default function PropertyPage() {
                     </Button>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Sobre o imóvel */}
+            <Card className="mt-8">
+              <CardHeader>
+                <CardTitle className="text-xl text-gray-900">
+                  Sobre esse imóvel
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4 leading-relaxed text-gray-700">
+                  <p>{property.fullDescription}</p>
+                  <p className="text-xs text-gray-600">
+                    {property.shortDescription}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -981,7 +1148,7 @@ export default function PropertyPage() {
                     </div>
 
                     <Label className="mt-3 text-sm font-medium">Crianças</Label>
-                    <div className="mt-2 flex items-center justify-between">
+                    <div className="mt-2 flex items-center justify-between py-3">
                       <Button
                         variant="outline"
                         size="sm"
@@ -1002,6 +1169,7 @@ export default function PropertyPage() {
                       </Button>
                     </div>
                   </div>
+                  {/* Aviso só aparece quando exceder o limite recomendado */}
                   {adults + children > property.maxGuests && (
                     <p className="mt-2 text-xs text-gray-500">
                       O recomendado pelo anfitrião é no máx.{" "}
@@ -1009,33 +1177,150 @@ export default function PropertyPage() {
                     </p>
                   )}
 
-                  <div>
-                    <Label className="text-sm font-medium">Cômodos</Label>
-                    <div className="mt-2 flex items-center justify-between">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setRooms(Math.max(1, rooms - 1))}
-                        disabled={rooms <= 1}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                      <span className="text-lg font-semibold">{rooms}</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setRooms(Math.min(property.bedrooms || 1, rooms + 1))
-                        }
-                        disabled={rooms >= (property.bedrooms || 1)}
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <p className="mt-2 text-xs text-gray-500">
-                      Máx. {property.bedrooms} cômodos
-                    </p>
-                  </div>
+                  <div className="border-t pt-1"></div>
+
+                  {/* Seleção de Apartamentos Mobile */}
+                  {property.apartments && property.apartments.length > 0 && (
+                    <>
+                      <Label className="mt-3 text-sm font-medium">
+                        Selecionar Apartamento
+                      </Label>
+
+                      <div className="scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-100 hover:scrollbar-thumb-gray-100 flex gap-3 overflow-x-auto pb-2">
+                        {property.apartments.map(
+                          (
+                            apartment: PropertyApartment,
+                            apartmentIndex: number,
+                          ) => (
+                            <div
+                              key={apartmentIndex}
+                              className={`flex flex-shrink-0 cursor-pointer flex-col items-center duration-200 ${
+                                selectedApartment === apartmentIndex
+                                  ? "opacity-100"
+                                  : "opacity-70 hover:opacity-100"
+                              }`}
+                              onClick={() =>
+                                setSelectedApartment(apartmentIndex)
+                              }
+                            >
+                              <div
+                                className={`flex h-auto w-auto flex-col space-y-3 rounded-lg border-2 px-2 py-3 shadow-md ${
+                                  selectedApartment === apartmentIndex
+                                    ? "border-gray-500 bg-gray-50"
+                                    : "border-gray-200"
+                                }`}
+                              >
+                                {/* Quartos */}
+                                {apartment.rooms?.map(
+                                  (room: ApartmentRoom, roomIndex: number) => (
+                                    <div key={roomIndex}>
+                                      <div className="mb-1 text-xs font-bold text-gray-800">
+                                        {room.name || `Quarto ${roomIndex + 1}`}
+                                        :
+                                      </div>
+                                      {(room.doubleBeds || 0) > 0 && (
+                                        <div className="mb-1 flex items-center gap-1">
+                                          {Array.from({
+                                            length: room.doubleBeds || 0,
+                                          }).map((_, index) => (
+                                            <BedDouble
+                                              key={index}
+                                              className="h-4 w-4 text-gray-500"
+                                            />
+                                          ))}
+                                          <p className="ml-1 text-xs text-gray-500">
+                                            {room.doubleBeds} cama(s) casal
+                                          </p>
+                                        </div>
+                                      )}
+                                      {(room.singleBeds || 0) > 0 && (
+                                        <div className="mb-1 flex items-center gap-1">
+                                          {Array.from({
+                                            length: room.singleBeds || 0,
+                                          }).map((_, index) => (
+                                            <Bed
+                                              key={index}
+                                              className="h-4 w-4 text-gray-500"
+                                            />
+                                          ))}
+                                          <p className="ml-1 text-xs text-gray-500">
+                                            {room.singleBeds} cama(s) solteiro
+                                          </p>
+                                        </div>
+                                      )}
+                                      {(room.sofaBeds || 0) > 0 && (
+                                        <div className="mb-1 flex items-center gap-1">
+                                          {Array.from({
+                                            length: room.sofaBeds || 0,
+                                          }).map((_, index) => (
+                                            <Sofa
+                                              key={index}
+                                              className="h-4 w-4 text-gray-500"
+                                            />
+                                          ))}
+                                          <p className="ml-1 text-xs text-gray-500">
+                                            {room.sofaBeds} sofá-cama(s)
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ),
+                                )}
+
+                                {/* Outras informações */}
+                                {apartment.livingRoomHasSofaBed && (
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-xs font-bold text-gray-800">
+                                      Sala de estar:
+                                    </p>
+                                    <Sofa className="h-4 w-4 text-gray-500" />
+                                    <p className="text-xs text-gray-500">
+                                      Com sofá-cama
+                                    </p>
+                                  </div>
+                                )}
+
+                                {(apartment.totalBathrooms || 0) > 0 && (
+                                  <div className="flex items-center gap-1">
+                                    <p className="text-xs font-bold text-gray-800">
+                                      Banheiros:
+                                    </p>
+                                    {Array.from({
+                                      length: apartment.totalBathrooms || 0,
+                                    }).map((_, index) => (
+                                      <Bath
+                                        key={index}
+                                        className="h-4 w-4 text-gray-500"
+                                      />
+                                    ))}
+                                    <p className="ml-1 text-xs text-gray-500">
+                                      {apartment.totalBathrooms} banheiro(s)
+                                    </p>
+                                  </div>
+                                )}
+
+                                {apartment.hasCrib && (
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-xs font-bold text-gray-800">
+                                      Berço:
+                                    </p>
+                                    <Baby className="h-4 w-4 text-gray-500" />
+                                    <p className="text-xs text-gray-500">
+                                      Disponível
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                              <p className="my-2 w-35 text-center text-xs font-medium text-gray-800">
+                                {apartment.name ||
+                                  `Apartamento ${apartmentIndex + 1}`}
+                              </p>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Valores */}
@@ -1071,7 +1356,82 @@ export default function PropertyPage() {
                       return;
                     }
 
-                    const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* \n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
+                    const generateApartmentDetails = () => {
+                      if (
+                        selectedApartment === null ||
+                        !property.apartments ||
+                        !property.apartments[selectedApartment]
+                      ) {
+                        return "";
+                      }
+
+                      const apartment = property.apartments[selectedApartment];
+                      let apartmentDetails = `\n🏠 *Apartamento: ${apartment.name || `Apartamento ${selectedApartment + 1}`}*`;
+
+                      // Quartos
+                      if (apartment.rooms && apartment.rooms.length > 0) {
+                        apartmentDetails += "\n\n🛏️ *Quartos:*";
+                        apartment.rooms.forEach(
+                          (room: ApartmentRoom, index: number) => {
+                            const roomName = room.name || `Quarto ${index + 1}`;
+                            apartmentDetails += `\n• ${roomName}:`;
+
+                            if (room.doubleBeds && room.doubleBeds > 0) {
+                              apartmentDetails += ` ${room.doubleBeds} cama(s) casal`;
+                            }
+                            if (room.singleBeds && room.singleBeds > 0) {
+                              apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
+                            }
+                            if (room.sofaBeds && room.sofaBeds > 0) {
+                              apartmentDetails += `${room.doubleBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
+                            }
+                          },
+                        );
+                      }
+
+                      // Sala de estar
+                      if (apartment.livingRoomHasSofaBed) {
+                        apartmentDetails +=
+                          "\n🛋️ *Sala de estar:* Com sofá-cama";
+                      }
+
+                      // Banheiros
+                      if (
+                        apartment.totalBathrooms &&
+                        apartment.totalBathrooms > 0
+                      ) {
+                        apartmentDetails += `\n🚿 *Banheiros:* ${apartment.totalBathrooms} banheiro(s)`;
+                      }
+
+                      // Cozinha
+                      if (apartment.hasKitchen) {
+                        apartmentDetails += "\n🍳 *Cozinha:* Disponível";
+                        if (apartment.kitchenHasStove)
+                          apartmentDetails += " (com fogão)";
+                        if (apartment.kitchenHasFridge)
+                          apartmentDetails += " (com geladeira)";
+                        if (apartment.kitchenHasMinibar)
+                          apartmentDetails += " (com frigobar)";
+                      }
+
+                      // Varanda
+                      if (apartment.hasBalcony) {
+                        apartmentDetails += "\n🌅 *Varanda:* Disponível";
+                        if (apartment.balconyHasSeaView)
+                          apartmentDetails += " (com vista para o mar)";
+                      }
+
+                      // Berço
+                      if (apartment.hasCrib) {
+                        apartmentDetails += "\n👶 *Berço:* Disponível";
+                      }
+
+                      return apartmentDetails;
+                    };
+
+                    const selectedApartmentInfo = generateApartmentDetails();
+
+                    const whatsappUrl = `https://api.whatsapp.com/send/?phone=5585992718222&text=${encodeURIComponent(`🏠 *RESERVA DE IMÓVEL* \n\nOlá! Gostaria de fazer uma reserva para o imóvel:\n\n📝 *${property.title}*\n📍 ${location}\n💰 Valor: ${nightlyRate > 0 ? `R$ ${nightlyRate}/noite` : "A combinar"}${selectedApartmentInfo}\n\n👥 Hóspedes: ${adults} adultos, ${children} crianças\n🚪 Cômodos: ${rooms}\n📅 Check-in: ${checkIn}\n📅 Check-out: ${checkOut}\n\nPor favor, me ajude a finalizar esta reserva! 😊`)}&type=phone_number&app_absent=0`;
                     window.open(whatsappUrl, "_blank");
                   }}
                 >
@@ -1178,6 +1538,30 @@ export default function PropertyPage() {
                 </div>
               </CardContent>
             </Card>
+            {/* Grid de Informações */}
+            <div className="grid cursor-default grid-cols-2 gap-4">
+              <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
+                <div className="flex items-center gap-5">
+                  <Users className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <div className="text-sm text-gray-600">Hóspedes</div>
+                    <div className="font-semibold">{property.maxGuests}</div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
+                <div className="flex items-center gap-5">
+                  <Car className="h-5 w-5 text-gray-600" />
+                  <div>
+                    <div className="text-sm text-gray-600">Vagas</div>
+                    <div className="font-semibold">
+                      {property.parkingSpaces}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
 
@@ -1214,23 +1598,6 @@ export default function PropertyPage() {
             </CardContent>
           </Card>
         </div> */}
-
-        {/* Sobre o imóvel */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="text-xl text-gray-900">
-              Sobre esse imóvel
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 leading-relaxed text-gray-700">
-              <p>{property.fullDescription}</p>
-              <p className="text-xs text-gray-600">
-                {property.shortDescription}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Sobre o Prédio */}
         {property.aboutBuilding && (
@@ -1437,11 +1804,6 @@ export default function PropertyPage() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Entrada</h4>
-                        {property.checkInTime && (
-                          <p className="text-sm font-medium text-gray-700">
-                            A partir das {property.checkInTime}
-                          </p>
-                        )}
                       </div>
                     </div>
                     <div className="md:w-2/3">
@@ -1461,11 +1823,6 @@ export default function PropertyPage() {
                       </div>
                       <div>
                         <h4 className="font-semibold text-gray-900">Saída</h4>
-                        {property.checkOutTime && (
-                          <p className="text-sm font-medium text-gray-700">
-                            Até {property.checkOutTime}
-                          </p>
-                        )}
                       </div>
                     </div>
                     <div className="md:w-2/3">
@@ -1513,6 +1870,25 @@ export default function PropertyPage() {
                     <div className="md:w-2/3">
                       <p className="text-sm leading-relaxed text-gray-600">
                         {property.houseRules.childrenRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pets */}
+                {property.houseRules?.petsRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Dog className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Pets</h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.petsRule}
                       </p>
                     </div>
                   </div>

@@ -172,23 +172,6 @@ export const createColumns = (
     },
   },
   {
-    accessorKey: "dailyRate",
-    header: () => <div className="text-right">Diária</div>,
-    cell: ({ row }) => {
-      const dailyRate = row.getValue("dailyRate") as string | null;
-      const formatted = dailyRate
-        ? Number(dailyRate).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })
-        : "R$ 0,00";
-
-      return (
-        <div className="text-right font-medium text-slate-200">{formatted}</div>
-      );
-    },
-  },
-  {
     accessorKey: "maxGuests",
     header: "Capacidade",
     cell: ({ row }) => (

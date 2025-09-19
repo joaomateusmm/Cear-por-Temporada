@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  BedDouble,
-  Check,
-  Copy,
-  MapPin,
-  Share2,
-  Toilet,
-  Users,
-} from "lucide-react";
+import { Check, Copy, MapPin, Share2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -113,31 +105,13 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                   <span className="text-sm text-gray-600">{location}</span>
                 </div>
 
-                <p className="mb-4 line-clamp-2 text-sm text-gray-600">
+                <p className="line-clamp-2 text-sm text-gray-600">
                   {property.shortDescription}
                 </p>
-
-                <div className="mb-4 flex items-center gap-5 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <span className="flex items-center gap-1">
-                      {property.maxGuests} <Users className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="flex items-center gap-1">
-                      {property.bedrooms} <BedDouble className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <span className="flex items-center gap-1">
-                      {property.bathrooms} <Toilet className="h-4 w-4" />
-                    </span>
-                  </div>
-                </div>
               </CardContent>
             </Link>
 
-            <CardContent className="px-6 pt-0 pb-6">
+            <CardContent className="px-6">
               <div className="flex items-center justify-between">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -206,38 +180,6 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                           >
                             {property.allowsPets ? "Sim" : "Não"}
                           </span>
-                        </div>
-                      </div>
-
-                      {/* Preços */}
-                      <div className="border-t pt-3">
-                        <h4 className="mb-2 font-medium text-gray-900">
-                          Preços
-                        </h4>
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="space-y-1">
-                            <span className="font-medium text-gray-700">
-                              Diária:{" "}
-                            </span>
-                            <span className="font-semibold text-green-600">
-                              {parseFloat(property.pricing.dailyRate || "0") ===
-                              0
-                                ? "Valor a combinar"
-                                : `R$ ${property.pricing.dailyRate}/dia`}
-                            </span>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="font-medium text-gray-700">
-                              Mensal:{" "}
-                            </span>
-                            <span className="font-semibold text-green-600">
-                              {parseFloat(
-                                property.pricing.monthlyRent || "0",
-                              ) === 0
-                                ? "Valor a combinar"
-                                : `R$ ${property.pricing.monthlyRent}/mês`}
-                            </span>
-                          </div>
                         </div>
                       </div>
 

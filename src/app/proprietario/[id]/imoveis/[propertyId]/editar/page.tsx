@@ -3,16 +3,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
+  BedDouble,
   Building2,
   Camera,
+  ChefHat,
+  Eye,
   Loader,
   MapPin,
   Palmtree,
   Plus,
-  Trash2,
+  ShowerHead,
+  Sofa,
+  Trash,
   User,
   Utensils,
-  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +40,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -156,6 +159,43 @@ const propertyFormSchema = z.object({
   bedsRule: z.string().optional(),
   ageRestrictionRule: z.string().optional(),
   groupsRule: z.string().optional(),
+  petsRule: z.string().optional(),
+
+  // Apartamentos
+  apartments: z
+    .array(
+      z.object({
+        name: z.string().min(1, "Nome do apartamento é obrigatório"),
+        // Campos originais do schema anterior
+        accommodates: z.number().min(1, "Deve acomodar pelo menos 1 pessoa"),
+        hasAirConditioning: z.boolean().default(false),
+        hasBalcony: z.boolean().default(false),
+        hasKitchen: z.boolean().default(false),
+        hasPrivateBathroom: z.boolean().default(false),
+        hasSeaView: z.boolean().default(false),
+        hasWifi: z.boolean().default(false),
+        // Campos necessários para PropertyFormData
+        totalBathrooms: z.number().min(0).default(0),
+        hasLivingRoom: z.boolean().default(false),
+        livingRoomHasSofaBed: z.boolean().default(false),
+        kitchenHasStove: z.boolean().default(false),
+        kitchenHasFridge: z.boolean().default(false),
+        kitchenHasMinibar: z.boolean().default(false),
+        balconyHasSeaView: z.boolean().default(false),
+        hasCrib: z.boolean().default(false),
+        rooms: z
+          .array(
+            z.object({
+              name: z.string().min(1, "Nome do cômodo é obrigatório"),
+              doubleBeds: z.number().min(0).default(0),
+              singleBeds: z.number().min(0).default(0),
+              sofaBeds: z.number().min(0).default(0),
+            }),
+          )
+          .min(1, "Adicione pelo menos um cômodo"),
+      }),
+    )
+    .default([]),
 
   // Métodos de pagamento aceitos
   acceptsVisa: z.boolean().default(false),
@@ -168,10 +208,56 @@ const propertyFormSchema = z.object({
   acceptsCash: z.boolean().default(false),
 });
 
+const popularDestinations = [
+  "Fortaleza",
+  "Caucaia",
+  "Aquiraz",
+  "Canoa Quebrada",
+  "Jericoacoara",
+  "Morro Branco",
+  "Taiba",
+  "Paracuru",
+  "Lagoinha",
+  "Mundaú",
+  "Baleia",
+  "Flecheiras",
+  "Parajuru",
+  "Águas Belas",
+  "Uruau",
+];
+
 interface Amenity {
   id: number;
   name: string;
   category: string;
+}
+
+interface ApartmentRoom {
+  name: string;
+  doubleBeds: number;
+  singleBeds: number;
+  sofaBeds: number;
+}
+
+interface PropertyApartment {
+  name: string;
+  accommodates: number;
+  hasAirConditioning: boolean;
+  hasBalcony: boolean;
+  hasKitchen: boolean;
+  hasPrivateBathroom: boolean;
+  hasSeaView: boolean;
+  hasWifi: boolean;
+  rooms: ApartmentRoom[];
+  // Additional fields used in the form - TODOS os campos do PropertyFormData
+  totalBathrooms: number;
+  hasLivingRoom: boolean;
+  livingRoomHasSofaBed: boolean;
+  kitchenHasStove: boolean;
+  kitchenHasFridge: boolean;
+  kitchenHasMinibar: boolean;
+  balconyHasSeaView: boolean;
+  hasCrib: boolean;
 }
 
 interface OwnerSession {
@@ -252,6 +338,8 @@ export default function EditPropertyPage() {
       bedsRule: "",
       ageRestrictionRule: "",
       groupsRule: "",
+      petsRule: "",
+      apartments: [],
       acceptsVisa: false,
       acceptsAmericanExpress: false,
       acceptsMasterCard: false,
@@ -431,6 +519,7 @@ export default function EditPropertyPage() {
             propertyData.houseRules.ageRestrictionRule || "",
           );
           form.setValue("groupsRule", propertyData.houseRules.groupsRule || "");
+          form.setValue("petsRule", propertyData.houseRules.petsRule || "");
         }
 
         // Preencher métodos de pagamento
@@ -507,6 +596,74 @@ export default function EditPropertyPage() {
         setUploadedImages(imageUrls);
         form.setValue("images", imageUrls);
 
+        // Preencher apartamentos
+        if (propertyData.apartments && propertyData.apartments.length > 0) {
+          const apartmentsData = propertyData.apartments.map(
+            (apt: {
+              name?: string;
+              accommodates?: number;
+              hasAirConditioning?: boolean;
+              hasBalcony?: boolean;
+              hasKitchen?: boolean;
+              hasPrivateBathroom?: boolean;
+              hasSeaView?: boolean;
+              hasWifi?: boolean;
+              totalBathrooms?: number;
+              hasLivingRoom?: boolean;
+              livingRoomHasSofaBed?: boolean;
+              kitchenHasStove?: boolean;
+              kitchenHasFridge?: boolean;
+              kitchenHasMinibar?: boolean;
+              balconyHasSeaView?: boolean;
+              hasCrib?: boolean;
+              rooms?: {
+                name?: string;
+                doubleBeds?: number;
+                singleBeds?: number;
+                sofaBeds?: number;
+              }[];
+            }) => ({
+              name: apt.name || "",
+              accommodates: apt.accommodates || 1,
+              hasAirConditioning: apt.hasAirConditioning || false,
+              hasBalcony: apt.hasBalcony || false,
+              hasKitchen: apt.hasKitchen || false,
+              hasPrivateBathroom: apt.hasPrivateBathroom || false,
+              hasSeaView: apt.hasSeaView || false,
+              hasWifi: apt.hasWifi || false,
+              totalBathrooms: apt.totalBathrooms || 0,
+              hasLivingRoom: apt.hasLivingRoom || false,
+              livingRoomHasSofaBed: apt.livingRoomHasSofaBed || false,
+              kitchenHasStove: apt.kitchenHasStove || false,
+              kitchenHasFridge: apt.kitchenHasFridge || false,
+              kitchenHasMinibar: apt.kitchenHasMinibar || false,
+              balconyHasSeaView: apt.balconyHasSeaView || false,
+              hasCrib: apt.hasCrib || false,
+              rooms: apt.rooms?.map(
+                (room: {
+                  name?: string;
+                  doubleBeds?: number;
+                  singleBeds?: number;
+                  sofaBeds?: number;
+                }) => ({
+                  name: room.name || "",
+                  doubleBeds: room.doubleBeds || 0,
+                  singleBeds: room.singleBeds || 0,
+                  sofaBeds: room.sofaBeds || 0,
+                }),
+              ) || [
+                {
+                  name: "Quarto 1",
+                  doubleBeds: 0,
+                  singleBeds: 0,
+                  sofaBeds: 0,
+                },
+              ],
+            }),
+          );
+          form.setValue("apartments", apartmentsData);
+        }
+
         // Preencher dados do proprietário - usar dados atualizados quando disponível
         const ownerToUse = ownerData || propertyData.owner;
         if (ownerToUse) {
@@ -555,8 +712,6 @@ export default function EditPropertyPage() {
   ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-
-    console.log("🚀 Iniciando upload:", { files: files.length, isOwnerImage });
     setIsUploading(true);
 
     try {
@@ -571,24 +726,14 @@ export default function EditPropertyPage() {
       const type = isOwnerImage ? "profiles" : "properties";
       formData.append("type", type);
 
-      console.log("📤 Enviando para API:", { type, filesCount: files.length });
-
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      console.log("📨 Resposta da API:", {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-      });
-
       const result = await response.json();
-      console.log("📋 Dados da resposta:", result);
 
       if (isOwnerImage && result.files && result.files.length > 0) {
-        console.log("👤 Atualizando foto do owner:", result.files[0]);
         setUploadedOwnerImage(result.files[0]);
         form.setValue("ownerProfileImage", result.files[0]);
         toast.success(
@@ -597,15 +742,9 @@ export default function EditPropertyPage() {
             : "Foto de perfil enviada com sucesso!",
         );
       } else if (result.files && result.files.length > 0) {
-        console.log("🏠 Atualizando imagens do imóvel:", {
-          antigas: uploadedImages.length,
-          novas: result.files.length,
-          total: uploadedImages.length + result.files.length,
-        });
         const newImages = [...uploadedImages, ...result.files];
         setUploadedImages(newImages);
         form.setValue("images", newImages);
-        console.log("✅ Estado atualizado:", { uploadedImages: newImages });
         toast.success(
           result.service === "cloudinary"
             ? `${result.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
@@ -633,23 +772,11 @@ export default function EditPropertyPage() {
   };
 
   const removeImage = (index: number) => {
-    console.log("🗑️ Removendo imagem:", {
-      index,
-      totalImages: uploadedImages.length,
-      imageUrl: uploadedImages[index],
-    });
-
     const newImages = uploadedImages.filter((_, i) => i !== index);
-    console.log("📝 Novas imagens após remoção:", {
-      antes: uploadedImages.length,
-      depois: newImages.length,
-      newImages,
-    });
 
     setUploadedImages(newImages);
     form.setValue("images", newImages);
 
-    console.log("✅ Estado atualizado após remoção");
     toast.success(`Imagem ${index + 1} removida com sucesso!`);
   };
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
@@ -708,7 +835,7 @@ export default function EditPropertyPage() {
         maxGuests: values.maxGuests,
         bedrooms: values.bedrooms,
         bathrooms: values.bathrooms,
-        parkingSpaces: values.parkingSpaces || 0,
+        parkingSpaces: values.parkingSpaces ?? 0,
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
         propertyStyle: values.propertyStyle.join(", "),
@@ -749,6 +876,28 @@ export default function EditPropertyPage() {
         bedsRule: values.bedsRule,
         ageRestrictionRule: values.ageRestrictionRule,
         groupsRule: values.groupsRule,
+        petsRule: values.petsRule,
+
+        // Apartamentos - transformando para PropertyFormData
+        apartments: values.apartments?.map((apt) => ({
+          name: apt.name,
+          totalBathrooms: apt.totalBathrooms || 0,
+          hasLivingRoom: apt.hasLivingRoom || false,
+          livingRoomHasSofaBed: apt.livingRoomHasSofaBed || false,
+          hasKitchen: apt.hasKitchen || false,
+          kitchenHasStove: apt.kitchenHasStove || false,
+          kitchenHasFridge: apt.kitchenHasFridge || false,
+          kitchenHasMinibar: apt.kitchenHasMinibar || false,
+          hasBalcony: apt.hasBalcony || false,
+          balconyHasSeaView: apt.balconyHasSeaView || false,
+          hasCrib: apt.hasCrib || false,
+          rooms:
+            apt.rooms?.map((room, index) => ({
+              roomNumber: index + 1, // PropertyFormData usa roomNumber ao invés de name
+              doubleBeds: room.doubleBeds || 0,
+              singleBeds: room.singleBeds || 0,
+            })) || [],
+        })),
 
         // Métodos de pagamento aceitos
         acceptsVisa: values.acceptsVisa,
@@ -1050,8 +1199,7 @@ export default function EditPropertyPage() {
                       Informações do Proprietário
                     </CardTitle>
                     <span className="text-sm text-gray-200">
-                      Adicione aqui suas informações de contato que aparecerão
-                      nos anúncios do imóvel.
+                      Adicione aqui suas informações de contato.
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-6 p-6">
@@ -1078,7 +1226,7 @@ export default function EditPropertyPage() {
                               className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
                               onClick={removeOwnerImage}
                             >
-                              <X className="h-8 w-8 text-slate-100" />
+                              <Trash className="h-8 w-8 text-slate-100" />
                             </Button>
                           </div>
                         ) : (
@@ -1130,7 +1278,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="Seu nome completo"
                               />
                             </FormControl>
@@ -1180,7 +1328,7 @@ export default function EditPropertyPage() {
                               <Input
                                 {...field}
                                 type="email"
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="seu@email.com"
                               />
                             </FormControl>
@@ -1201,7 +1349,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="@seuinstagram"
                               />
                             </FormControl>
@@ -1222,7 +1370,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="https://seusite.com"
                               />
                             </FormControl>
@@ -1251,7 +1399,7 @@ export default function EditPropertyPage() {
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                          <FormItem className="md:col-span-2">
+                          <FormItem>
                             <FormLabel className="text-slate-300">
                               Título do Imóvel *
                             </FormLabel>
@@ -1287,11 +1435,14 @@ export default function EditPropertyPage() {
                                     }}
                                   >
                                     <FormControl>
-                                      <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-100">
-                                        <SelectValue placeholder="Selecione o tipo" />
+                                      <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
+                                        <SelectValue
+                                          className="text-slate-300"
+                                          placeholder="Selecione o tipo"
+                                        />
                                       </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="border-slate-600 bg-slate-700 text-slate-100">
+                                    <SelectContent className="border-slate-600 bg-slate-700 text-slate-300">
                                       {propertyStyleOptions.map((type) => (
                                         <SelectItem
                                           key={type}
@@ -1314,9 +1465,9 @@ export default function EditPropertyPage() {
                                         );
                                         field.onChange(newStyles);
                                       }}
-                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-red-600"
+                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
                                     >
-                                      <X className="h-4 w-4" />
+                                      <Trash className="h-4 w-4" />
                                     </Button>
                                   )}
                                 </div>
@@ -1327,7 +1478,7 @@ export default function EditPropertyPage() {
                                 onClick={() => {
                                   field.onChange([...field.value, ""]);
                                 }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
                               >
                                 <Plus className="mr-2 h-4 w-4" />
                                 Adicionar Tipo
@@ -1399,62 +1550,14 @@ export default function EditPropertyPage() {
                       )}
                     />
 
-                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField
                         control={form.control}
                         name="maxGuests"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-slate-300">
-                              Máx. Hóspedes *
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="1"
-                                onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value) || 1)
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="bedrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Quartos *
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                onChange={(e) =>
-                                  field.onChange(parseInt(e.target.value) || 0)
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="bathrooms"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Banheiros *
+                              Máx. Hóspedes por Grupo *
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -1497,34 +1600,7 @@ export default function EditPropertyPage() {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                      <FormField
-                        control={form.control}
-                        name="areaM2"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Área (m²)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                min="0"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="Ex: 85"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                       <FormField
                         control={form.control}
                         name="minimumStay"
@@ -1573,65 +1649,344 @@ export default function EditPropertyPage() {
                         )}
                       />
                     </div>
+                  </CardContent>
+                </Card>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {/* Proximidades da Região */}
+                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-semibold text-slate-100">
+                      Proximidades da Região
+                    </CardTitle>
+                    <span className="text-sm text-gray-200">
+                      Configure os locais próximos ao imóvel para cada
+                      categoria. É obrigatório adicionar pelo menos um local em
+                      cada seção.
+                    </span>
+                  </CardHeader>
+                  <CardContent className="space-y-8 p-6">
+                    {/* O que há por perto? */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <MapPin className="h-5 w-5" />O que há por perto?
+                      </h3>
                       <FormField
                         control={form.control}
-                        name="checkInTime"
+                        name="nearbyPlaces"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Horário de Check-in
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="time"
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="checkOutTime"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Horário de Check-out
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="time"
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="allowsPets"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-start space-y-0 space-x-3 rounded-md p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                                className="border-slate-600 data-[state=checked]:bg-blue-600"
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel className="text-slate-300">
-                                Aceita Pets
-                              </FormLabel>
+                            <div className="space-y-3">
+                              {field.value.map((place, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do local (ex: Centro da cidade)"
+                                      value={place.name}
+                                      onChange={(e) => {
+                                        const newPlaces = [...field.value];
+                                        newPlaces[index].name = e.target.value;
+                                        field.onChange(newPlaces);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 2,5 km)"
+                                      value={place.distance}
+                                      onChange={(e) => {
+                                        const newPlaces = [...field.value];
+                                        newPlaces[index].distance =
+                                          e.target.value;
+                                        field.onChange(newPlaces);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newPlaces = field.value.filter(
+                                            (_, i) => i !== index,
+                                          );
+                                          field.onChange(newPlaces);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                      >
+                                        <Trash className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Local
+                              </Button>
                             </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Praias na vizinhança */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Palmtree className="h-5 w-5" />
+                        Praias na vizinhança
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyBeaches"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((beach, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome da praia (ex: Praia de Iracema)"
+                                      value={beach.name}
+                                      onChange={(e) => {
+                                        const newBeaches = [...field.value];
+                                        newBeaches[index].name = e.target.value;
+                                        field.onChange(newBeaches);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 2,1 km)"
+                                      value={beach.distance}
+                                      onChange={(e) => {
+                                        const newBeaches = [...field.value];
+                                        newBeaches[index].distance =
+                                          e.target.value;
+                                        field.onChange(newBeaches);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newBeaches = field.value.filter(
+                                            (_, i) => i !== index,
+                                          );
+                                          field.onChange(newBeaches);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                      >
+                                        <Trash className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Praia
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Aeroportos mais próximos */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Building2 className="h-5 w-5" />
+                        Aeroportos mais próximos
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyAirports"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((airport, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do aeroporto (ex: Aeroporto Internacional Pinto Martins)"
+                                      value={airport.name}
+                                      onChange={(e) => {
+                                        const newAirports = [...field.value];
+                                        newAirports[index].name =
+                                          e.target.value;
+                                        field.onChange(newAirports);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 15 km)"
+                                      value={airport.distance}
+                                      onChange={(e) => {
+                                        const newAirports = [...field.value];
+                                        newAirports[index].distance =
+                                          e.target.value;
+                                        field.onChange(newAirports);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newAirports =
+                                            field.value.filter(
+                                              (_, i) => i !== index,
+                                            );
+                                          field.onChange(newAirports);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                      >
+                                        <Trash className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Aeroporto
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Restaurantes e cafés */}
+                    <div className="space-y-4">
+                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
+                        <Utensils className="h-5 w-5" />
+                        Restaurantes e cafés
+                      </h3>
+                      <FormField
+                        control={form.control}
+                        name="nearbyRestaurants"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="space-y-3">
+                              {field.value.map((restaurant, index) => (
+                                <div
+                                  key={index}
+                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                >
+                                  <div className="md:col-span-2">
+                                    <Input
+                                      placeholder="Nome do restaurante (ex: Restaurante Vila Azul)"
+                                      value={restaurant.name}
+                                      onChange={(e) => {
+                                        const newRestaurants = [...field.value];
+                                        newRestaurants[index].name =
+                                          e.target.value;
+                                        field.onChange(newRestaurants);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="Distância (ex: 650 m)"
+                                      value={restaurant.distance}
+                                      onChange={(e) => {
+                                        const newRestaurants = [...field.value];
+                                        newRestaurants[index].distance =
+                                          e.target.value;
+                                        field.onChange(newRestaurants);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                    />
+                                    {field.value.length > 1 && (
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => {
+                                          const newRestaurants =
+                                            field.value.filter(
+                                              (_, i) => i !== index,
+                                            );
+                                          field.onChange(newRestaurants);
+                                        }}
+                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                      >
+                                        <Trash className="h-4 w-4" />
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([
+                                    ...field.value,
+                                    { name: "", distance: "" },
+                                  ]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Restaurante
+                              </Button>
+                            </div>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1799,7 +2154,8 @@ export default function EditPropertyPage() {
                       )}
                     />
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="grid grid-cols-2 gap-6">
+                      {/* Linha 1 */}
                       <FormField
                         control={form.control}
                         name="neighborhood"
@@ -1811,7 +2167,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="Nome do bairro"
                               />
                             </FormControl>
@@ -1831,7 +2187,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="00000-000"
                               />
                             </FormControl>
@@ -1839,9 +2195,8 @@ export default function EditPropertyPage() {
                           </FormItem>
                         )}
                       />
-                    </div>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                      {/* Linha 2 */}
                       <FormField
                         control={form.control}
                         name="municipality"
@@ -1855,8 +2210,11 @@ export default function EditPropertyPage() {
                               defaultValue={field.value}
                             >
                               <FormControl>
-                                <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-100">
-                                  <SelectValue placeholder="Selecione o município" />
+                                <SelectTrigger className="w-full border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400">
+                                  <SelectValue
+                                    className="placeholder:text-slate-400"
+                                    placeholder="Selecione o município"
+                                  />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent className="max-h-60 border-slate-600 bg-slate-700">
@@ -1887,7 +2245,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="Nome da cidade"
                               />
                             </FormControl>
@@ -1896,6 +2254,7 @@ export default function EditPropertyPage() {
                         )}
                       />
 
+                      {/* Linha 3 */}
                       <FormField
                         control={form.control}
                         name="state"
@@ -1907,7 +2266,7 @@ export default function EditPropertyPage() {
                             <FormControl>
                               <Input
                                 {...field}
-                                className="border-slate-600 bg-slate-700 text-slate-100"
+                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 placeholder="Ex: CE"
                               />
                             </FormControl>
@@ -1915,143 +2274,36 @@ export default function EditPropertyPage() {
                           </FormItem>
                         )}
                       />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="popularDestination"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-medium text-slate-200">
-                            Seu imóvel está localizado em um destes destinos
-                            populares ou está muito próximo deles?
-                          </FormLabel>
-                          <FormDescription className="text-xs text-slate-400">
-                            Essa opção ajuda nossos clientes que estiverem
-                            interessados em destinos específicos, que seu imóvel
-                            pode estar próximo.
-                          </FormDescription>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="border-slate-600 bg-slate-700/50 text-slate-100 transition-colors focus:border-blue-400 focus:ring-blue-400/20">
-                                <SelectValue placeholder="Selecione um destino popular" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="max-h-60 border-slate-600 bg-slate-800">
-                              <SelectItem
-                                value="Fortaleza"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Fortaleza
-                              </SelectItem>
-                              <SelectItem
-                                value="Jericoacoara"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Jericoacoara
-                              </SelectItem>
-                              <SelectItem
-                                value="Canoa Quebrada"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Canoa Quebrada
-                              </SelectItem>
-                              <SelectItem
-                                value="Praia de Picos"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Praia de Picos
-                              </SelectItem>
-                              <SelectItem
-                                value="Morro Branco"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Morro Branco
-                              </SelectItem>
-                              <SelectItem
-                                value="Águas Belas"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Águas Belas
-                              </SelectItem>
-                              <SelectItem
-                                value="Cumbuco"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Cumbuco
-                              </SelectItem>
-                              <SelectItem
-                                value="Beach Park"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Beach Park
-                              </SelectItem>
-                              <SelectItem
-                                value="Nenhum dos anteriores"
-                                className="text-slate-100 hover:bg-slate-700/50 focus:bg-slate-700/50"
-                              >
-                                Nenhum dos anteriores
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                      <FormField
-                        control={form.control}
-                        name="latitude"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-slate-300">
-                              Latitude (Opcional)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                step="any"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="-3.7319"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
                       <FormField
                         control={form.control}
-                        name="longitude"
+                        name="popularDestination"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-slate-300">
-                              Longitude (Opcional)
+                              Destino Popular *
                             </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                step="any"
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                                className="border-slate-600 bg-slate-700 text-slate-100"
-                                placeholder="-38.5267"
-                              />
-                            </FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger className="w-full border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400">
+                                  <SelectValue placeholder="Selecione um destino" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className="w-full border-slate-600 bg-slate-700">
+                                {popularDestinations.map((destination) => (
+                                  <SelectItem
+                                    key={destination}
+                                    value={destination}
+                                    className="text-slate-100 focus:bg-slate-600"
+                                  >
+                                    {destination}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -2071,61 +2323,55 @@ export default function EditPropertyPage() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-4 p-6">
-                    <div className="space-y-4">
-                      <div>
-                        <label
-                          htmlFor="property-images"
-                          className="-mt-5 mb-4 block text-sm font-medium text-slate-200"
+                    <div className="flex items-center gap-4">
+                      <label className="cursor-pointer">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={isUploading}
+                          className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
+                          asChild
                         >
-                          Adicionar Imagens
-                        </label>
-                        <label className="cursor-pointer">
-                          <div className="w-full rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 text-sm text-slate-100 transition-all duration-200 hover:bg-slate-600 disabled:opacity-50">
+                          <span>
                             {isUploading ? "Enviando..." : "Escolher Imagens"}
-                          </div>
-                          <input
-                            id="property-images"
-                            type="file"
-                            multiple
-                            accept="image/*"
-                            onChange={(e) => handleImageUpload(e, false)}
-                            disabled={isUploading}
-                            className="hidden"
-                          />
-                        </label>
-                        {isUploading && (
-                          <p className="mt-2 text-sm text-blue-400">
-                            Fazendo upload...
-                          </p>
-                        )}
-                      </div>
+                          </span>
+                        </Button>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          disabled={isUploading}
+                          className="hidden"
+                        />
+                      </label>
+                      {isUploading && (
+                        <Loader className="h-6 w-6 animate-spin text-blue-400" />
+                      )}
                     </div>
 
                     {uploadedImages.length > 0 && (
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-slate-200">
-                          Imagens Carregadas ({uploadedImages.length})
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                          {uploadedImages.map((imageUrl, index) => (
-                            <div key={index} className="group relative">
-                              <Image
-                                src={imageUrl}
-                                alt={`Imagem ${index + 1}`}
-                                width={200}
-                                height={200}
-                                className="h-24 w-full rounded-lg border border-slate-600 object-cover"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
-                              >
-                                <X className="h-4 w-4" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
+                      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {uploadedImages.map((imageUrl, index) => (
+                          <div key={index} className="relative">
+                            <Image
+                              src={imageUrl}
+                              alt={`Imagem ${index + 1}`}
+                              width={200}
+                              height={150}
+                              className="rounded-lg object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="absolute -top-2 -right-2 h-9 w-9 rounded-full border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              onClick={() => removeImage(index)}
+                            >
+                              <Trash className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </CardContent>
@@ -2181,348 +2427,6 @@ export default function EditPropertyPage() {
                   </CardContent>
                 </Card>
 
-                {/* Proximidades da Região */}
-                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-semibold text-slate-100">
-                      Proximidades da Região
-                    </CardTitle>
-                    <span className="text-sm text-gray-200">
-                      Configure os locais próximos ao imóvel para cada
-                      categoria. É obrigatório adicionar pelo menos um local em
-                      cada seção.
-                    </span>
-                  </CardHeader>
-                  <CardContent className="space-y-8 p-6">
-                    {/* O que há por perto? */}
-                    <div className="space-y-4">
-                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
-                        <MapPin className="h-5 w-5" />O que há por perto?
-                      </h3>
-                      <FormField
-                        control={form.control}
-                        name="nearbyPlaces"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="space-y-3">
-                              {field.value.map((place, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do local (ex: Centro da cidade)"
-                                      value={place.name}
-                                      onChange={(e) => {
-                                        const newPlaces = [...field.value];
-                                        newPlaces[index].name = e.target.value;
-                                        field.onChange(newPlaces);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-300"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 2,5 km)"
-                                      value={place.distance}
-                                      onChange={(e) => {
-                                        const newPlaces = [...field.value];
-                                        newPlaces[index].distance =
-                                          e.target.value;
-                                        field.onChange(newPlaces);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-300"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newPlaces = field.value.filter(
-                                            (_, i) => i !== index,
-                                          );
-                                          field.onChange(newPlaces);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Local
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Praias na vizinhança */}
-                    <div className="space-y-4">
-                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
-                        <Palmtree className="h-5 w-5" />
-                        Praias na vizinhança
-                      </h3>
-                      <FormField
-                        control={form.control}
-                        name="nearbyBeaches"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="space-y-3">
-                              {field.value.map((beach, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome da praia (ex: Praia de Iracema)"
-                                      value={beach.name}
-                                      onChange={(e) => {
-                                        const newBeaches = [...field.value];
-                                        newBeaches[index].name = e.target.value;
-                                        field.onChange(newBeaches);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 2,1 km)"
-                                      value={beach.distance}
-                                      onChange={(e) => {
-                                        const newBeaches = [...field.value];
-                                        newBeaches[index].distance =
-                                          e.target.value;
-                                        field.onChange(newBeaches);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newBeaches = field.value.filter(
-                                            (_, i) => i !== index,
-                                          );
-                                          field.onChange(newBeaches);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Praia
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Aeroportos mais próximos */}
-                    <div className="space-y-4">
-                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
-                        <Building2 className="h-5 w-5" />
-                        Aeroportos mais próximos
-                      </h3>
-                      <FormField
-                        control={form.control}
-                        name="nearbyAirports"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="space-y-3">
-                              {field.value.map((airport, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do aeroporto (ex: Aeroporto Internacional Pinto Martins)"
-                                      value={airport.name}
-                                      onChange={(e) => {
-                                        const newAirports = [...field.value];
-                                        newAirports[index].name =
-                                          e.target.value;
-                                        field.onChange(newAirports);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 15 km)"
-                                      value={airport.distance}
-                                      onChange={(e) => {
-                                        const newAirports = [...field.value];
-                                        newAirports[index].distance =
-                                          e.target.value;
-                                        field.onChange(newAirports);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newAirports =
-                                            field.value.filter(
-                                              (_, i) => i !== index,
-                                            );
-                                          field.onChange(newAirports);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Aeroporto
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Restaurantes e cafés */}
-                    <div className="space-y-4">
-                      <h3 className="flex items-center gap-2 text-lg font-semibold text-slate-200">
-                        <Utensils className="h-5 w-5" />
-                        Restaurantes e cafés
-                      </h3>
-                      <FormField
-                        control={form.control}
-                        name="nearbyRestaurants"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="space-y-3">
-                              {field.value.map((restaurant, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do restaurante (ex: Restaurante Vila Azul)"
-                                      value={restaurant.name}
-                                      onChange={(e) => {
-                                        const newRestaurants = [...field.value];
-                                        newRestaurants[index].name =
-                                          e.target.value;
-                                        field.onChange(newRestaurants);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 650 m)"
-                                      value={restaurant.distance}
-                                      onChange={(e) => {
-                                        const newRestaurants = [...field.value];
-                                        newRestaurants[index].distance =
-                                          e.target.value;
-                                        field.onChange(newRestaurants);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newRestaurants =
-                                            field.value.filter(
-                                              (_, i) => i !== index,
-                                            );
-                                          field.onChange(newRestaurants);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                                      >
-                                        <Trash2 className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Restaurante
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* Regras da Casa */}
                 <Card className="border-slate-700/50 bg-slate-800/80 shadow-xl transition-all">
                   <CardHeader className="pb-6">
@@ -2531,7 +2435,8 @@ export default function EditPropertyPage() {
                     </CardTitle>
                     <CardDescription className="text-start text-slate-100">
                       Defina as regras específicas para seu imóvel. Estes campos
-                      são opcionais. Você não precisa preencher todos.
+                      são independentes, você pode preencher apenas o que for
+                      necessário.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6 pt-6">
@@ -2620,6 +2525,29 @@ export default function EditPropertyPage() {
                         )}
                       />
 
+                      {/* Pets */}
+
+                      <FormField
+                        control={form.control}
+                        name="petsRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Pets
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Animais de estimação são permitidos. Taxa adicional pode ser aplicada."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
                       {/* Camas */}
                       <FormField
                         control={form.control}
@@ -2641,14 +2569,14 @@ export default function EditPropertyPage() {
                         )}
                       />
 
-                      {/* Restrição de idade */}
+                      {/* Restrições de Idade */}
                       <FormField
                         control={form.control}
                         name="ageRestrictionRule"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="font-semibold text-slate-300">
-                              Restrição de Idade
+                              Restrições de Idade
                             </FormLabel>
                             <FormControl>
                               <Textarea
@@ -2669,11 +2597,11 @@ export default function EditPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="font-semibold text-slate-300">
-                              Grupos e Festas
+                              Grupos
                             </FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder="Ex: Festas não são permitidas. Grupos de até 8 pessoas são bem-vindos."
+                                placeholder="Ex: Grupos de até 8 pessoas são aceitos. Festas não são permitidas. Silêncio após 22h."
                                 className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 {...field}
                               />
@@ -2684,11 +2612,16 @@ export default function EditPropertyPage() {
                       />
                     </div>
 
-                    {/* Métodos de Pagamento Aceitos */}
-                    <div className="mt-8 space-y-4">
-                      <h3 className="text-lg font-semibold text-slate-200">
-                        Métodos de Pagamento Aceitos
+                    {/* Métodos de Pagamento */}
+                    <div className="">
+                      <h3 className="font-semibold text-slate-300">
+                        Cartões aceitos neste imóvel
                       </h3>
+                      <p className="mb-4 text-xs text-slate-400">
+                        Selecione as bandeiras dos cartões que são aceitos para
+                        pagamento neste imóvel, caso seu imóvel não aceite
+                        dinheiro, deixe em branco.
+                      </p>
                       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         <FormField
                           control={form.control}
@@ -2846,11 +2779,711 @@ export default function EditPropertyPage() {
                   </CardContent>
                 </Card>
 
+                {/* Tipos de Apartamentos do Imóvel */}
+                <Card className="border-slate-700/50 bg-slate-800/80 shadow-2xl backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl font-bold text-gray-100">
+                      Tipos de Apartamentos do Imóvel
+                    </CardTitle>
+                    <CardDescription className="text-slate-300">
+                      Configure os diferentes tipos de apartamentos disponíveis
+                      no imóvel
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6 p-6">
+                    <FormField
+                      control={form.control}
+                      name="apartments"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-base font-semibold text-gray-200">
+                            Apartamentos
+                          </FormLabel>
+                          <div className="space-y-6">
+                            {(field.value as PropertyApartment[])?.map(
+                              (
+                                apartment: PropertyApartment,
+                                apartmentIndex: number,
+                              ) => (
+                                <Card
+                                  key={apartmentIndex}
+                                  className="border-slate-600/50 bg-slate-700/30"
+                                >
+                                  <CardHeader className="pb-4">
+                                    <div className="flex items-center justify-between">
+                                      <CardTitle className="text-lg text-gray-100">
+                                        Apartamento {apartmentIndex + 1}
+                                      </CardTitle>
+                                      {(field.value as PropertyApartment[])
+                                        ?.length > 1 && (
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            const newApartments = (
+                                              field.value as PropertyApartment[]
+                                            )?.filter(
+                                              (_, index) =>
+                                                index !== apartmentIndex,
+                                            );
+                                            field.onChange(newApartments);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </CardHeader>
+                                  <CardContent className="space-y-6">
+                                    {/* Nome do Apartamento */}
+                                    <div>
+                                      <FormLabel className="text-sm font-medium text-gray-200">
+                                        Nome do Apartamento *
+                                      </FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          placeholder="Ex: Apartamento Vista Mar"
+                                          value={apartment.name}
+                                          onChange={(e) => {
+                                            const newApartments = [
+                                              ...((field.value as PropertyApartment[]) ||
+                                                []),
+                                            ];
+                                            newApartments[apartmentIndex].name =
+                                              e.target.value;
+                                            field.onChange(newApartments);
+                                          }}
+                                          className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100 placeholder:text-slate-400"
+                                        />
+                                      </FormControl>
+                                    </div>
+
+                                    {/* Quartos */}
+                                    <div className="space-y-4">
+                                      <div className="flex items-center justify-between">
+                                        <FormLabel className="text-sm font-medium text-gray-200">
+                                          <BedDouble className="mr-2 inline h-4 w-4" />
+                                          Quartos *
+                                        </FormLabel>
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            const newApartments = [
+                                              ...(field.value as PropertyApartment[]),
+                                            ];
+                                            newApartments[
+                                              apartmentIndex
+                                            ].rooms.push({
+                                              name: `Quarto ${apartment.rooms.length + 1}`,
+                                              doubleBeds: 0,
+                                              singleBeds: 0,
+                                              sofaBeds: 0,
+                                            });
+                                            field.onChange(newApartments);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Plus className="mr-2 h-4 w-4" />
+                                          Adicionar Quarto
+                                        </Button>
+                                      </div>
+
+                                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                        {apartment.rooms.map(
+                                          (
+                                            room: ApartmentRoom,
+                                            roomIndex: number,
+                                          ) => (
+                                            <Card
+                                              key={roomIndex}
+                                              className="border-slate-500/30 bg-slate-600/20"
+                                            >
+                                              <CardContent className="p-4">
+                                                <div className="mb-3 flex items-center justify-between">
+                                                  <h4 className="text-sm font-medium text-gray-200">
+                                                    {room.name}
+                                                  </h4>
+                                                  {apartment.rooms.length >
+                                                    1 && (
+                                                    <Button
+                                                      type="button"
+                                                      variant="outline"
+                                                      size="sm"
+                                                      onClick={() => {
+                                                        const newApartments = [
+                                                          ...(field.value as PropertyApartment[]),
+                                                        ];
+                                                        newApartments[
+                                                          apartmentIndex
+                                                        ].rooms =
+                                                          apartment.rooms.filter(
+                                                            (
+                                                              _,
+                                                              index: number,
+                                                            ) =>
+                                                              index !==
+                                                              roomIndex,
+                                                          );
+                                                        // Renomear quartos
+                                                        newApartments[
+                                                          apartmentIndex
+                                                        ].rooms.forEach(
+                                                          (
+                                                            r: ApartmentRoom,
+                                                            i: number,
+                                                          ) => {
+                                                            r.name = `Quarto ${i + 1}`;
+                                                          },
+                                                        );
+                                                        field.onChange(
+                                                          newApartments,
+                                                        );
+                                                      }}
+                                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                                    >
+                                                      <Trash className="h-3 w-3" />
+                                                    </Button>
+                                                  )}
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                  <div>
+                                                    <FormLabel className="text-xs text-gray-300">
+                                                      Camas de Casal
+                                                    </FormLabel>
+                                                    <Select
+                                                      value={(
+                                                        room.doubleBeds || 0
+                                                      ).toString()}
+                                                      onValueChange={(
+                                                        value,
+                                                      ) => {
+                                                        const newApartments = [
+                                                          ...((field.value as PropertyApartment[]) ||
+                                                            []),
+                                                        ];
+                                                        newApartments[
+                                                          apartmentIndex
+                                                        ].rooms[
+                                                          roomIndex
+                                                        ].doubleBeds =
+                                                          parseInt(value);
+                                                        field.onChange(
+                                                          newApartments,
+                                                        );
+                                                      }}
+                                                    >
+                                                      <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                        <SelectValue />
+                                                      </SelectTrigger>
+                                                      <SelectContent className="border-slate-600 bg-slate-700">
+                                                        {[0, 1, 2, 3, 4, 5].map(
+                                                          (num) => (
+                                                            <SelectItem
+                                                              key={num}
+                                                              value={num.toString()}
+                                                            >
+                                                              {num}
+                                                            </SelectItem>
+                                                          ),
+                                                        )}
+                                                      </SelectContent>
+                                                    </Select>
+                                                  </div>
+
+                                                  <div>
+                                                    <FormLabel className="text-xs text-gray-300">
+                                                      Camas de Solteiro
+                                                    </FormLabel>
+                                                    <Select
+                                                      value={(
+                                                        room.singleBeds || 0
+                                                      ).toString()}
+                                                      onValueChange={(
+                                                        value,
+                                                      ) => {
+                                                        const newApartments = [
+                                                          ...((field.value as PropertyApartment[]) ||
+                                                            []),
+                                                        ];
+                                                        newApartments[
+                                                          apartmentIndex
+                                                        ].rooms[
+                                                          roomIndex
+                                                        ].singleBeds =
+                                                          parseInt(value);
+                                                        field.onChange(
+                                                          newApartments,
+                                                        );
+                                                      }}
+                                                    >
+                                                      <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                        <SelectValue />
+                                                      </SelectTrigger>
+                                                      <SelectContent className="border-slate-600 bg-slate-700">
+                                                        {[0, 1, 2, 3, 4, 5].map(
+                                                          (num) => (
+                                                            <SelectItem
+                                                              key={num}
+                                                              value={num.toString()}
+                                                            >
+                                                              {num}
+                                                            </SelectItem>
+                                                          ),
+                                                        )}
+                                                      </SelectContent>
+                                                    </Select>
+                                                  </div>
+                                                </div>
+                                              </CardContent>
+                                            </Card>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Outros Cômodos - Grid 3x2 (Desktop) / Flex Column (Mobile) */}
+                                    <div className="space-y-6">
+                                      {/* Primeira linha: 3 colunas */}
+                                      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                        {/* Banheiros */}
+                                        <div>
+                                          <FormLabel className="text-sm font-medium text-gray-200">
+                                            <ShowerHead className="mr-2 inline h-4 w-4" />
+                                            Quantidade de Banheiros
+                                          </FormLabel>
+                                          <Select
+                                            value={(
+                                              apartment.totalBathrooms || 0
+                                            ).toString()}
+                                            onValueChange={(value) => {
+                                              const newApartments = [
+                                                ...((field.value as PropertyApartment[]) ||
+                                                  []),
+                                              ];
+                                              newApartments[
+                                                apartmentIndex
+                                              ].totalBathrooms =
+                                                parseInt(value);
+                                              field.onChange(newApartments);
+                                            }}
+                                          >
+                                            <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                              <SelectValue placeholder="Selecione a quantidade" />
+                                            </SelectTrigger>
+                                            <SelectContent className="border-slate-600 bg-slate-700">
+                                              {[
+                                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                10,
+                                              ].map((num) => (
+                                                <SelectItem
+                                                  key={num}
+                                                  value={num.toString()}
+                                                >
+                                                  {num}{" "}
+                                                  {num === 1
+                                                    ? "banheiro"
+                                                    : "banheiros"}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+
+                                        {/* Sala de Estar */}
+                                        <div className="space-y-3">
+                                          <FormLabel className="text-sm font-medium text-gray-200">
+                                            <Sofa className="mr-2 inline h-4 w-4" />
+                                            Sala de Estar
+                                          </FormLabel>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                              checked={apartment.hasLivingRoom}
+                                              onCheckedChange={(checked) => {
+                                                const newApartments = [
+                                                  ...((field.value as PropertyApartment[]) ||
+                                                    []),
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].hasLivingRoom = !!checked;
+                                                if (!checked) {
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].livingRoomHasSofaBed =
+                                                    false;
+                                                }
+                                                field.onChange(newApartments);
+                                              }}
+                                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                            />
+                                            <span className="text-sm text-slate-300">
+                                              Possui sala de estar
+                                            </span>
+                                          </div>
+
+                                          {apartment.hasLivingRoom && (
+                                            <div className="ml-6 flex items-center space-x-2">
+                                              <Checkbox
+                                                checked={
+                                                  apartment.livingRoomHasSofaBed
+                                                }
+                                                onCheckedChange={(checked) => {
+                                                  const newApartments = [
+                                                    ...((field.value as PropertyApartment[]) ||
+                                                      []),
+                                                  ];
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].livingRoomHasSofaBed =
+                                                    !!checked;
+                                                  field.onChange(newApartments);
+                                                }}
+                                                className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                              />
+                                              <span className="text-sm text-slate-300">
+                                                Com sofá-cama
+                                              </span>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Cozinha */}
+                                        <div className="space-y-3">
+                                          <FormLabel className="text-sm font-medium text-gray-200">
+                                            <ChefHat className="mr-2 inline h-4 w-4" />
+                                            Cozinha
+                                          </FormLabel>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                              checked={apartment.hasKitchen}
+                                              onCheckedChange={(checked) => {
+                                                const newApartments = [
+                                                  ...((field.value as PropertyApartment[]) ||
+                                                    []),
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].hasKitchen = !!checked;
+                                                if (!checked) {
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].kitchenHasStove = false;
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].kitchenHasFridge = false;
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].kitchenHasMinibar = false;
+                                                }
+                                                field.onChange(newApartments);
+                                              }}
+                                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                            />
+                                            <span className="text-sm text-slate-300">
+                                              Possui cozinha
+                                            </span>
+                                          </div>
+
+                                          {apartment.hasKitchen && (
+                                            <div className="ml-6 space-y-2">
+                                              <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                  checked={
+                                                    apartment.kitchenHasStove
+                                                  }
+                                                  onCheckedChange={(
+                                                    checked,
+                                                  ) => {
+                                                    const newApartments = [
+                                                      ...((field.value as PropertyApartment[]) ||
+                                                        []),
+                                                    ];
+                                                    newApartments[
+                                                      apartmentIndex
+                                                    ].kitchenHasStove =
+                                                      !!checked;
+                                                    field.onChange(
+                                                      newApartments,
+                                                    );
+                                                  }}
+                                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                                />
+                                                <span className="text-sm text-slate-300">
+                                                  Fogão
+                                                </span>
+                                              </div>
+                                              <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                  checked={
+                                                    apartment.kitchenHasFridge
+                                                  }
+                                                  onCheckedChange={(
+                                                    checked,
+                                                  ) => {
+                                                    const newApartments = [
+                                                      ...((field.value as PropertyApartment[]) ||
+                                                        []),
+                                                    ];
+                                                    newApartments[
+                                                      apartmentIndex
+                                                    ].kitchenHasFridge =
+                                                      !!checked;
+                                                    field.onChange(
+                                                      newApartments,
+                                                    );
+                                                  }}
+                                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                                />
+                                                <span className="text-sm text-slate-300">
+                                                  Geladeira
+                                                </span>
+                                              </div>
+                                              <div className="flex items-center space-x-2">
+                                                <Checkbox
+                                                  checked={
+                                                    apartment.kitchenHasMinibar
+                                                  }
+                                                  onCheckedChange={(
+                                                    checked,
+                                                  ) => {
+                                                    const newApartments = [
+                                                      ...((field.value as PropertyApartment[]) ||
+                                                        []),
+                                                    ];
+                                                    newApartments[
+                                                      apartmentIndex
+                                                    ].kitchenHasMinibar =
+                                                      !!checked;
+                                                    field.onChange(
+                                                      newApartments,
+                                                    );
+                                                  }}
+                                                  className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                                />
+                                                <span className="text-sm text-slate-300">
+                                                  Frigobar
+                                                </span>
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+
+                                      {/* Segunda linha: 2 colunas centralizadas */}
+                                      <div className="grid grid-cols-1 gap-6 md:mx-auto md:max-w-2xl md:grid-cols-2">
+                                        {/* Varanda */}
+                                        <div className="space-y-3">
+                                          <FormLabel className="text-sm font-medium text-gray-200">
+                                            <Eye className="mr-2 inline h-4 w-4" />
+                                            Varanda
+                                          </FormLabel>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                              checked={apartment.hasBalcony}
+                                              onCheckedChange={(checked) => {
+                                                const newApartments = [
+                                                  ...((field.value as PropertyApartment[]) ||
+                                                    []),
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].hasBalcony = !!checked;
+                                                if (!checked) {
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].balconyHasSeaView = false;
+                                                }
+                                                field.onChange(newApartments);
+                                              }}
+                                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                            />
+                                            <span className="text-sm text-slate-300">
+                                              Possui varanda
+                                            </span>
+                                          </div>
+
+                                          {apartment.hasBalcony && (
+                                            <div className="ml-6 flex items-center space-x-2">
+                                              <Checkbox
+                                                checked={apartment.hasSeaView}
+                                                onCheckedChange={(checked) => {
+                                                  const newApartments = [
+                                                    ...(field.value as PropertyApartment[]),
+                                                  ];
+                                                  newApartments[
+                                                    apartmentIndex
+                                                  ].hasSeaView = !!checked;
+                                                  field.onChange(newApartments);
+                                                }}
+                                                className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                              />
+                                              <span className="text-sm text-slate-300">
+                                                Com vista para o mar
+                                              </span>
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Berço */}
+                                        <div className="space-y-3">
+                                          <FormLabel className="text-sm font-medium text-gray-200">
+                                            Berço
+                                          </FormLabel>
+                                          <div className="flex items-center space-x-2">
+                                            <Checkbox
+                                              checked={apartment.hasCrib}
+                                              onCheckedChange={(checked) => {
+                                                const newApartments = [
+                                                  ...((field.value as PropertyApartment[]) ||
+                                                    []),
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].hasCrib = !!checked;
+                                                field.onChange(newApartments);
+                                              }}
+                                              className="border-slate-600 data-[state=checked]:bg-blue-600"
+                                            />
+                                            <span className="text-sm text-slate-300">
+                                              Berço disponível
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ),
+                            )}
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => {
+                                const newApartment: PropertyApartment = {
+                                  name: "",
+                                  accommodates: 1,
+                                  hasAirConditioning: false,
+                                  hasBalcony: false,
+                                  hasKitchen: false,
+                                  hasPrivateBathroom: false,
+                                  hasSeaView: false,
+                                  hasWifi: false,
+                                  totalBathrooms: 0,
+                                  hasLivingRoom: false,
+                                  livingRoomHasSofaBed: false,
+                                  kitchenHasStove: false,
+                                  kitchenHasFridge: false,
+                                  kitchenHasMinibar: false,
+                                  balconyHasSeaView: false,
+                                  hasCrib: false,
+                                  rooms: [
+                                    {
+                                      name: "Quarto 1",
+                                      doubleBeds: 0,
+                                      singleBeds: 0,
+                                      sofaBeds: 0,
+                                    },
+                                  ],
+                                };
+                                field.onChange([
+                                  ...(field.value || []),
+                                  newApartment,
+                                ]);
+                              }}
+                              className="w-auto border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                            >
+                              <Plus className="mr-2 h-4 w-4" />
+                              Adicionar Novo Tipo de Apartamento
+                            </Button>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+
                 {/* Botão de Envio */}
                 <div className="flex justify-center pt-8">
                   <Button
-                    type="submit"
+                    type="button"
                     disabled={isSubmitting}
+                    onClick={() => {
+                      const values = form.getValues();
+                      // Garantir que todos os campos obrigatórios tenham valores seguros
+                      const safeValues = {
+                        ...values,
+                        parkingSpaces: values.parkingSpaces ?? 0,
+                        areaM2: values.areaM2 ?? 0,
+                        latitude: values.latitude ?? 0,
+                        longitude: values.longitude ?? 0,
+                        amenities: values.amenities ?? [],
+                        images: values.images ?? [],
+                        apartments: (values.apartments ?? []).map(
+                          (apartment) => ({
+                            name: apartment.name,
+                            accommodates: apartment.accommodates ?? 1,
+                            hasAirConditioning:
+                              apartment.hasAirConditioning ?? false,
+                            hasBalcony: apartment.hasBalcony ?? false,
+                            hasKitchen: apartment.hasKitchen ?? false,
+                            hasPrivateBathroom:
+                              apartment.hasPrivateBathroom ?? false,
+                            hasSeaView: apartment.hasSeaView ?? false,
+                            hasWifi: apartment.hasWifi ?? false,
+                            totalBathrooms: apartment.totalBathrooms ?? 1,
+                            hasLivingRoom: apartment.hasLivingRoom ?? false,
+                            livingRoomHasSofaBed:
+                              apartment.livingRoomHasSofaBed ?? false,
+                            kitchenHasStove: apartment.kitchenHasStove ?? false,
+                            kitchenHasFridge:
+                              apartment.kitchenHasFridge ?? false,
+                            kitchenHasMinibar:
+                              apartment.kitchenHasMinibar ?? false,
+                            balconyHasSeaView:
+                              apartment.balconyHasSeaView ?? false,
+                            hasCrib: apartment.hasCrib ?? false,
+                            rooms: (apartment.rooms ?? []).map((room) => ({
+                              name: room.name,
+                              doubleBeds: room.doubleBeds ?? 0,
+                              singleBeds: room.singleBeds ?? 0,
+                              sofaBeds: room.sofaBeds ?? 0,
+                            })),
+                          }),
+                        ),
+                        ownerInstagram: values.ownerInstagram ?? "",
+                        ownerWebsite: values.ownerWebsite ?? "",
+                        ownerProfileImage: values.ownerProfileImage ?? "",
+                        aboutBuilding: values.aboutBuilding ?? "",
+                        fullDescription: values.fullDescription ?? "",
+                        checkInTime: values.checkInTime ?? "",
+                        checkOutTime: values.checkOutTime ?? "",
+                        checkInRule: values.checkInRule ?? "",
+                        checkOutRule: values.checkOutRule ?? "",
+                        cancellationRule: values.cancellationRule ?? "",
+                        childrenRule: values.childrenRule ?? "",
+                        bedsRule: values.bedsRule ?? "",
+                        ageRestrictionRule: values.ageRestrictionRule ?? "",
+                        groupsRule: values.groupsRule ?? "",
+                        petsRule: values.petsRule ?? "",
+                        acceptsVisa: values.acceptsVisa ?? false,
+                        acceptsAmericanExpress:
+                          values.acceptsAmericanExpress ?? false,
+                        acceptsMasterCard: values.acceptsMasterCard ?? false,
+                        acceptsMaestro: values.acceptsMaestro ?? false,
+                        acceptsElo: values.acceptsElo ?? false,
+                        acceptsDinersClub: values.acceptsDinersClub ?? false,
+                        acceptsPix: values.acceptsPix ?? false,
+                        acceptsCash: values.acceptsCash ?? false,
+                      };
+                      onSubmit(safeValues);
+                    }}
                     className="transform rounded-lg bg-[#182334] px-12 py-6 text-lg font-semibold text-white shadow-xl transition-all duration-500 hover:scale-[1.02] hover:bg-[#182334] hover:shadow-2xl disabled:transform-none disabled:opacity-50"
                   >
                     {isSubmitting ? (
