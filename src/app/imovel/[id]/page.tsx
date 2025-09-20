@@ -11,7 +11,6 @@ import {
   BedSingle,
   Car,
   Check,
-  ChefHat,
   CircleQuestionMark,
   Coffee,
   Copy,
@@ -915,7 +914,6 @@ export default function PropertyPage() {
                                       <p className="text-xs font-bold text-gray-800">
                                         Cozinha:
                                       </p>
-                                      <ChefHat className="h-4 w-4 text-gray-500" />
                                       <p className="text-xs text-gray-500">
                                         {apartment.kitchenHasStove ||
                                         apartment.kitchenHasFridge ||
