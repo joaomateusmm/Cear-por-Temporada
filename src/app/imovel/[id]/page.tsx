@@ -11,6 +11,7 @@ import {
   BedSingle,
   Car,
   Check,
+  ChefHat,
   CircleQuestionMark,
   Coffee,
   Copy,
@@ -113,6 +114,8 @@ interface AmenityWithIcon {
 interface ApartmentRoom {
   name?: string;
   doubleBeds?: number;
+  largeBeds?: number;
+  extraLargeBeds?: number;
   singleBeds?: number;
   sofaBeds?: number;
 }
@@ -784,6 +787,38 @@ export default function PropertyPage() {
                                             </p>
                                           </div>
                                         )}
+                                        {(room.largeBeds || 0) > 0 && (
+                                          <div className="mb-1 flex items-center gap-1">
+                                            {Array.from({
+                                              length: room.largeBeds || 0,
+                                            }).map((_, index) => (
+                                              <BedDouble
+                                                key={index}
+                                                className="h-4 w-4 text-gray-500"
+                                              />
+                                            ))}
+                                            <p className="ml-1 text-xs text-gray-500">
+                                              {room.largeBeds} cama(s) casal
+                                              grande
+                                            </p>
+                                          </div>
+                                        )}
+                                        {(room.extraLargeBeds || 0) > 0 && (
+                                          <div className="mb-1 flex items-center gap-1">
+                                            {Array.from({
+                                              length: room.extraLargeBeds || 0,
+                                            }).map((_, index) => (
+                                              <BedDouble
+                                                key={index}
+                                                className="h-4 w-4 text-gray-500"
+                                              />
+                                            ))}
+                                            <p className="ml-1 text-xs text-gray-500">
+                                              {room.extraLargeBeds} cama(s)
+                                              casal extra-grande
+                                            </p>
+                                          </div>
+                                        )}
                                         {(room.singleBeds || 0) > 0 && (
                                           <div className="mb-1 flex items-center gap-1">
                                             {Array.from({
@@ -819,6 +854,19 @@ export default function PropertyPage() {
                                   )}
 
                                   {/* Outras informações */}
+                                  {apartment.hasLivingRoom &&
+                                    !apartment.livingRoomHasSofaBed && (
+                                      <div className="flex items-center gap-2">
+                                        <p className="text-xs font-bold text-gray-800">
+                                          Sala de estar:
+                                        </p>
+                                        <Sofa className="h-4 w-4 text-gray-500" />
+                                        <p className="text-xs text-gray-500">
+                                          Disponível
+                                        </p>
+                                      </div>
+                                    )}
+
                                   {apartment.livingRoomHasSofaBed && (
                                     <div className="flex items-center gap-2">
                                       <p className="text-xs font-bold text-gray-800">
@@ -858,6 +906,44 @@ export default function PropertyPage() {
                                       <Baby className="h-4 w-4 text-gray-500" />
                                       <p className="text-xs text-gray-500">
                                         Disponível
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {apartment.hasKitchen && (
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Cozinha:
+                                      </p>
+                                      <ChefHat className="h-4 w-4 text-gray-500" />
+                                      <p className="text-xs text-gray-500">
+                                        {apartment.kitchenHasStove ||
+                                        apartment.kitchenHasFridge ||
+                                        apartment.kitchenHasMinibar
+                                          ? `Disponível (${[
+                                              apartment.kitchenHasStove &&
+                                                "fogão",
+                                              apartment.kitchenHasFridge &&
+                                                "geladeira",
+                                              apartment.kitchenHasMinibar &&
+                                                "frigobar",
+                                            ]
+                                              .filter(Boolean)
+                                              .join(", ")})`
+                                          : "Disponível"}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {apartment.hasBalcony && (
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Varanda:
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {apartment.balconyHasSeaView
+                                          ? "Com vista para o mar"
+                                          : "Disponível"}
                                       </p>
                                     </div>
                                   )}
@@ -939,17 +1025,33 @@ export default function PropertyPage() {
                               if (room.doubleBeds && room.doubleBeds > 0) {
                                 apartmentDetails += ` ${room.doubleBeds} cama(s) casal`;
                               }
+                              if (room.largeBeds && room.largeBeds > 0) {
+                                apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.largeBeds} cama(s) casal grande`;
+                              }
+                              if (
+                                room.extraLargeBeds &&
+                                room.extraLargeBeds > 0
+                              ) {
+                                apartmentDetails += `${room.doubleBeds || room.largeBeds ? ", " : " "}${room.extraLargeBeds} cama(s) casal extra-grande`;
+                              }
                               if (room.singleBeds && room.singleBeds > 0) {
-                                apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
+                                apartmentDetails += `${room.doubleBeds || room.largeBeds || room.extraLargeBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
                               }
                               if (room.sofaBeds && room.sofaBeds > 0) {
-                                apartmentDetails += `${room.doubleBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
+                                apartmentDetails += `${room.doubleBeds || room.largeBeds || room.extraLargeBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
                               }
                             },
                           );
                         }
 
                         // Sala de estar
+                        if (
+                          apartment.hasLivingRoom &&
+                          !apartment.livingRoomHasSofaBed
+                        ) {
+                          apartmentDetails +=
+                            "\n🛋️ *Sala de estar:* Disponível";
+                        }
                         if (apartment.livingRoomHasSofaBed) {
                           apartmentDetails +=
                             "\n🛋️ *Sala de estar:* Com sofá-cama";
@@ -1233,6 +1335,38 @@ export default function PropertyPage() {
                                           </p>
                                         </div>
                                       )}
+                                      {(room.largeBeds || 0) > 0 && (
+                                        <div className="mb-1 flex items-center gap-1">
+                                          {Array.from({
+                                            length: room.largeBeds || 0,
+                                          }).map((_, index) => (
+                                            <BedDouble
+                                              key={index}
+                                              className="h-4 w-4 text-gray-500"
+                                            />
+                                          ))}
+                                          <p className="ml-1 text-xs text-gray-500">
+                                            {room.largeBeds} cama(s) casal
+                                            grande
+                                          </p>
+                                        </div>
+                                      )}
+                                      {(room.extraLargeBeds || 0) > 0 && (
+                                        <div className="mb-1 flex items-center gap-1">
+                                          {Array.from({
+                                            length: room.extraLargeBeds || 0,
+                                          }).map((_, index) => (
+                                            <BedDouble
+                                              key={index}
+                                              className="h-4 w-4 text-gray-500"
+                                            />
+                                          ))}
+                                          <p className="ml-1 text-xs text-gray-500">
+                                            {room.extraLargeBeds} cama(s) casal
+                                            extra-grande
+                                          </p>
+                                        </div>
+                                      )}
                                       {(room.singleBeds || 0) > 0 && (
                                         <div className="mb-1 flex items-center gap-1">
                                           {Array.from({
@@ -1268,6 +1402,19 @@ export default function PropertyPage() {
                                 )}
 
                                 {/* Outras informações */}
+                                {apartment.hasLivingRoom &&
+                                  !apartment.livingRoomHasSofaBed && (
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-gray-800">
+                                        Sala de estar:
+                                      </p>
+                                      <Sofa className="h-4 w-4 text-gray-500" />
+                                      <p className="text-xs text-gray-500">
+                                        Disponível
+                                      </p>
+                                    </div>
+                                  )}
+
                                 {apartment.livingRoomHasSofaBed && (
                                   <div className="flex items-center gap-2">
                                     <p className="text-xs font-bold text-gray-800">
@@ -1307,6 +1454,43 @@ export default function PropertyPage() {
                                     <Baby className="h-4 w-4 text-gray-500" />
                                     <p className="text-xs text-gray-500">
                                       Disponível
+                                    </p>
+                                  </div>
+                                )}
+
+                                {apartment.hasKitchen && (
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-xs font-bold text-gray-800">
+                                      Cozinha:
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      {apartment.kitchenHasStove ||
+                                      apartment.kitchenHasFridge ||
+                                      apartment.kitchenHasMinibar
+                                        ? `Disponível (${[
+                                            apartment.kitchenHasStove &&
+                                              "fogão",
+                                            apartment.kitchenHasFridge &&
+                                              "geladeira",
+                                            apartment.kitchenHasMinibar &&
+                                              "frigobar",
+                                          ]
+                                            .filter(Boolean)
+                                            .join(", ")})`
+                                        : "Disponível"}
+                                    </p>
+                                  </div>
+                                )}
+
+                                {apartment.hasBalcony && (
+                                  <div className="flex items-center gap-2">
+                                    <p className="text-xs font-bold text-gray-800">
+                                      Varanda:
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                      {apartment.balconyHasSeaView
+                                        ? "Com vista para o mar"
+                                        : "Disponível"}
                                     </p>
                                   </div>
                                 )}
@@ -1379,17 +1563,32 @@ export default function PropertyPage() {
                             if (room.doubleBeds && room.doubleBeds > 0) {
                               apartmentDetails += ` ${room.doubleBeds} cama(s) casal`;
                             }
+                            if (room.largeBeds && room.largeBeds > 0) {
+                              apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.largeBeds} cama(s) casal grande`;
+                            }
+                            if (
+                              room.extraLargeBeds &&
+                              room.extraLargeBeds > 0
+                            ) {
+                              apartmentDetails += `${room.doubleBeds || room.largeBeds ? ", " : " "}${room.extraLargeBeds} cama(s) casal extra-grande`;
+                            }
                             if (room.singleBeds && room.singleBeds > 0) {
-                              apartmentDetails += `${room.doubleBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
+                              apartmentDetails += `${room.doubleBeds || room.largeBeds || room.extraLargeBeds ? ", " : " "}${room.singleBeds} cama(s) solteiro`;
                             }
                             if (room.sofaBeds && room.sofaBeds > 0) {
-                              apartmentDetails += `${room.doubleBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
+                              apartmentDetails += `${room.doubleBeds || room.largeBeds || room.extraLargeBeds || room.singleBeds ? ", " : " "}${room.sofaBeds} sofá-cama(s)`;
                             }
                           },
                         );
                       }
 
                       // Sala de estar
+                      if (
+                        apartment.hasLivingRoom &&
+                        !apartment.livingRoomHasSofaBed
+                      ) {
+                        apartmentDetails += "\n🛋️ *Sala de estar:* Disponível";
+                      }
                       if (apartment.livingRoomHasSofaBed) {
                         apartmentDetails +=
                           "\n🛋️ *Sala de estar:* Com sofá-cama";

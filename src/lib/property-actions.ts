@@ -159,6 +159,8 @@ interface FullProperty {
     rooms: Array<{
       name: string;
       doubleBeds: number;
+      largeBeds: number;
+      extraLargeBeds: number;
       singleBeds: number;
       sofaBeds: number;
     }>;
@@ -251,7 +253,10 @@ export type PropertyFormData = {
     rooms: Array<{
       roomNumber: number;
       doubleBeds: number;
+      largeBeds: number;
+      extraLargeBeds: number;
       singleBeds: number;
+      sofaBeds: number;
     }>;
   }>;
 
@@ -549,7 +554,10 @@ export async function createProperty(data: PropertyFormData) {
             apartmentId: insertedApartment.id,
             roomNumber: room.roomNumber,
             doubleBeds: room.doubleBeds,
+            largeBeds: room.largeBeds,
+            extraLargeBeds: room.extraLargeBeds,
             singleBeds: room.singleBeds,
+            sofaBeds: room.sofaBeds,
           }));
 
           await db.insert(apartmentRoomsTable).values(roomsData);
@@ -895,8 +903,10 @@ export async function getPropertyById(
           rooms: rooms.map((room) => ({
             name: `Quarto ${room.roomNumber}`,
             doubleBeds: room.doubleBeds,
+            largeBeds: room.largeBeds,
+            extraLargeBeds: room.extraLargeBeds,
             singleBeds: room.singleBeds,
-            sofaBeds: 0, // Este campo não existe na tabela atual
+            sofaBeds: room.sofaBeds,
           })),
         };
       }),
@@ -1159,6 +1169,50 @@ export async function updateProperty(
 
       if (imageInserts.length > 0) {
         await db.insert(propertyImagesTable).values(imageInserts);
+      }
+    }
+
+    // Atualizar apartamentos
+    if (data.apartments && data.apartments.length > 0) {
+      // Deletar apartamentos existentes e seus quartos (cascade delete)
+      await db
+        .delete(propertyApartmentsTable)
+        .where(eq(propertyApartmentsTable.propertyId, propertyId));
+
+      // Inserir novos apartamentos
+      for (const apartment of data.apartments) {
+        const [insertedApartment] = await db
+          .insert(propertyApartmentsTable)
+          .values({
+            propertyId,
+            name: apartment.name,
+            totalBathrooms: apartment.totalBathrooms,
+            hasLivingRoom: apartment.hasLivingRoom,
+            livingRoomHasSofaBed: apartment.livingRoomHasSofaBed,
+            hasKitchen: apartment.hasKitchen,
+            kitchenHasStove: apartment.kitchenHasStove,
+            kitchenHasFridge: apartment.kitchenHasFridge,
+            kitchenHasMinibar: apartment.kitchenHasMinibar,
+            hasBalcony: apartment.hasBalcony,
+            balconyHasSeaView: apartment.balconyHasSeaView,
+            hasCrib: apartment.hasCrib,
+          })
+          .returning({ id: propertyApartmentsTable.id });
+
+        // Inserir quartos do apartamento
+        if (apartment.rooms && apartment.rooms.length > 0) {
+          const roomsData = apartment.rooms.map((room) => ({
+            apartmentId: insertedApartment.id,
+            roomNumber: room.roomNumber,
+            doubleBeds: room.doubleBeds,
+            largeBeds: room.largeBeds,
+            extraLargeBeds: room.extraLargeBeds,
+            singleBeds: room.singleBeds,
+            sofaBeds: room.sofaBeds,
+          }));
+
+          await db.insert(apartmentRoomsTable).values(roomsData);
+        }
       }
     }
 

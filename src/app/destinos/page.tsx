@@ -94,13 +94,13 @@ export default function DestinosPage() {
       <HeaderMobile />
 
       {/* Conteúdo Principal */}
-      <div className="container mx-auto mt-15 px-12 py-8">
+      <div className="container mx-auto mt-15 px-52 py-8">
         <div className="mb-8 text-start">
           <div className="mb-4 flex items-center justify-start gap-3">
             <Link href="/">
               <Button
                 size="sm"
-                className="bg-gray-800 text-gray-100 shadow-md backdrop-blur-sm transition-all duration-200 hover:bg-gray-900"
+                className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Voltar

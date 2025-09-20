@@ -270,7 +270,10 @@ export const apartmentRoomsTable = pgTable("apartment_rooms", {
     .references(() => propertyApartmentsTable.id, { onDelete: "cascade" }),
   roomNumber: integer("room_number").notNull(),
   doubleBeds: integer("double_beds").default(0).notNull(),
+  largeBeds: integer("large_beds").default(0).notNull(),
+  extraLargeBeds: integer("extra_large_beds").default(0).notNull(),
   singleBeds: integer("single_beds").default(0).notNull(),
+  sofaBeds: integer("sofa_beds").default(0).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

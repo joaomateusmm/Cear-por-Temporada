@@ -137,35 +137,11 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                     </AlertDialogHeader>
 
                     <div className="space-y-4">
-                      {/* Informações básicas */}
+                      {/* Informações principais */}
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="space-y-1">
                           <span className="font-medium text-gray-700">
-                            Hóspedes:{" "}
-                          </span>
-                          <span className="text-gray-600">
-                            {property.maxGuests}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="font-medium text-gray-700">
-                            Quartos:{" "}
-                          </span>
-                          <span className="text-gray-600">
-                            {property.bedrooms}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="font-medium text-gray-700">
-                            Banheiros:{" "}
-                          </span>
-                          <span className="text-gray-600">
-                            {property.bathrooms}
-                          </span>
-                        </div>
-                        <div className="space-y-1">
-                          <span className="font-medium text-gray-700">
-                            Tipo:{" "}
+                            Estilo:{" "}
                           </span>
                           <span className="text-gray-600">
                             {property.propertyStyle}
@@ -173,13 +149,54 @@ export default function PropertyCatalog({ properties }: PropertyCatalogProps) {
                         </div>
                         <div className="space-y-1">
                           <span className="font-medium text-gray-700">
-                            Aceita Pets:{" "}
+                            Cidade:{" "}
                           </span>
-                          <span
-                            className={`${property.allowsPets ? "text-green-600" : "text-red-600"} font-medium`}
-                          >
-                            {property.allowsPets ? "Sim" : "Não"}
+                          <span className="text-gray-600">
+                            {property.location.city}
                           </span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="font-medium text-gray-700">
+                            Bairro:{" "}
+                          </span>
+                          <span className="text-gray-600">
+                            {property.location.neighborhood}
+                          </span>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="font-medium text-gray-700">
+                            Estado:{" "}
+                          </span>
+                          <span className="text-gray-600">
+                            {property.location.state}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Características especiais */}
+                      <div className="border-t pt-3">
+                        <h4 className="mb-2 font-medium text-gray-900">
+                          Características
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-blue-600">🏠</span>
+                            <span className="text-gray-600">
+                              Ideal para até {property.maxGuests} pessoas
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-green-600">📍</span>
+                            <span className="text-gray-600">
+                              Localização privilegiada
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className="text-yellow-600">⭐</span>
+                            <span className="text-gray-600">
+                              Imóvel verificado
+                            </span>
+                          </div>
                         </div>
                       </div>
 

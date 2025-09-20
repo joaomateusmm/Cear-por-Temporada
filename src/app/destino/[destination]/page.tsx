@@ -6,6 +6,7 @@ import {
   MapPin,
   Palmtree,
   Plane,
+  SlidersHorizontal,
   TreePine,
   Umbrella,
   WavesLadder,
@@ -131,7 +132,7 @@ export default function DestinationPage() {
       <HeaderMobile />
 
       {/* Conteúdo Principal */}
-      <div className="container mx-auto mt-15 px-4 py-8">
+      <div className="container mx-auto mt-15 px-52 py-8">
         {/* Cabeçalho do Destino */}
         <div className="mb-8 flex items-center justify-between text-start">
           <div>
@@ -140,20 +141,19 @@ export default function DestinationPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-slate-600 bg-slate-800 text-slate-100 hover:bg-slate-900 hover:text-slate-100"
+                  className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar
                 </Button>
               </Link>
-              <h1 className="text-4xl font-bold text-gray-900">
-                {destinationData.fullName}
-              </h1>
+              <div className="- flex flex-col">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {destinationData.fullName}
+                </h2>
+                <p className="text-gray-600">{destinationData.description}</p>
+              </div>
             </div>
-
-            <p className="mb-4 text-xl text-gray-600">
-              {destinationData.description}
-            </p>
 
             {!isLoading && (
               <p className="text-sm text-gray-500">
@@ -165,12 +165,15 @@ export default function DestinationPage() {
               </p>
             )}
           </div>
-          {/* <div>
-            <Button variant="outline" size="sm">
-              <ArrowLeft className="mr-2 h-4 w-4" />
+          <div className="flex gap-4">
+            <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+              <SlidersHorizontal className="h-4 w-4" />
               Filtros
             </Button>
-          </div> */}
+            <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+              A - Z
+            </Button>
+          </div>
         </div>
 
         {/* Catálogo de Imóveis */}

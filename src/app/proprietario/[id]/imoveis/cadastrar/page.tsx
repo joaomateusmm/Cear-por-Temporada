@@ -40,6 +40,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -172,9 +173,21 @@ const propertyFormSchema = z.object({
                 .number()
                 .min(0, "Número de camas de casal inválido")
                 .default(0),
+              largeBeds: z
+                .number()
+                .min(0, "Número de camas de casal grande inválido")
+                .default(0),
+              extraLargeBeds: z
+                .number()
+                .min(0, "Número de camas de casal extra-grande inválido")
+                .default(0),
               singleBeds: z
                 .number()
                 .min(0, "Número de camas de solteiro inválido")
+                .default(0),
+              sofaBeds: z
+                .number()
+                .min(0, "Número de sofás-cama inválido")
                 .default(0),
             }),
           )
@@ -291,6 +304,8 @@ export default function AddPropertyPage() {
             {
               roomNumber: 1,
               doubleBeds: 0,
+              largeBeds: 0,
+              extraLargeBeds: 0,
               singleBeds: 0,
             },
           ],
@@ -510,6 +525,95 @@ export default function AddPropertyPage() {
     form.setValue("ownerProfileImage", "");
   };
 
+  // Estados para drag and drop
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  // Funções para drag and drop de imagens do imóvel
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      toast.error("Por favor, arraste apenas arquivos de imagem");
+      return;
+    }
+
+    setIsUploading(true);
+    const formData = new FormData();
+
+    imageFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    formData.append("type", "properties");
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        let errorMessage = "Erro no upload";
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData.error ||
+            errorData.message ||
+            `Erro HTTP ${response.status}`;
+        } catch {
+          errorMessage = `Erro HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+
+      if (
+        !data.files ||
+        !Array.isArray(data.files) ||
+        data.files.length === 0
+      ) {
+        throw new Error("Nenhuma URL de imagem foi retornada pelo servidor");
+      }
+
+      const newImages = [...uploadedImages, ...data.files];
+      setUploadedImages(newImages);
+      form.setValue("images", newImages);
+
+      toast.success(
+        data.service === "cloudinary"
+          ? `${data.files.length} imagem(ns) enviada(s) com sucesso! (Cloudinary)`
+          : `${data.files.length} imagem(ns) enviada(s) com sucesso!`,
+      );
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao enviar imagem(ns)";
+      toast.error(errorMessage);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleAmenityChange = (amenityId: number, checked: boolean) => {
     let newSelectedAmenities;
     if (checked) {
@@ -660,14 +764,13 @@ export default function AddPropertyPage() {
 
   const popularDestinations = [
     "Fortaleza",
-    "Canoa Quebrada",
     "Jericoacoara",
+    "Canoa Quebrada",
+    "Praia de Picos",
     "Morro Branco",
-    "Praia das Fontes",
-    "Aquiraz",
+    "Aguas Belas",
     "Cumbuco",
-    "Paracuru",
-    "Trairi",
+    "Beach Park",
     "Outros",
   ];
 
@@ -2008,6 +2111,10 @@ export default function AddPropertyPage() {
                             <FormLabel className="text-slate-300">
                               Destino Popular *
                             </FormLabel>
+                            <FormDescription className="text-xs text-slate-400">
+                              Selecione se seu imóvel estiver próximo ou em um
+                              local turístico popular.
+                            </FormDescription>
                             <Select
                               onValueChange={field.onChange}
                               defaultValue={field.value}
@@ -2048,24 +2155,38 @@ export default function AddPropertyPage() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-4 p-6">
-                    <div className="flex items-center gap-4">
-                      <label className="cursor-pointer">
+                    <div
+                      className="flex items-center gap-4"
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      <label className="flex-1 cursor-pointer">
                         <Button
                           type="button"
                           variant="outline"
                           disabled={isUploading}
-                          className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
+                          className={`h-24 w-full border-2 border-dashed transition-all duration-200 ${
+                            isDragOver
+                              ? "border-blue-400 bg-blue-400/10 text-blue-300"
+                              : "border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-100"
+                          }`}
                           asChild
                         >
-                          <span>
-                            {isUploading ? "Enviando..." : "Escolher Imagens"}
+                          <span className="flex flex-col items-center gap-2">
+                            <Camera className="h-6 w-6" />
+                            {isUploading
+                              ? "Enviando..."
+                              : isDragOver
+                                ? "Solte as imagens aqui"
+                                : "Selecione os arquivos ou arraste aqui"}
                           </span>
                         </Button>
                         <input
                           type="file"
                           accept="image/*"
                           multiple
-                          onChange={handleImageUpload}
+                          onChange={(e) => handleImageUpload(e, false)}
                           disabled={isUploading}
                           className="hidden"
                         />
@@ -2600,6 +2721,8 @@ export default function AddPropertyPage() {
                                           ].rooms.push({
                                             roomNumber,
                                             doubleBeds: 0,
+                                            largeBeds: 0,
+                                            extraLargeBeds: 0,
                                             singleBeds: 0,
                                           });
                                           field.onChange(newApartments);
@@ -2676,6 +2799,88 @@ export default function AddPropertyPage() {
                                                       ].rooms[
                                                         roomIndex
                                                       ].doubleBeds =
+                                                        parseInt(value);
+                                                      field.onChange(
+                                                        newApartments,
+                                                      );
+                                                    }}
+                                                  >
+                                                    <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                      <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="border-slate-600 bg-slate-700">
+                                                      {[0, 1, 2, 3, 4, 5].map(
+                                                        (num) => (
+                                                          <SelectItem
+                                                            key={num}
+                                                            value={num.toString()}
+                                                          >
+                                                            {num}
+                                                          </SelectItem>
+                                                        ),
+                                                      )}
+                                                    </SelectContent>
+                                                  </Select>
+                                                </div>
+
+                                                <div>
+                                                  <FormLabel className="text-xs text-gray-300">
+                                                    Camas de Casal Grande
+                                                  </FormLabel>
+                                                  <Select
+                                                    value={(
+                                                      room.largeBeds || 0
+                                                    ).toString()}
+                                                    onValueChange={(value) => {
+                                                      const newApartments = [
+                                                        ...field.value,
+                                                      ];
+                                                      newApartments[
+                                                        apartmentIndex
+                                                      ].rooms[
+                                                        roomIndex
+                                                      ].largeBeds =
+                                                        parseInt(value);
+                                                      field.onChange(
+                                                        newApartments,
+                                                      );
+                                                    }}
+                                                  >
+                                                    <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                      <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="border-slate-600 bg-slate-700">
+                                                      {[0, 1, 2, 3, 4, 5].map(
+                                                        (num) => (
+                                                          <SelectItem
+                                                            key={num}
+                                                            value={num.toString()}
+                                                          >
+                                                            {num}
+                                                          </SelectItem>
+                                                        ),
+                                                      )}
+                                                    </SelectContent>
+                                                  </Select>
+                                                </div>
+
+                                                <div>
+                                                  <FormLabel className="text-xs text-gray-300">
+                                                    Camas de Casal Extra-Grande
+                                                  </FormLabel>
+                                                  <Select
+                                                    value={(
+                                                      room.extraLargeBeds || 0
+                                                    ).toString()}
+                                                    onValueChange={(value) => {
+                                                      const newApartments = [
+                                                        ...field.value,
+                                                      ];
+                                                      newApartments[
+                                                        apartmentIndex
+                                                      ].rooms[
+                                                        roomIndex
+                                                      ].extraLargeBeds =
                                                         parseInt(value);
                                                       field.onChange(
                                                         newApartments,
