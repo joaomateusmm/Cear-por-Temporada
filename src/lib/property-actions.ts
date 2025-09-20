@@ -126,6 +126,8 @@ interface FullProperty {
     bedsRule: string | null;
     ageRestrictionRule: string | null;
     groupsRule: string | null;
+    partyRule: string | null;
+    restaurantRule: string | null;
     createdAt: Date;
     updatedAt: Date;
   } | null;
@@ -269,6 +271,8 @@ export type PropertyFormData = {
   bedsRule?: string;
   ageRestrictionRule?: string;
   groupsRule?: string;
+  partyRule?: string;
+  restaurantRule?: string;
 
   // Métodos de pagamento aceitos
   acceptsVisa?: boolean;
@@ -511,6 +515,8 @@ export async function createProperty(data: PropertyFormData) {
       bedsRule: data.bedsRule || null,
       ageRestrictionRule: data.ageRestrictionRule || null,
       groupsRule: data.groupsRule || null,
+      partyRule: data.partyRule || null,
+      restaurantRule: data.restaurantRule || null,
     });
 
     // 8. Salvar métodos de pagamento aceitos
@@ -1121,6 +1127,24 @@ export async function updateProperty(
         await db.insert(propertyAmenitiesTable).values(amenityInserts);
       }
     }
+
+    // Atualizar regras da casa
+    await db
+      .update(propertyHouseRulesTable)
+      .set({
+        checkInRule: data.checkInRule || null,
+        checkOutRule: data.checkOutRule || null,
+        cancellationRule: data.cancellationRule || null,
+        childrenRule: data.childrenRule || null,
+        petsRule: data.petsRule || null,
+        bedsRule: data.bedsRule || null,
+        ageRestrictionRule: data.ageRestrictionRule || null,
+        groupsRule: data.groupsRule || null,
+        partyRule: data.partyRule || null,
+        restaurantRule: data.restaurantRule || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(propertyHouseRulesTable.propertyId, propertyId));
 
     // Atualizar classes
     if (data.propertyClasses && data.propertyClasses.length > 0) {

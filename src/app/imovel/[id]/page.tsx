@@ -19,6 +19,7 @@ import {
   DoorOpen,
   Dumbbell,
   GlassWater,
+  Hamburger,
   HousePlus,
   ImageIcon,
   LampCeiling,
@@ -27,6 +28,7 @@ import {
   Microwave,
   Minus,
   Palmtree,
+  PartyPopper,
   Plane,
   Plus,
   Refrigerator,
@@ -998,6 +1000,17 @@ export default function PropertyPage() {
                         return;
                       }
 
+                      if (
+                        property.apartments &&
+                        property.apartments.length > 0 &&
+                        selectedApartment === null
+                      ) {
+                        toast.error(
+                          "Por favor, selecione um apartamento antes de reservar.",
+                        );
+                        return;
+                      }
+
                       const generateApartmentDetails = () => {
                         if (
                           selectedApartment === null ||
@@ -1534,6 +1547,17 @@ export default function PropertyPage() {
                     if (!checkIn || !checkOut) {
                       toast.error(
                         "Por favor, preencha as datas de saída e entrada antes de reservar.",
+                      );
+                      return;
+                    }
+
+                    if (
+                      property.apartments &&
+                      property.apartments.length > 0 &&
+                      selectedApartment === null
+                    ) {
+                      toast.error(
+                        "Por favor, selecione um apartamento antes de reservar.",
                       );
                       return;
                     }
@@ -2128,6 +2152,48 @@ export default function PropertyPage() {
                     <div className="md:w-2/3">
                       <p className="text-sm leading-relaxed text-gray-600">
                         {property.houseRules.ageRestrictionRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Festas e Eventos */}
+                {property.houseRules?.partyRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <PartyPopper className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Festas e Eventos
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.partyRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Restaurante */}
+                {property.houseRules?.restaurantRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Hamburger className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Restaurante Local
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.restaurantRule}
                       </p>
                     </div>
                   </div>

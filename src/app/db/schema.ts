@@ -291,6 +291,8 @@ export const propertyHouseRulesTable = pgTable("property_house_rules", {
   bedsRule: text("beds_rule"), // Regra sobre camas
   ageRestrictionRule: text("age_restriction_rule"), // Restrições de idade
   groupsRule: text("groups_rule"), // Regra sobre grupos
+  partyRule: text("party_rule"), // Regra sobre festas e eventos
+  restaurantRule: text("restaurant_rule"), // Regra sobre restaurante local
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

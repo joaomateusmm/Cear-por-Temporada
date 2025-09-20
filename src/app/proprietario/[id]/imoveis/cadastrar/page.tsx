@@ -205,6 +205,8 @@ const propertyFormSchema = z.object({
   bedsRule: z.string().optional(),
   ageRestrictionRule: z.string().optional(),
   groupsRule: z.string().optional(),
+  partyRule: z.string().optional(),
+  restaurantRule: z.string().optional(),
 
   // Métodos de pagamento aceitos
   acceptsVisa: z.boolean().default(false),
@@ -2384,6 +2386,52 @@ export default function AddPropertyPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Ex: Animais de estimação são permitidos. Taxa adicional pode ser aplicada."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Festa e Eventos */}
+
+                      <FormField
+                        control={form.control}
+                        name="partyRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Festa e Eventos
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Festas e eventos são permitidos. Taxa adicional pode ser aplicada."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                value={field.value || ""}
+                                onChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Restaurantes */}
+
+                      <FormField
+                        control={form.control}
+                        name="restaurantRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Restaurantes
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Possuímos restaurantes na instalação. Abre as 6:00 e fecha as 22:00."
                                 className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 value={field.value || ""}
                                 onChange={field.onChange}
