@@ -310,7 +310,7 @@ export default function PropertyPage() {
     },
     {
       icon: BedSingle,
-      label: "Kit enxoval",
+      label: "Roupas de cama",
       included: property.pricing?.includesLinens || false,
     },
     {

@@ -1,6 +1,17 @@
 "use client";
 
-import { Check, Copy, MapPin, Share2 } from "lucide-react";
+import {
+  BedSingle,
+  Check,
+  Coffee,
+  Copy,
+  GlassWater,
+  LampCeiling,
+  MapPin,
+  Share2,
+  TvMinimal,
+  Wifi,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -203,30 +214,84 @@ export function PropertyCarousel({
                               </div>
                             </div>
 
-                            {/* Características especiais */}
+                            {/* Serviços inclusos no imóvel */}
                             <div className="border-t pt-3">
                               <h4 className="mb-2 font-medium text-gray-900">
-                                Características
+                                Serviços inclusos no imóvel
                               </h4>
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-sm">
-                                  <span className="text-blue-600">🏠</span>
-                                  <span className="text-gray-600">
-                                    Ideal para até {property.maxGuests} pessoas
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm">
-                                  <span className="text-green-600">📍</span>
-                                  <span className="text-gray-600">
-                                    Localização privilegiada
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 text-sm">
-                                  <span className="text-yellow-600">⭐</span>
-                                  <span className="text-gray-600">
-                                    Imóvel verificado
-                                  </span>
-                                </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                {property.pricing?.includesKitchenUtensils && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <Coffee className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      Café da manhã
+                                    </span>
+                                  </div>
+                                )}
+                                {property.pricing?.includesInternet && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <Wifi className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      Internet
+                                    </span>
+                                  </div>
+                                )}
+                                {property.pricing?.includesElectricity && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <LampCeiling className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      Luz
+                                    </span>
+                                  </div>
+                                )}
+                                {property.pricing?.includesWater && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <GlassWater className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      Água
+                                    </span>
+                                  </div>
+                                )}
+                                {property.pricing?.includesLinens && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <BedSingle className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      Roupas de cama
+                                    </span>
+                                  </div>
+                                )}
+                                {property.pricing?.includesFurniture && (
+                                  <div className="flex items-center gap-2 rounded-md bg-gray-50 p-2">
+                                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200">
+                                      <span>
+                                        <TvMinimal className="h-5 w-5 text-gray-800" />
+                                      </span>
+                                    </div>
+                                    <span className="text-xs text-gray-700">
+                                      TV a cabo
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </div>
 

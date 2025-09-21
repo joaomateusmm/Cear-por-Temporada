@@ -34,6 +34,12 @@ export interface PropertyWithDetails {
   pricing: {
     dailyRate: string;
     monthlyRent: string;
+    includesKitchenUtensils?: boolean;
+    includesFurniture?: boolean;
+    includesElectricity?: boolean;
+    includesInternet?: boolean;
+    includesLinens?: boolean;
+    includesWater?: boolean;
   };
   images: {
     imageUrl: string;
@@ -65,6 +71,13 @@ export async function getActiveProperties(): Promise<PropertyWithDetails[]> {
         // Dados de preço
         dailyRate: propertyPricingTable.dailyRate,
         monthlyRent: propertyPricingTable.monthlyRent,
+        // Serviços inclusos
+        includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+        includesFurniture: propertyPricingTable.includesFurniture,
+        includesElectricity: propertyPricingTable.includesElectricity,
+        includesInternet: propertyPricingTable.includesInternet,
+        includesLinens: propertyPricingTable.includesLinens,
+        includesWater: propertyPricingTable.includesWater,
       })
       .from(propertiesTable)
       .leftJoin(
@@ -150,6 +163,12 @@ export async function getActiveProperties(): Promise<PropertyWithDetails[]> {
         pricing: {
           dailyRate: property.dailyRate || "0",
           monthlyRent: property.monthlyRent || "0",
+          includesKitchenUtensils: property.includesKitchenUtensils || false,
+          includesFurniture: property.includesFurniture || false,
+          includesElectricity: property.includesElectricity || false,
+          includesInternet: property.includesInternet || false,
+          includesLinens: property.includesLinens || false,
+          includesWater: property.includesWater || false,
         },
         images: validImages,
       });
@@ -186,6 +205,13 @@ export const getPropertiesByType = unstable_cache(
           // Dados de preço
           dailyRate: propertyPricingTable.dailyRate,
           monthlyRent: propertyPricingTable.monthlyRent,
+          // Serviços inclusos
+          includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+          includesFurniture: propertyPricingTable.includesFurniture,
+          includesElectricity: propertyPricingTable.includesElectricity,
+          includesInternet: propertyPricingTable.includesInternet,
+          includesLinens: propertyPricingTable.includesLinens,
+          includesWater: propertyPricingTable.includesWater,
         })
         .from(propertiesTable)
         .leftJoin(
@@ -278,6 +304,12 @@ export const getPropertiesByType = unstable_cache(
           pricing: {
             dailyRate: property.dailyRate || "0",
             monthlyRent: property.monthlyRent || "0",
+            includesKitchenUtensils: property.includesKitchenUtensils || false,
+            includesFurniture: property.includesFurniture || false,
+            includesElectricity: property.includesElectricity || false,
+            includesInternet: property.includesInternet || false,
+            includesLinens: property.includesLinens || false,
+            includesWater: property.includesWater || false,
           },
           images: validImages,
         });
@@ -358,6 +390,13 @@ export const getPropertiesByClass = unstable_cache(
           // Dados de preço
           dailyRate: propertyPricingTable.dailyRate,
           monthlyRent: propertyPricingTable.monthlyRent,
+          // Serviços inclusos
+          includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+          includesFurniture: propertyPricingTable.includesFurniture,
+          includesElectricity: propertyPricingTable.includesElectricity,
+          includesInternet: propertyPricingTable.includesInternet,
+          includesLinens: propertyPricingTable.includesLinens,
+          includesWater: propertyPricingTable.includesWater,
         })
         .from(propertiesTable)
         .innerJoin(
@@ -424,6 +463,12 @@ export const getPropertiesByClass = unstable_cache(
           pricing: {
             dailyRate: property.dailyRate || "0",
             monthlyRent: property.monthlyRent || "0",
+            includesKitchenUtensils: property.includesKitchenUtensils || false,
+            includesFurniture: property.includesFurniture || false,
+            includesElectricity: property.includesElectricity || false,
+            includesInternet: property.includesInternet || false,
+            includesLinens: property.includesLinens || false,
+            includesWater: property.includesWater || false,
           },
           images: validImages,
         });
@@ -515,6 +560,13 @@ export async function searchProperties({
         // Dados de preço
         dailyRate: propertyPricingTable.dailyRate,
         monthlyRent: propertyPricingTable.monthlyRent,
+        // Serviços inclusos
+        includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+        includesFurniture: propertyPricingTable.includesFurniture,
+        includesElectricity: propertyPricingTable.includesElectricity,
+        includesInternet: propertyPricingTable.includesInternet,
+        includesLinens: propertyPricingTable.includesLinens,
+        includesWater: propertyPricingTable.includesWater,
       })
       .from(propertiesTable)
       .leftJoin(
@@ -558,6 +610,12 @@ export async function searchProperties({
         pricing: {
           dailyRate: property.dailyRate || "0",
           monthlyRent: property.monthlyRent || "0",
+          includesKitchenUtensils: property.includesKitchenUtensils || false,
+          includesFurniture: property.includesFurniture || false,
+          includesElectricity: property.includesElectricity || false,
+          includesInternet: property.includesInternet || false,
+          includesLinens: property.includesLinens || false,
+          includesWater: property.includesWater || false,
         },
         images: validImages,
       });
@@ -598,6 +656,13 @@ export async function getAllProperties(): Promise<PropertyWithDetails[]> {
         pricingId: propertyPricingTable.id,
         dailyRate: propertyPricingTable.dailyRate,
         monthlyRent: propertyPricingTable.monthlyRent,
+        // Serviços inclusos
+        includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+        includesFurniture: propertyPricingTable.includesFurniture,
+        includesElectricity: propertyPricingTable.includesElectricity,
+        includesInternet: propertyPricingTable.includesInternet,
+        includesLinens: propertyPricingTable.includesLinens,
+        includesWater: propertyPricingTable.includesWater,
 
         // Primeira imagem
         imageUrl: propertyImagesTable.imageUrl,
@@ -643,6 +708,12 @@ export async function getAllProperties(): Promise<PropertyWithDetails[]> {
           pricing: {
             dailyRate: row.dailyRate || "0",
             monthlyRent: row.monthlyRent || "0",
+            includesKitchenUtensils: row.includesKitchenUtensils || false,
+            includesFurniture: row.includesFurniture || false,
+            includesElectricity: row.includesElectricity || false,
+            includesInternet: row.includesInternet || false,
+            includesLinens: row.includesLinens || false,
+            includesWater: row.includesWater || false,
           },
           images: [],
         });
@@ -699,6 +770,13 @@ export async function getPropertiesByDestination(
         pricingId: propertyPricingTable.id,
         dailyRate: propertyPricingTable.dailyRate,
         monthlyRent: propertyPricingTable.monthlyRent,
+        // Serviços inclusos
+        includesKitchenUtensils: propertyPricingTable.includesKitchenUtensils,
+        includesFurniture: propertyPricingTable.includesFurniture,
+        includesElectricity: propertyPricingTable.includesElectricity,
+        includesInternet: propertyPricingTable.includesInternet,
+        includesLinens: propertyPricingTable.includesLinens,
+        includesWater: propertyPricingTable.includesWater,
 
         // Primeira imagem
         imageUrl: propertyImagesTable.imageUrl,
@@ -750,6 +828,12 @@ export async function getPropertiesByDestination(
           pricing: {
             dailyRate: row.dailyRate || "0",
             monthlyRent: row.monthlyRent || "0",
+            includesKitchenUtensils: row.includesKitchenUtensils || false,
+            includesFurniture: row.includesFurniture || false,
+            includesElectricity: row.includesElectricity || false,
+            includesInternet: row.includesInternet || false,
+            includesLinens: row.includesLinens || false,
+            includesWater: row.includesWater || false,
           },
           images: [],
         });
