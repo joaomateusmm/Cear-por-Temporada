@@ -98,10 +98,10 @@ function ResultadosContent() {
       </div>
 
       {/* Seção de resultados */}
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-52">
         {isLoading ? (
           <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent"></div>
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-gray-500 border-r-transparent"></div>
             <p className="mt-4 text-gray-600">Carregando resultados...</p>
           </div>
         ) : (
