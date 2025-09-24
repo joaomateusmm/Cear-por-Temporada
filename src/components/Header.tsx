@@ -142,7 +142,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
                     <Link
-                      href="/categoria/casas"
+                      href="/categoria/casas-de-praia"
                       className="w-full scroll-smooth"
                     >
                       Casas de praia
@@ -158,7 +158,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
                     <Link
-                      href="/categoria/casas"
+                      href="/categoria/flats"
                       className="w-full scroll-smooth"
                     >
                       Flats
@@ -166,7 +166,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem className="text-white hover:bg-gray-700/50">
                     <Link
-                      href="/categoria/casas"
+                      href="/categoria/pousadas"
                       className="w-full scroll-smooth"
                     >
                       Pousadas

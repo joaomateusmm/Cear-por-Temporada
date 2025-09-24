@@ -132,11 +132,11 @@ export default function DestinationPage() {
       <HeaderMobile />
 
       {/* Conteúdo Principal */}
-      <div className="container mx-auto mt-15 px-52 py-8">
+      <div className="container mx-auto mt-15 px-4 py-8 md:px-52">
         {/* Cabeçalho do Destino */}
-        <div className="mb-8 flex items-center justify-between text-start">
+        <div className="mb-8 flex flex-col gap-4 text-start md:flex-row md:items-center md:justify-between">
           <div>
-            <div className="mb-4 flex items-center justify-start gap-3">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
               <Link href="/">
                 <Button
                   variant="outline"
@@ -147,11 +147,13 @@ export default function DestinationPage() {
                   Voltar
                 </Button>
               </Link>
-              <div className="- flex flex-col">
-                <h2 className="text-2xl font-bold text-gray-900">
+              <div className="flex flex-col">
+                <h2 className="text-xl font-bold text-gray-900 md:text-2xl">
                   {destinationData.fullName}
                 </h2>
-                <p className="text-gray-600">{destinationData.description}</p>
+                <p className="w-52 text-sm text-gray-600 md:w-full md:text-base">
+                  {destinationData.description}
+                </p>
               </div>
             </div>
 
@@ -165,12 +167,12 @@ export default function DestinationPage() {
               </p>
             )}
           </div>
-          <div className="flex gap-4">
-            <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+          <div className="flex gap-2 md:gap-4">
+            <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
               <SlidersHorizontal className="h-4 w-4" />
-              Filtros
+              <span className="hidden sm:inline">Filtros</span>
             </Button>
-            <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+            <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
               A - Z
             </Button>
           </div>

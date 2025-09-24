@@ -163,7 +163,7 @@ function CategoryContent() {
 
   if (!config) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="mt-15 min-h-screen bg-gray-50">
         <ScrollingHeader />
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold text-gray-900">
@@ -188,36 +188,39 @@ function CategoryContent() {
       <ScrollingHeader />
 
       {/* Results Section */}
-      <section className="md:px-52 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between">
-            <div className="mt-10 mb-8 flex items-center justify-start gap-4">
+      <section className="px-4 py-12 md:px-52">
+        <div className="container mx-auto">
+          <div className="mb-8 flex flex-col gap-4 text-start md:flex-row md:items-center md:justify-between">
+            <div className="mt-10 mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
               <Link href="/">
                 <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
                   <ArrowLeft className="h-4 w-4" />
                   Voltar
                 </Button>
               </Link>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+              <div className="flex flex-col">
+                <h2 className="text-xl font-bold text-gray-900 md:text-2xl">
                   {isLoading
                     ? "Carregando..."
                     : `${properties.length} imóveis disponíveis`}
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-sm text-gray-600 md:text-base">
                   Aqui estão todos os imóveis na categoria &ldquo;{config.title}
                   &rdquo;.
                 </p>
               </div>
             </div>
-            <div className="mt-10 mb-8 flex items-center justify-start gap-4">
+            <div className="flex gap-2 md:gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
+                  <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
                     <SlidersHorizontal className="h-4 w-4" />
-                    Filtros{" "}
-                    {selectedDestinations.length > 0 &&
-                      `(${selectedDestinations.length})`}
+                    <span className="hidden sm:inline">Filtros</span>
+                    {selectedDestinations.length > 0 && (
+                      <span className="ml-1">
+                        ({selectedDestinations.length})
+                      </span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56">
@@ -261,7 +264,7 @@ function CategoryContent() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button
-                className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95"
+                className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base"
                 onClick={toggleSortOrder}
               >
                 {sortOrder === "asc" ? "A - Z" : "Z - A"}
