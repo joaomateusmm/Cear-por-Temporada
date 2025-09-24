@@ -247,6 +247,8 @@ export const propertyApartmentsTable = pgTable("property_apartments", {
     .references(() => propertiesTable.id, { onDelete: "cascade" }),
   name: varchar("name", { length: 255 }).notNull(),
   totalBathrooms: integer("total_bathrooms").default(0).notNull(),
+  maxAdults: integer("max_adults").default(0).notNull(), // Número máximo recomendado de adultos
+  maxChildren: integer("max_children").default(0).notNull(), // Número máximo recomendado de crianças
   hasLivingRoom: boolean("has_living_room").default(false).notNull(),
   livingRoomHasSofaBed: boolean("living_room_has_sofa_bed")
     .default(false)
@@ -293,6 +295,7 @@ export const propertyHouseRulesTable = pgTable("property_house_rules", {
   groupsRule: text("groups_rule"), // Regra sobre grupos
   partyRule: text("party_rule"), // Regra sobre festas e eventos
   restaurantRule: text("restaurant_rule"), // Regra sobre restaurante local
+  silenceRule: text("silence_rule"), // Regra sobre horários de silêncio
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

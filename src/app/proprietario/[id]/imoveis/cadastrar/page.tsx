@@ -16,6 +16,7 @@ import {
   Sofa,
   Trash,
   User,
+  Users,
   Utensils,
 } from "lucide-react";
 import Image from "next/image";
@@ -156,6 +157,14 @@ const propertyFormSchema = z.object({
           .number()
           .min(0, "Número de banheiros inválido")
           .default(0),
+        maxAdults: z
+          .number()
+          .min(0, "Número máximo de adultos inválido")
+          .default(0),
+        maxChildren: z
+          .number()
+          .min(0, "Número máximo de crianças inválido")
+          .default(0),
         hasLivingRoom: z.boolean().default(false),
         livingRoomHasSofaBed: z.boolean().default(false),
         hasKitchen: z.boolean().default(false),
@@ -207,6 +216,7 @@ const propertyFormSchema = z.object({
   groupsRule: z.string().optional(),
   partyRule: z.string().optional(),
   restaurantRule: z.string().optional(),
+  silenceRule: z.string().optional(),
 
   // Métodos de pagamento aceitos
   acceptsVisa: z.boolean().default(false),
@@ -293,6 +303,8 @@ export default function AddPropertyPage() {
         {
           name: "",
           totalBathrooms: 0,
+          maxAdults: 0,
+          maxChildren: 0,
           hasLivingRoom: false,
           livingRoomHasSofaBed: false,
           hasKitchen: false,
@@ -321,6 +333,9 @@ export default function AddPropertyPage() {
       bedsRule: "",
       ageRestrictionRule: "",
       groupsRule: "",
+      partyRule: "",
+      restaurantRule: "",
+      silenceRule: "",
       acceptsVisa: false,
       acceptsAmericanExpress: false,
       acceptsMasterCard: false,
@@ -708,7 +723,11 @@ export default function AddPropertyPage() {
         images: uploadedImages,
 
         // Apartamentos
-        apartments: values.apartments,
+        apartments: values.apartments.map((apt) => ({
+          ...apt,
+          maxAdults: apt.maxAdults || 0,
+          maxChildren: apt.maxChildren || 0,
+        })),
 
         // Regras da Casa
         checkInRule: values.checkInRule,
@@ -719,6 +738,9 @@ export default function AddPropertyPage() {
         bedsRule: values.bedsRule,
         ageRestrictionRule: values.ageRestrictionRule,
         groupsRule: values.groupsRule,
+        partyRule: values.partyRule,
+        restaurantRule: values.restaurantRule,
+        silenceRule: values.silenceRule,
 
         // Métodos de pagamento aceitos
         acceptsVisa: values.acceptsVisa,
@@ -2052,7 +2074,7 @@ export default function AddPropertyPage() {
                                   <SelectItem
                                     key={municipality}
                                     value={municipality}
-                                    className="text-slate-100 focus:bg-slate-600"
+                                    className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                   >
                                     {municipality}
                                   </SelectItem>
@@ -2131,7 +2153,7 @@ export default function AddPropertyPage() {
                                   <SelectItem
                                     key={destination}
                                     value={destination}
-                                    className="text-slate-100 focus:bg-slate-600"
+                                    className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                   >
                                     {destination}
                                   </SelectItem>
@@ -2454,6 +2476,27 @@ export default function AddPropertyPage() {
                             <FormControl>
                               <Textarea
                                 placeholder="Ex: Camas extras não disponíveis. Berços disponíveis de 0 a 3 anos."
+                                className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Hora do Silêncio */}
+                      <FormField
+                        control={form.control}
+                        name="silenceRule"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="font-semibold text-slate-300">
+                              Hora do Silêncio
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Ex: Silêncio absoluto entre 22h e 6h."
                                 className="min-h-[100px] border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
                                 {...field}
                               />
@@ -2860,6 +2903,7 @@ export default function AddPropertyPage() {
                                                       {[0, 1, 2, 3, 4, 5].map(
                                                         (num) => (
                                                           <SelectItem
+                                                            className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                                             key={num}
                                                             value={num.toString()}
                                                           >
@@ -2901,6 +2945,7 @@ export default function AddPropertyPage() {
                                                       {[0, 1, 2, 3, 4, 5].map(
                                                         (num) => (
                                                           <SelectItem
+                                                            className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                                             key={num}
                                                             value={num.toString()}
                                                           >
@@ -2942,6 +2987,7 @@ export default function AddPropertyPage() {
                                                       {[0, 1, 2, 3, 4, 5].map(
                                                         (num) => (
                                                           <SelectItem
+                                                            className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                                             key={num}
                                                             value={num.toString()}
                                                           >
@@ -2983,6 +3029,7 @@ export default function AddPropertyPage() {
                                                       {[0, 1, 2, 3, 4, 5].map(
                                                         (num) => (
                                                           <SelectItem
+                                                            className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                                             key={num}
                                                             value={num.toString()}
                                                           >
@@ -3033,6 +3080,7 @@ export default function AddPropertyPage() {
                                               0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                                             ].map((num) => (
                                               <SelectItem
+                                                className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
                                                 key={num}
                                                 value={num.toString()}
                                               >
@@ -3207,7 +3255,98 @@ export default function AddPropertyPage() {
                                     </div>
 
                                     {/* Segunda linha: 2 colunas centralizadas */}
-                                    <div className="grid grid-cols-1 gap-6 md:mx-auto md:max-w-2xl md:grid-cols-2">
+                                    <div className="grid grid-cols-1 gap-6 md:mx-auto md:max-w-2xl md:grid-cols-3">
+                                      {/* Capacidade de Hóspedes */}
+                                      <div>
+                                        <FormLabel className="text-sm font-medium text-gray-200">
+                                          <Users className="mr-2 inline h-4 w-4" />
+                                          Capacidade Max. de Hóspedes
+                                        </FormLabel>
+                                        <FormDescription className="text-xs text-gray-400">
+                                          Número máximo recomendado de hóspedes
+                                          que o apartamento acomoda
+                                          confortavelmente.
+                                        </FormDescription>
+                                        <div className="flex gap-3">
+                                          {/* Adultos */}
+                                          <div className="flex-1">
+                                            <FormLabel className="text-xs text-gray-400">
+                                              Adultos
+                                            </FormLabel>
+                                            <Select
+                                              value={(
+                                                apartment.maxAdults || 0
+                                              ).toString()}
+                                              onValueChange={(value) => {
+                                                const newApartments = [
+                                                  ...field.value,
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].maxAdults = parseInt(value);
+                                                field.onChange(newApartments);
+                                              }}
+                                            >
+                                              <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                <SelectValue placeholder="0" />
+                                              </SelectTrigger>
+                                              <SelectContent className="border-slate-600 bg-slate-700">
+                                                {[
+                                                  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                  10,
+                                                ].map((num) => (
+                                                  <SelectItem
+                                                    className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
+                                                    key={`adults-${apartmentIndex}-${num}`}
+                                                    value={num.toString()}
+                                                  >
+                                                    {num}
+                                                  </SelectItem>
+                                                ))}
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+
+                                          {/* Crianças */}
+                                          <div className="flex-1">
+                                            <FormLabel className="text-xs text-gray-400">
+                                              Crianças
+                                            </FormLabel>
+                                            <Select
+                                              value={(
+                                                apartment.maxChildren || 0
+                                              ).toString()}
+                                              onValueChange={(value) => {
+                                                const newApartments = [
+                                                  ...field.value,
+                                                ];
+                                                newApartments[
+                                                  apartmentIndex
+                                                ].maxChildren = parseInt(value);
+                                                field.onChange(newApartments);
+                                              }}
+                                            >
+                                              <SelectTrigger className="mt-1 border-slate-600 bg-slate-700/50 text-gray-100">
+                                                <SelectValue placeholder="0" />
+                                              </SelectTrigger>
+                                              <SelectContent className="border-slate-600 bg-slate-700">
+                                                {[
+                                                  0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                  10,
+                                                ].map((num) => (
+                                                  <SelectItem
+                                                    className="border-slate-600 bg-slate-700 text-gray-300 hover:selection:text-white"
+                                                    key={`children-${apartmentIndex}-${num}`}
+                                                    value={num.toString()}
+                                                  >
+                                                    {num}
+                                                  </SelectItem>
+                                                ))}
+                                              </SelectContent>
+                                            </Select>
+                                          </div>
+                                        </div>
+                                      </div>
                                       {/* Varanda */}
                                       <div className="space-y-3">
                                         <FormLabel className="text-sm font-medium text-gray-200">

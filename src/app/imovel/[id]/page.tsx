@@ -12,6 +12,7 @@ import {
   Car,
   Check,
   CircleQuestionMark,
+  Clock,
   Coffee,
   Copy,
   CreditCard,
@@ -37,6 +38,7 @@ import {
   Sofa,
   SquareCheck,
   TvMinimal,
+  User,
   Users,
   Utensils,
   WavesLadder,
@@ -134,6 +136,8 @@ interface PropertyApartment {
   hasBalcony?: boolean;
   balconyHasSeaView?: boolean;
   hasCrib?: boolean;
+  maxAdults?: number;
+  maxChildren?: number;
   rooms?: ApartmentRoom[];
 }
 
@@ -947,6 +951,43 @@ export default function PropertyPage() {
                                       </p>
                                     </div>
                                   )}
+
+                                  {/* Capacidade de Hóspedes */}
+                                  {(apartment.maxAdults ||
+                                    apartment.maxChildren) && (
+                                    <div className="flex items-center gap-1">
+
+                                      <div className="flex items-center gap-1">
+                                        {/* Adultos */}
+                                        {Array.from({ 
+                                          length: apartment.maxAdults || 0,
+                                        }).map((_, index) => (
+                                          <User
+                                            key={`adult-${index}`}
+                                            className="h-4 w-4 text-gray-600"
+                                          />
+                                        ))}
+                                        {/* Crianças */}
+                                        {Array.from({
+                                          length: apartment.maxChildren || 0,
+                                        }).map((_, index) => (
+                                          <User
+                                            key={`child-${index}`}
+                                            className="h-3.5 w-3.5 text-gray-600"
+                                          />
+                                        ))}
+                                        <p className="ml-1 text-xs text-gray-500">
+                                          {apartment.maxAdults || 0} adulto
+                                          {(apartment.maxAdults || 0) !== 1
+                                            ? "s"
+                                            : ""}
+                                          {(apartment.maxChildren || 0) > 0
+                                            ? `, ${apartment.maxChildren} criança${(apartment.maxChildren || 0) !== 1 ? "s" : ""}`
+                                            : ""}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                                 <p className="my-2 w-35 text-center text-xs font-medium text-gray-800">
                                   {apartment.name ||
@@ -1740,7 +1781,7 @@ export default function PropertyPage() {
                   {includedServices.map((service, index) => (
                     <div key={index} className="flex items-center gap-3">
                       <div
-                        className={`rounded-md p-2 shadow-md duration-700 hover:scale-115 ${service.included ? "bg-gray-200" : "bg-gray-100/70"}`}
+                        className={`rounded-md p-2 shadow-md duration-700 hover:scale-115 ${service.included ? "bg-gray-200" : "bg-gray-100/70 hover:scale-100"}`}
                       >
                         <service.icon
                           className={`h-4 w-4 ${service.included ? "text-gray-800" : "text-gray-400"}`}
@@ -1998,7 +2039,11 @@ export default function PropertyPage() {
             property.houseRules.childrenRule ||
             property.houseRules.bedsRule ||
             property.houseRules.ageRestrictionRule ||
-            property.houseRules.groupsRule)) ||
+            property.houseRules.groupsRule ||
+            property.houseRules.petsRule ||
+            property.houseRules.partyRule ||
+            property.houseRules.restaurantRule ||
+            property.houseRules.silenceRule)) ||
         (property.paymentMethods &&
           (property.paymentMethods.acceptsVisa ||
             property.paymentMethods.acceptsAmericanExpress ||
@@ -2213,6 +2258,69 @@ export default function PropertyPage() {
                     <div className="md:w-2/3">
                       <p className="text-sm leading-relaxed text-gray-600">
                         {property.houseRules.groupsRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Hora do Silêncio */}
+                {property.houseRules?.silenceRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Clock className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Hora do Silêncio
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.silenceRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Festas e Eventos */}
+                {property.houseRules?.partyRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <PartyPopper className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Festas e Eventos
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.partyRule}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Restaurantes */}
+                {property.houseRules?.restaurantRule && (
+                  <div className="flex flex-col gap-3 border-b border-gray-100 pb-6 md:flex-row md:gap-8">
+                    <div className="flex items-start gap-3 md:w-1/3">
+                      <div className="rounded-md bg-gray-200 p-2 shadow-md duration-700 hover:scale-115">
+                        <Utensils className="h-4 w-4 text-gray-800" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Restaurantes
+                        </h4>
+                      </div>
+                    </div>
+                    <div className="md:w-2/3">
+                      <p className="text-sm leading-relaxed text-gray-600">
+                        {property.houseRules.restaurantRule}
                       </p>
                     </div>
                   </div>

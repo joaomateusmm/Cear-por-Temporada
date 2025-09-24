@@ -128,6 +128,7 @@ interface FullProperty {
     groupsRule: string | null;
     partyRule: string | null;
     restaurantRule: string | null;
+    silenceRule: string | null;
     createdAt: Date;
     updatedAt: Date;
   } | null;
@@ -149,6 +150,8 @@ interface FullProperty {
     id?: number;
     name: string;
     totalBathrooms: number;
+    maxAdults: number; // Número máximo recomendado de adultos
+    maxChildren: number; // Número máximo recomendado de crianças
     hasLivingRoom: boolean;
     livingRoomHasSofaBed: boolean;
     hasKitchen: boolean;
@@ -243,6 +246,8 @@ export type PropertyFormData = {
   apartments?: Array<{
     name: string;
     totalBathrooms: number;
+    maxAdults: number; // Número máximo recomendado de adultos
+    maxChildren: number; // Número máximo recomendado de crianças
     hasLivingRoom: boolean;
     livingRoomHasSofaBed: boolean;
     hasKitchen: boolean;
@@ -273,6 +278,7 @@ export type PropertyFormData = {
   groupsRule?: string;
   partyRule?: string;
   restaurantRule?: string;
+  silenceRule?: string; // Regra sobre horários de silêncio
 
   // Métodos de pagamento aceitos
   acceptsVisa?: boolean;
@@ -517,6 +523,7 @@ export async function createProperty(data: PropertyFormData) {
       groupsRule: data.groupsRule || null,
       partyRule: data.partyRule || null,
       restaurantRule: data.restaurantRule || null,
+      silenceRule: data.silenceRule || null,
     });
 
     // 8. Salvar métodos de pagamento aceitos
@@ -542,6 +549,8 @@ export async function createProperty(data: PropertyFormData) {
             propertyId,
             name: apartment.name,
             totalBathrooms: apartment.totalBathrooms,
+            maxAdults: apartment.maxAdults || 0,
+            maxChildren: apartment.maxChildren || 0,
             hasLivingRoom: apartment.hasLivingRoom,
             livingRoomHasSofaBed: apartment.livingRoomHasSofaBed,
             hasKitchen: apartment.hasKitchen,
@@ -1142,6 +1151,7 @@ export async function updateProperty(
         groupsRule: data.groupsRule || null,
         partyRule: data.partyRule || null,
         restaurantRule: data.restaurantRule || null,
+        silenceRule: data.silenceRule || null,
         updatedAt: new Date(),
       })
       .where(eq(propertyHouseRulesTable.propertyId, propertyId));
@@ -1211,6 +1221,8 @@ export async function updateProperty(
             propertyId,
             name: apartment.name,
             totalBathrooms: apartment.totalBathrooms,
+            maxAdults: apartment.maxAdults || 0,
+            maxChildren: apartment.maxChildren || 0,
             hasLivingRoom: apartment.hasLivingRoom,
             livingRoomHasSofaBed: apartment.livingRoomHasSofaBed,
             hasKitchen: apartment.hasKitchen,
