@@ -306,7 +306,7 @@ function CategoryContent() {
           ) : properties.length > 0 ? (
             <PropertyCatalog properties={properties} />
           ) : (
-            <div className="py-12 md:py-45 text-center">
+            <div className="py-12 text-center md:py-45">
               <h3 className="text-xl font-semibold text-gray-900">
                 Nenhum imóvel encontrado
               </h3>
