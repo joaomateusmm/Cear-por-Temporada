@@ -2638,7 +2638,7 @@ export default function PropertyPage() {
         <section className="text-start" id="imoveis-destaque">
           <PropertySection
             title="Recomendações"
-            description={`Já que você gostou de ${property.title}, talvez você também se interesse por estas opções.`}
+            description={`Já que você gostou de ${property.title}, talvez você também se interesse por estas opções:`}
             properties={featuredProperties}
             category="imoveis-destaque"
           />

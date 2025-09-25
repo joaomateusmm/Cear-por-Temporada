@@ -450,42 +450,35 @@ export default function EditPropertyPage() {
         );
 
         // Preencher regras da casa
-        if (propertyData.houseRules) {
-          form.setValue(
-            "checkInRule",
-            propertyData.houseRules.checkInRule || "",
-          );
-          form.setValue(
-            "checkOutRule",
-            propertyData.houseRules.checkOutRule || "",
-          );
-          form.setValue(
-            "cancellationRule",
-            propertyData.houseRules.cancellationRule || "",
-          );
-          form.setValue(
-            "childrenRule",
-            propertyData.houseRules.childrenRule || "",
-          );
-          form.setValue("bedsRule", propertyData.houseRules.bedsRule || "");
-          form.setValue(
-            "ageRestrictionRule",
-            propertyData.houseRules.ageRestrictionRule || "",
-          );
-          form.setValue("groupsRule", propertyData.houseRules.groupsRule || "");
-          form.setValue("petsRule", propertyData.houseRules.petsRule || "");
-          form.setValue("partyRule", propertyData.houseRules.partyRule || "");
-          form.setValue(
-            "restaurantRule",
-            propertyData.houseRules.restaurantRule || "",
-          );
-          form.setValue(
-            "silenceRule",
-            propertyData.houseRules.silenceRule || "",
-          );
-        }
+        // Sempre preencher os campos, mesmo que houseRules seja null
+        const houseRules = propertyData.houseRules || {
+          checkInRule: null,
+          checkOutRule: null,
+          cancellationRule: null,
+          childrenRule: null,
+          bedsRule: null,
+          ageRestrictionRule: null,
+          groupsRule: null,
+          petsRule: null,
+          partyRule: null,
+          restaurantRule: null,
+          silenceRule: null,
+        };
 
-        // Preencher métodos de pagamento
+        form.setValue("checkInRule", houseRules.checkInRule || "");
+        form.setValue("checkOutRule", houseRules.checkOutRule || "");
+        form.setValue("cancellationRule", houseRules.cancellationRule || "");
+        form.setValue("childrenRule", houseRules.childrenRule || "");
+        form.setValue("bedsRule", houseRules.bedsRule || "");
+        form.setValue(
+          "ageRestrictionRule",
+          houseRules.ageRestrictionRule || "",
+        );
+        form.setValue("groupsRule", houseRules.groupsRule || "");
+        form.setValue("petsRule", houseRules.petsRule || "");
+        form.setValue("partyRule", houseRules.partyRule || "");
+        form.setValue("restaurantRule", houseRules.restaurantRule || "");
+        form.setValue("silenceRule", houseRules.silenceRule || ""); // Preencher métodos de pagamento
         if (propertyData.paymentMethods) {
           form.setValue(
             "acceptsVisa",
