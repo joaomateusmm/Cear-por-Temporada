@@ -34,6 +34,24 @@ const categoryConfig = {
       "Encontre todos os apartamentos disponíveis para aluguel por temporada no Ceará",
     filter: "apartamento",
   },
+  "casas-de-praia": {
+    title: "Casas de Praia",
+    description:
+      "Desfrute de nossas casas exclusivas na orla, perfeitas para quem busca tranquilidade e vista para o mar",
+    filter: "casa de praia",
+  },
+  flats: {
+    title: "Flats",
+    description:
+      "Todos os nossos flats modernos e confortáveis em localização privilegiada",
+    filter: "flats",
+  },
+  pousadas: {
+    title: "Pousadas",
+    description:
+      "Experimente a hospitalidade cearense em nossas pousadas aconchegantes com atendimento personalizado",
+    filter: "pousada",
+  },
   "casas-destaque": {
     title: "Casas em Destaque",
     description: "As melhores casas selecionadas especialmente para você",
@@ -288,7 +306,7 @@ function CategoryContent() {
           ) : properties.length > 0 ? (
             <PropertyCatalog properties={properties} />
           ) : (
-            <div className="py-12 text-center">
+            <div className="py-12 md:py-45 text-center">
               <h3 className="text-xl font-semibold text-gray-900">
                 Nenhum imóvel encontrado
               </h3>

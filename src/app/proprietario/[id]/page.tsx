@@ -4,8 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeft,
   Edit,
-  Instagram,
-  Link2,
   Loader,
   LogOut,
   MapPin,
