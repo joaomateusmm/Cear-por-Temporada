@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import Footer from "@/components/Footer";
@@ -21,6 +21,14 @@ import Header from "@/components/Header";
 import HeaderMobile from "@/components/HeaderMobile";
 import PropertyCatalog from "@/components/PropertyCatalog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   getPropertiesByDestination,
   PropertyWithDetails,
@@ -72,24 +80,95 @@ const destinationInfo = {
   },
 };
 
+// Lista de categorias de imóveis para filtro
+const propertyCategories = [
+  "Casas",
+  "Casas de Praia",
+  "Apartamentos",
+  "Flats",
+  "Pousadas",
+  "Imóveis em Destaque",
+];
+
 export default function DestinationPage() {
   const params = useParams();
   const destination = decodeURIComponent(params.destination as string);
 
   const [properties, setProperties] = useState<PropertyWithDetails[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // A-Z por padrão
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   // Informações do destino atual
   const destinationData =
     destinationInfo[destination as keyof typeof destinationInfo];
   const DestinationIcon = destinationData?.icon || MapPin;
 
+  // Função para alternar filtro de categoria
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category],
+    );
+  };
+
+  // Função para alternar ordem alfabética
+  const toggleSortOrder = () => {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  };
+
+  // Função para ordenar propriedades alfabeticamente
+  const sortProperties = useCallback(
+    (properties: PropertyWithDetails[]) => {
+      return [...properties].sort((a, b) => {
+        const titleA = a.title.toLowerCase();
+        const titleB = b.title.toLowerCase();
+
+        if (sortOrder === "asc") {
+          return titleA.localeCompare(titleB);
+        } else {
+          return titleB.localeCompare(titleA);
+        }
+      });
+    },
+    [sortOrder],
+  );
+
   useEffect(() => {
     async function loadPropertiesByDestination() {
       try {
         setIsLoading(true);
         const data = await getPropertiesByDestination(destination);
-        setProperties(data || []);
+
+        let filteredProperties = data || [];
+
+        // Filtrar por categorias selecionadas
+        if (selectedCategories.length > 0) {
+          filteredProperties = filteredProperties.filter(
+            (property: PropertyWithDetails) =>
+              selectedCategories.some((category) => {
+                const propertyType =
+                  property.propertyStyle?.toLowerCase() || "";
+
+                if (category === "Casas") return propertyType.includes("casa");
+                if (category === "Casas de Praia")
+                  return propertyType.includes("casa");
+                if (category === "Apartamentos")
+                  return propertyType.includes("apartamento");
+                if (category === "Flats") return propertyType.includes("flat");
+                if (category === "Pousadas")
+                  return propertyType.includes("pousada");
+                if (category === "Imóveis em Destaque") return true; // Para "destaque" mostra todos
+
+                return propertyType.includes(category.toLowerCase());
+              }),
+          );
+        }
+
+        // Aplicar ordenação alfabética
+        const sortedProperties = sortProperties(filteredProperties);
+        setProperties(sortedProperties);
       } catch (error) {
         console.error("Erro ao carregar imóveis do destino:", error);
         toast.error("Erro ao carregar imóveis do destino");
@@ -101,7 +180,7 @@ export default function DestinationPage() {
     if (destination) {
       loadPropertiesByDestination();
     }
-  }, [destination]);
+  }, [destination, selectedCategories, sortOrder, sortProperties]);
 
   // Se não encontrou informações do destino, mostrar erro
   if (!destinationData) {
@@ -168,12 +247,58 @@ export default function DestinationPage() {
             )}
           </div>
           <div className="flex gap-2 md:gap-4">
-            <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
-              <SlidersHorizontal className="h-4 w-4" />
-              <span className="hidden sm:inline">Filtros</span>
-            </Button>
-            <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
-              A - Z
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base">
+                  <SlidersHorizontal className="h-4 w-4" />
+                  <span className="hidden sm:inline">Filtros</span>
+                  {selectedCategories.length > 0 && (
+                    <span className="ml-1">({selectedCategories.length})</span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 ml-2">
+                <DropdownMenuLabel>Filtrar por Categoria</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="space-y-2 p-2">
+                  {propertyCategories.map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={category}
+                        checked={selectedCategories.includes(category)}
+                        onCheckedChange={() => toggleCategory(category)}
+                      />
+                      <label
+                        htmlFor={category}
+                        className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        {category}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {selectedCategories.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <div className="p-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setSelectedCategories([])}
+                      >
+                        Limpar Filtros
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button
+              className="cursor-pointer bg-gray-800 px-3 py-4 text-sm text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95 md:px-4 md:py-5 md:text-base"
+              onClick={toggleSortOrder}
+            >
+              {sortOrder === "asc" ? "A - Z" : "Z - A"}
             </Button>
           </div>
         </div>

@@ -191,7 +191,7 @@ function CategoryContent() {
       <section className="px-4 py-12 md:px-52">
         <div className="container mx-auto">
           <div className="mb-8 flex flex-col gap-4 text-start md:flex-row md:items-center md:justify-between">
-            <div className="mt-10 mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-start">
               <Link href="/">
                 <Button className="cursor-pointer bg-gray-800 px-4 py-5 text-gray-100 shadow-md duration-200 hover:scale-[1.02] hover:bg-gray-800 hover:text-white hover:active:scale-95">
                   <ArrowLeft className="h-4 w-4" />
@@ -223,7 +223,7 @@ function CategoryContent() {
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56">
+                <DropdownMenuContent className="ml-2 w-56">
                   <DropdownMenuLabel>Filtrar por Destino</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <div className="space-y-2 p-2">
@@ -295,12 +295,6 @@ function CategoryContent() {
               <p className="mt-2 text-gray-600">
                 Não há imóveis disponíveis nesta categoria no momento.
               </p>
-              <Link
-                href="/"
-                className="mt-4 inline-block rounded-md bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
-              >
-                Ver todos os imóveis
-              </Link>
             </div>
           )}
         </div>
