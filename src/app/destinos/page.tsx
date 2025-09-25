@@ -94,7 +94,7 @@ export default function DestinosPage() {
       <HeaderMobile />
 
       {/* Conteúdo Principal */}
-      <div className="container mx-auto mt-15 px-52 py-8">
+      <div className="container mx-auto mt-15 px-4 py-8 md:px-52">
         <div className="mb-8 text-start">
           <div className="mb-4 flex items-center justify-start gap-3">
             <Link href="/">
