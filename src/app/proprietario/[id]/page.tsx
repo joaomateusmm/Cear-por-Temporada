@@ -678,7 +678,7 @@ export default function OwnerDashboard() {
               <CardTitle className="flex items-center justify-between text-slate-100">
                 <div className="flex">
                   <User className="mr-2 h-5 w-5" />
-                  Como seu perfil aparece para os clientes:
+                  Como seu perfil aparece para os Admins:
                 </div>
                 <AlertDialog
                   open={isEditingProfile}
@@ -692,156 +692,157 @@ export default function OwnerDashboard() {
                       <Pencil />
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="md:[85vw] max-w-sm border-slate-600 bg-slate-800 sm:max-w-md lg:w-[50vw]">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="text-slate-100">
-                        Editar Perfil do Proprietário
-                      </AlertDialogTitle>
-                      <AlertDialogDescription className="text-slate-400">
-                        Atualize suas informações de perfil que aparecerão para
-                        os clientes.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
+                  <AlertDialogContent className="border-slate-600 bg-slate-800">
+                    <div className=" w-full max-w-none md:mx-auto md:w-[80vw] lg:w-[45vw]">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-slate-100">
+                          Editar Perfil do Proprietário
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-slate-400">
+                          Atualize suas informações de perfil que aparecerão
+                          para os Admins.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
 
-                    <Form {...profileForm}>
-                      <form
-                        onSubmit={profileForm.handleSubmit(
-                          onSubmitProfileUpdate,
-                        )}
-                        className="space-y-6"
-                      >
-                        {/* Foto de Perfil */}
-                        <div className="space-y-2">
-                          <FormLabel className="mb-3 text-slate-300">
-                            Foto de Perfil
-                          </FormLabel>
-                          <div className="flex items-center gap-4">
-                            {uploadedProfileImage ? (
-                              <div className="relative">
-                                <Image
-                                  src={uploadedProfileImage}
-                                  alt="Perfil"
-                                  width={80}
-                                  height={80}
-                                  className="h-20 w-20 rounded-full object-cover shadow-lg"
-                                />
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  onClick={removeProfileImage}
-                                  className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
-                                >
-                                  <X className="h-8 w-8" />
-                                </Button>
-                              </div>
-                            ) : (
-                              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-600">
-                                <UserRound className="h-10 w-10 text-slate-400" />
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <label className="cursor-pointer">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  disabled={isUploadingImage}
-                                  className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
-                                  asChild
-                                >
-                                  <span>
-                                    {isUploadingImage
-                                      ? "Enviando..."
-                                      : "Escolher Arquivo"}
-                                  </span>
-                                </Button>
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleProfileImageUpload}
-                                  disabled={isUploadingImage}
-                                  className="hidden"
-                                />
-                              </label>
-                              {isUploadingImage && (
-                                <Loader className="h-4 w-4 animate-spin text-blue-400" />
+                      <Form {...profileForm}>
+                        <form
+                          onSubmit={profileForm.handleSubmit(
+                            onSubmitProfileUpdate,
+                          )}
+                          className="space-y-6"
+                        >
+                          {/* Foto de Perfil */}
+                          <div className="space-y-2">
+                            <FormLabel className="mb-3 text-slate-300">
+                              Foto de Perfil
+                            </FormLabel>
+                            <div className="flex items-center gap-4">
+                              {uploadedProfileImage ? (
+                                <div className="relative">
+                                  <Image
+                                    src={uploadedProfileImage}
+                                    alt="Perfil"
+                                    width={80}
+                                    height={80}
+                                    className="h-20 w-20 rounded-full object-cover shadow-lg"
+                                  />
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={removeProfileImage}
+                                    className="absolute -top-2 -right-2 h-9 w-9 rounded-full border border-slate-500 bg-slate-700 hover:bg-slate-600"
+                                  >
+                                    <X className="h-8 w-8" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-600">
+                                  <UserRound className="h-10 w-10 text-slate-400" />
+                                </div>
                               )}
+                              <div className="flex items-center gap-2">
+                                <label className="cursor-pointer">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={isUploadingImage}
+                                    className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600 hover:text-slate-100"
+                                    asChild
+                                  >
+                                    <span>
+                                      {isUploadingImage
+                                        ? "Enviando..."
+                                        : "Escolher Arquivo"}
+                                    </span>
+                                  </Button>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleProfileImageUpload}
+                                    disabled={isUploadingImage}
+                                    className="hidden"
+                                  />
+                                </label>
+                                {isUploadingImage && (
+                                  <Loader className="h-4 w-4 animate-spin text-blue-400" />
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          {/* Nome */}
-                          <FormField
-                            control={profileForm.control}
-                            name="fullName"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-slate-300">
-                                  Nome Completo *
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    className="border-slate-600 bg-slate-700 text-slate-100"
-                                    placeholder="Seu nome completo"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {/* Nome */}
+                            <FormField
+                              control={profileForm.control}
+                              name="fullName"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-slate-300">
+                                    Nome Completo *
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                      placeholder="Seu nome completo"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                          {/* Email */}
-                          <FormField
-                            control={profileForm.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-slate-300">
-                                  Email *
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    type="email"
-                                    disabled
-                                    className="border-slate-600 bg-slate-600 text-slate-300 opacity-70"
-                                    placeholder="seu@email.com"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                            {/* Email */}
+                            <FormField
+                              control={profileForm.control}
+                              name="email"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-slate-300">
+                                    Email *
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      type="email"
+                                      disabled
+                                      className="border-slate-600 bg-slate-600 text-slate-300 opacity-70"
+                                      placeholder="seu@email.com"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                          {/* Telefone */}
-                          <FormField
-                            control={profileForm.control}
-                            name="phone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-slate-300">
-                                  Telefone *
-                                </FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    onChange={(e) => {
-                                      const formatted = formatPhoneNumber(
-                                        e.target.value,
-                                      );
-                                      field.onChange(formatted);
-                                    }}
-                                    className="border-slate-600 bg-slate-700 text-slate-100"
-                                    placeholder="(85) 9 9999-9999"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                            {/* Telefone */}
+                            <FormField
+                              control={profileForm.control}
+                              name="phone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-slate-300">
+                                    Telefone *
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      onChange={(e) => {
+                                        const formatted = formatPhoneNumber(
+                                          e.target.value,
+                                        );
+                                        field.onChange(formatted);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-100"
+                                      placeholder="(85) 9 9999-9999"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
 
-                          {/* Instagram */}
+                            {/* Instagram
                           <FormField
                             control={profileForm.control}
                             name="instagram"
@@ -862,7 +863,7 @@ export default function OwnerDashboard() {
                             )}
                           />
 
-                          {/* Website */}
+                          {/* Website 
                           <FormField
                             control={profileForm.control}
                             name="website"
@@ -881,35 +882,36 @@ export default function OwnerDashboard() {
                                 <FormMessage />
                               </FormItem>
                             )}
-                          />
-                        </div>
+                          /> */}
+                          </div>
 
-                        <AlertDialogFooter>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setIsEditingProfile(false)}
-                            className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600"
-                          >
-                            Cancelar
-                          </Button>
-                          <Button
-                            type="submit"
-                            disabled={isUpdatingProfile}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            {isUpdatingProfile ? (
-                              <>
-                                <Loader className="mr-2 h-4 w-4 animate-spin" />
-                                Salvando...
-                              </>
-                            ) : (
-                              "Salvar Alterações"
-                            )}
-                          </Button>
-                        </AlertDialogFooter>
-                      </form>
-                    </Form>
+                          <AlertDialogFooter>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setIsEditingProfile(false)}
+                              className="border-slate-600 bg-slate-700 text-slate-100 hover:bg-slate-600"
+                            >
+                              Cancelar
+                            </Button>
+                            <Button
+                              type="submit"
+                              disabled={isUpdatingProfile}
+                              className="bg-blue-600 hover:bg-blue-700"
+                            >
+                              {isUpdatingProfile ? (
+                                <>
+                                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                  Salvando...
+                                </>
+                              ) : (
+                                "Salvar Alterações"
+                              )}
+                            </Button>
+                          </AlertDialogFooter>
+                        </form>
+                      </Form>
+                    </div>
                   </AlertDialogContent>
                 </AlertDialog>
               </CardTitle>
@@ -921,7 +923,7 @@ export default function OwnerDashboard() {
                     <p className="text-lg font-semibold text-gray-300">
                       Perfil do Proprietário
                     </p>
-                    <div className="flex items-center gap-12">
+                    <div className="flex items-center gap-8">
                       {ownerData.profileImage ? (
                         <Image
                           src={ownerData.profileImage}
@@ -952,7 +954,7 @@ export default function OwnerDashboard() {
                               {ownerData.phone || "Não informado"}
                             </span>
                           </div>
-                          <div className="flex flex-col">
+                          {/* <div className="flex flex-col">
                             <p className="mb-1 text-slate-300">Redes:</p>
                             <div className="flex gap-2">
                               {ownerData.instagram ? (
@@ -994,7 +996,7 @@ export default function OwnerDashboard() {
                                 </div>
                               )}
                             </div>
-                          </div>
+                          </div> */}
                         </div>
                       </div>
                     </div>
