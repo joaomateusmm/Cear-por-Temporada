@@ -952,16 +952,15 @@ export default function PropertyPage() {
                                     </div>
                                   )}
 
-                                  <div className="border-b border-gray-300 mb-4 mt-2"></div>
+                                  <div className="mt-2 mb-4 border-b border-gray-300"></div>
 
                                   {/* Capacidade de Hóspedes */}
                                   {(apartment.maxAdults ||
                                     apartment.maxChildren) && (
                                     <div className="flex items-center gap-1">
-
                                       <div className="flex items-center gap-1">
                                         {/* Adultos */}
-                                        {Array.from({ 
+                                        {Array.from({
                                           length: apartment.maxAdults || 0,
                                         }).map((_, index) => (
                                           <User
@@ -1217,10 +1216,14 @@ export default function PropertyPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 leading-relaxed text-gray-700">
-                  <p>{property.fullDescription}</p>
-                  <p className="text-xs text-gray-600">
-                    {property.shortDescription}
-                  </p>
+                  <div className="text-base leading-7 whitespace-pre-line">
+                    {property.fullDescription}
+                  </div>
+                  <div className="mt-6 border-t border-gray-200 pt-4">
+                    <p className="text-sm text-gray-600 italic">
+                      {property.shortDescription}
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1549,44 +1552,43 @@ export default function PropertyPage() {
                                   </div>
                                 )}
 
-                                <div className="border-b border-gray-300 mb-4 mt-2"></div>
+                                <div className="mt-2 mb-4 border-b border-gray-300"></div>
 
-                                  {/* Capacidade de Hóspedes */}
-                                  {(apartment.maxAdults ||
-                                    apartment.maxChildren) && (
+                                {/* Capacidade de Hóspedes */}
+                                {(apartment.maxAdults ||
+                                  apartment.maxChildren) && (
+                                  <div className="flex items-end gap-1">
                                     <div className="flex items-end gap-1">
-
-                                      <div className="flex items-end gap-1">
-                                        {/* Adultos */}
-                                        {Array.from({ 
-                                          length: apartment.maxAdults || 0,
-                                        }).map((_, index) => (
-                                          <User
-                                            key={`adult-${index}`}
-                                            className="h-4 w-4 text-gray-600"
-                                          />
-                                        ))}
-                                        {/* Crianças */}
-                                        {Array.from({
-                                          length: apartment.maxChildren || 0,
-                                        }).map((_, index) => (
-                                          <User
-                                            key={`child-${index}`}
-                                            className="h-3.5 w-3.5 text-gray-600"
-                                          />
-                                        ))}
-                                        <p className="ml-1 text-xs text-gray-500">
-                                          {apartment.maxAdults || 0} adulto
-                                          {(apartment.maxAdults || 0) !== 1
-                                            ? "s"
-                                            : ""}
-                                          {(apartment.maxChildren || 0) > 0
-                                            ? `, ${apartment.maxChildren} criança${(apartment.maxChildren || 0) !== 1 ? "s" : ""}`
-                                            : ""}
-                                        </p>
-                                      </div>
+                                      {/* Adultos */}
+                                      {Array.from({
+                                        length: apartment.maxAdults || 0,
+                                      }).map((_, index) => (
+                                        <User
+                                          key={`adult-${index}`}
+                                          className="h-4 w-4 text-gray-600"
+                                        />
+                                      ))}
+                                      {/* Crianças */}
+                                      {Array.from({
+                                        length: apartment.maxChildren || 0,
+                                      }).map((_, index) => (
+                                        <User
+                                          key={`child-${index}`}
+                                          className="h-3.5 w-3.5 text-gray-600"
+                                        />
+                                      ))}
+                                      <p className="ml-1 text-xs text-gray-500">
+                                        {apartment.maxAdults || 0} adulto
+                                        {(apartment.maxAdults || 0) !== 1
+                                          ? "s"
+                                          : ""}
+                                        {(apartment.maxChildren || 0) > 0
+                                          ? `, ${apartment.maxChildren} criança${(apartment.maxChildren || 0) !== 1 ? "s" : ""}`
+                                          : ""}
+                                      </p>
                                     </div>
-                                  )}
+                                  </div>
+                                )}
                               </div>
                               <p className="my-2 w-35 text-center text-xs font-medium text-gray-800">
                                 {apartment.name ||
