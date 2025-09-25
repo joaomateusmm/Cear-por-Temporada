@@ -54,6 +54,7 @@ import { toast } from "sonner";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import HeaderMobile from "@/components/HeaderMobile";
+import { PropertyCarousel } from "@/components/PropertyCarousel";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -88,11 +89,58 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  getPropertiesByClass,
+  PropertyWithDetails,
+} from "@/lib/get-properties";
 import { getPropertyById } from "@/lib/property-actions";
 import { Amenity, PropertyAmenity } from "@/types/database";
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&h=600&fit=crop";
+
+// Componente para renderizar uma seção de propriedades
+function PropertySection({
+  title,
+  description,
+  properties,
+  category,
+}: {
+  title: string;
+  description: string;
+  properties: PropertyWithDetails[];
+  category?:
+    | "casas"
+    | "apartamentos"
+    | "casas-destaque"
+    | "apartamentos-destaque"
+    | "imoveis-destaque"
+    | "casas-de-praia"
+    | "flats"
+    | "pousadas";
+}) {
+  // Se não há propriedades, não renderizar a seção
+  if (!properties || properties.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-10">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6 text-left">
+          <h2 className="mb-2 text-3xl font-bold text-gray-900 md:text-3xl">
+            {title}
+          </h2>
+          <p className="max-w-2xl text-lg text-gray-600">
+            {description}
+          </p>
+        </div>
+
+        <PropertyCarousel properties={properties} category={category} />
+      </div>
+    </section>
+  );
+}
 
 // Interface para tipagem das imagens
 interface PropertyImage {
@@ -162,6 +210,9 @@ export default function PropertyPage() {
   const [selectedApartment, setSelectedApartment] = useState<number | null>(
     null,
   );
+  const [featuredProperties, setFeaturedProperties] = useState<
+    PropertyWithDetails[]
+  >([]);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null);
 
   // URL base para compartilhamento
@@ -226,8 +277,18 @@ export default function PropertyPage() {
       }
     }
 
+    async function loadFeaturedProperties() {
+      try {
+        const featured = await getPropertiesByClass("Imóvel em Destaque");
+        setFeaturedProperties(featured.slice(0, 8));
+      } catch (error) {
+        console.error("Erro ao carregar imóveis em destaque:", error);
+      }
+    }
+
     if (id) {
       loadProperty();
+      loadFeaturedProperties();
     }
   }, [id]);
 
@@ -397,7 +458,7 @@ export default function PropertyPage() {
       <HeaderMobile />
 
       {/* Conteúdo Principal */}
-      <div className="mt-15 max-w-7xl px-4 py-8 md:mx-40">
+      <div className="mt-15 max-w-7xl px-4 py-8 md:mx-52">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Coluna Esquerda - Informações do Imóvel */}
           <div className="space-y-8 lg:col-span-2">
@@ -2574,6 +2635,14 @@ export default function PropertyPage() {
             </CardContent>
           </Card>
         </div>
+        <section className="text-start" id="imoveis-destaque">
+          <PropertySection
+            title="Recomendações"
+            description={`Já que você gostou de ${property.title}, talvez você também se interesse por estas opções.`}
+            properties={featuredProperties}
+            category="imoveis-destaque"
+          />
+        </section>
       </div>
 
       <Footer />
