@@ -82,8 +82,8 @@ export function GoogleMapsInput({
   // Carregar a biblioteca de Web Components
   useEffect(() => {
     // Verificar se a chave API está configurada
-    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-      console.error("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY não está configurada");
+    if (!process.env.GOOGLE_MAPS_API_KEY) {
+      console.error("GOOGLE_MAPS_API_KEY não está configurada");
       toast.error(
         "Chave do Google Maps não configurada. Verifique o arquivo .env",
       );
@@ -91,13 +91,10 @@ export function GoogleMapsInput({
     }
 
     console.log("Iniciando carregamento do Google Maps...");
-    console.log(
-      "API Key exists:",
-      !!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    );
+    console.log("API Key exists:", !!process.env.GOOGLE_MAPS_API_KEY);
     console.log(
       "API Key preview:",
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.substring(0, 10) + "...",
+      process.env.GOOGLE_MAPS_API_KEY?.substring(0, 10) + "...",
     );
 
     const loadGoogleMapsComponents = async () => {
@@ -236,7 +233,7 @@ export function GoogleMapsInput({
             onLocationSelect({
               ...locationData,
               mapsUrl: `https://www.google.com/maps/place/?q=place_id:${locationData.placeId}`,
-              embedUrl: `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=place_id:${locationData.placeId}`,
+              embedUrl: `https://www.google.com/maps/embed/v1/place?key=${process.env.GOOGLE_MAPS_API_KEY}&q=place_id:${locationData.placeId}`,
             });
           }
 
@@ -276,7 +273,7 @@ export function GoogleMapsInput({
       {/* API Loader - necessário apenas uma vez */}
       {!document.querySelector("gmpx-api-loader") && (
         <gmpx-api-loader
-          key={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+          key={process.env.GOOGLE_MAPS_API_KEY}
           solution-channel="GMP_GE_mapsandplacesautocomplete_v2"
         />
       )}
