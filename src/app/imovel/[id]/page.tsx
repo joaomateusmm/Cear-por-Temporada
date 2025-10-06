@@ -1832,10 +1832,10 @@ export default function PropertyPage() {
 
             {/* Localização do Google Maps */}
 
-            <Card className="md:hidden lg:hidden">
+            <Card className="">
             <CardHeader>
               <CardTitle className="text-xl text-gray-900">
-                Localização
+                Localização do Imóvel
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -1876,7 +1876,7 @@ export default function PropertyPage() {
                           }}
                           className="rounded-lg border cursor-pointer border-white/20 bg-slate-800 px-6 py-5 font-semibold text-white shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:bg-slate-800 hover:shadow-2xl"
                         >
-                          <MapPin className="mr-2 h-4 w-4" />
+                          <MapPin className="mr-1 h-4 w-4" />
                           Ver no Google Maps
                         </Button>
                       </div>
@@ -1975,7 +1975,7 @@ export default function PropertyPage() {
 
         {/* Localização Google Maps */}
         <div className="mt-6 space-y-6">
-          <Card className="hidden md:block lg:block">
+          <Card className="hidden">
             <CardHeader>
               <CardTitle className="text-xl text-gray-900">
                 Localização
@@ -2627,7 +2627,7 @@ export default function PropertyPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl text-gray-900">
-                Localização do Imóvel
+                Localização
               </CardTitle>
               <p className="text-gray-600">
                 Informações completas sobre a localização e região

@@ -46,10 +46,10 @@ export function GoogleMapsInputTraditional({
 
   // Carregar Google Maps JavaScript API
   useEffect(() => {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     if (!apiKey) {
-      console.error("GOOGLE_MAPS_API_KEY não está configurada");
+      console.error("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY não está configurada");
       toast.error("Chave do Google Maps não configurada");
       return;
     }
@@ -332,7 +332,7 @@ export function GoogleMapsInputTraditional({
                 lng,
                 placeId,
                 mapsUrl: `https://maps.google.com/?q=${lat},${lng}`,
-                embedUrl: `https://www.google.com/maps/embed/v1/place?key=${process.env.GOOGLE_MAPS_API_KEY}&q=place_id:${placeId}`,
+                embedUrl: `https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=place_id:${placeId}`,
               });
             }
 
