@@ -1809,6 +1809,8 @@ export default function PropertyPage() {
               </CardContent>
             </Card>
 
+            
+
             {/* Suporte */}
             <Card>
               <CardContent>
@@ -1827,6 +1829,71 @@ export default function PropertyPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Localização do Google Maps */}
+
+            <Card className="md:hidden lg:hidden">
+            <CardHeader>
+              <CardTitle className="text-xl text-gray-900">
+                Localização
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Mapa interativo como fundo com botão sobreposto */}
+                {property.location?.googleMapsUrl ||
+                (property.location?.latitude &&
+                  property.location?.longitude) ? (
+                  <div className="relative h-80 w-full overflow-hidden rounded-lg border-2 border-blue-200">
+                    {/* Mapa de fundo */}
+                    <div className="absolute inset-0">
+                      <GoogleMapDisplay
+                        latitude={parseFloat(
+                          property.location?.latitude || "0",
+                        )}
+                        longitude={parseFloat(
+                          property.location?.longitude || "0",
+                        )}
+                        address={property.location?.fullAddress}
+                        className="h-full w-full"
+                      />
+                    </div>
+
+                    {/* Overlay com gradiente para melhor legibilidade */}
+                    <div className="absolute inset-0 bg-black/30"></div>
+
+                    {/* Conteúdo sobreposto */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <Button
+                          onClick={() => {
+                            // Prioriza googleMapsUrl se existir, senão usa coordenadas
+                            const mapsUrl =
+                              property.location?.googleMapsUrl ||
+                              `https://www.google.com/maps?q=${property.location?.latitude},${property.location?.longitude}`;
+
+                            window.open(mapsUrl, "_blank");
+                          }}
+                          className="rounded-lg border cursor-pointer border-white/20 bg-slate-800 px-6 py-5 font-semibold text-white shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:bg-slate-800 hover:shadow-2xl"
+                        >
+                          <MapPin className="mr-2 h-4 w-4" />
+                          Ver no Google Maps
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-200">
+                    <div className="text-center text-gray-500">
+                      <MapPin className="mx-auto mb-2 h-8 w-8" />
+                      <p>Localização não disponível</p>
+                      <p className="text-sm">Sem dados do Google Maps</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
             {/* Benefícios */}
             <Card>
@@ -1908,7 +1975,7 @@ export default function PropertyPage() {
 
         {/* Localização Google Maps */}
         <div className="mt-6 space-y-6">
-          <Card>
+          <Card className="hidden md:block lg:block">
             <CardHeader>
               <CardTitle className="text-xl text-gray-900">
                 Localização
