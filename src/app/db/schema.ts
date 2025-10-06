@@ -118,6 +118,9 @@ export const propertyLocationTable = pgTable("property_location", {
   zipCode: varchar("zip_code", { length: 10 }).notNull(),
   latitude: decimal("latitude", { precision: 10, scale: 8 }),
   longitude: decimal("longitude", { precision: 11, scale: 8 }),
+  googleMapsUrl: text("google_maps_url"), // URL do Google Maps
+  googlePlaceId: varchar("google_place_id", { length: 255 }), // Place ID do Google Maps
+  googleMapsEmbedUrl: text("google_maps_embed_url"), // URL para embed do mapa
   popularDestination: varchar("popular_destination", { length: 100 })
     .notNull()
     .default("Nenhum dos anteriores"),

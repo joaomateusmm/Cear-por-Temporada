@@ -52,6 +52,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import Footer from "@/components/Footer";
+import { GoogleMapDisplay } from "@/components/google-map-display";
 import Header from "@/components/Header";
 import HeaderMobile from "@/components/HeaderMobile";
 import { PropertyCarousel } from "@/components/PropertyCarousel";
@@ -131,9 +132,7 @@ function PropertySection({
           <h2 className="mb-2 text-3xl font-bold text-gray-900 md:text-3xl">
             {title}
           </h2>
-          <p className="max-w-2xl text-lg text-gray-600">
-            {description}
-          </p>
+          <p className="max-w-2xl text-lg text-gray-600">{description}</p>
         </div>
 
         <PropertyCarousel properties={properties} category={category} />
@@ -1904,66 +1903,74 @@ export default function PropertyPage() {
                 </div>
               </CardContent>
             </Card>
-            {/* Grid de Informações */}
-            <div className="grid cursor-default grid-cols-2 gap-4">
-              <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                <div className="flex items-center gap-5">
-                  <Users className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <div className="text-sm text-gray-600">Hóspedes</div>
-                    <div className="font-semibold">{property.maxGuests}</div>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 shadow-md duration-700 hover:scale-[1.02]">
-                <div className="flex items-center gap-5">
-                  <Car className="h-5 w-5 text-gray-600" />
-                  <div>
-                    <div className="text-sm text-gray-600">Vagas</div>
-                    <div className="font-semibold">
-                      {property.parkingSpaces}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </div>
           </div>
         </div>
 
-        {/* Localização Google Maps
+        {/* Localização Google Maps */}
         <div className="mt-6 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl text-gray-900">
+              <CardTitle className="text-xl text-gray-900">
                 Localização
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-200">
-                  <div className="text-center text-gray-500">
-                    <MapPin className="mx-auto mb-2 h-8 w-8" />
-                    <p>Mapa interativo</p>
-                    <p className="text-sm">Integração com Google Maps</p>
+                {/* Mapa interativo como fundo com botão sobreposto */}
+                {property.location?.googleMapsUrl ||
+                (property.location?.latitude &&
+                  property.location?.longitude) ? (
+                  <div className="relative h-80 w-full overflow-hidden rounded-lg border-2 border-blue-200">
+                    {/* Mapa de fundo */}
+                    <div className="absolute inset-0">
+                      <GoogleMapDisplay
+                        latitude={parseFloat(
+                          property.location?.latitude || "0",
+                        )}
+                        longitude={parseFloat(
+                          property.location?.longitude || "0",
+                        )}
+                        address={property.location?.fullAddress}
+                        className="h-full w-full"
+                      />
+                    </div>
+
+                    {/* Overlay com gradiente para melhor legibilidade */}
+                    <div className="absolute inset-0 bg-black/30"></div>
+
+                    {/* Conteúdo sobreposto */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="text-center">
+                        <Button
+                          onClick={() => {
+                            // Prioriza googleMapsUrl se existir, senão usa coordenadas
+                            const mapsUrl =
+                              property.location?.googleMapsUrl ||
+                              `https://www.google.com/maps?q=${property.location?.latitude},${property.location?.longitude}`;
+
+                            window.open(mapsUrl, "_blank");
+                          }}
+                          className="rounded-lg border cursor-pointer border-white/20 bg-slate-800 px-6 py-5 font-semibold text-white shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:bg-slate-800 hover:shadow-2xl"
+                        >
+                          <MapPin className="mr-2 h-4 w-4" />
+                          Ver no Google Maps
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                {property.location && (
-                  <div className="text-gray-700">
-                    <p className="font-semibold">
-                      {property.location.fullAddress}
-                    </p>
-                    <p>
-                      {property.location.neighborhood}, {property.location.city}{" "}
-                      - {property.location.state}
-                    </p>
-                    <p>CEP: {property.location.zipCode}</p>
+                ) : (
+                  <div className="flex h-64 w-full items-center justify-center rounded-lg bg-gray-200">
+                    <div className="text-center text-gray-500">
+                      <MapPin className="mx-auto mb-2 h-8 w-8" />
+                      <p>Localização não disponível</p>
+                      <p className="text-sm">Sem dados do Google Maps</p>
+                    </div>
                   </div>
                 )}
               </div>
             </CardContent>
           </Card>
-        </div> */}
+        </div>
 
         {/* Sobre o Prédio */}
         {property.aboutBuilding && (

@@ -534,7 +534,7 @@ export default function OwnerDashboard() {
                   </CardDescription>
                 </div>
                 <Link href={`/proprietario/${ownerId}/imoveis/cadastrar`}>
-                  <Button className="bg-gray-900 duration-300 hover:scale-[1.02] hover:bg-gray-900">
+                  <Button className="bg-gray-900 duration-300 hover:scale-[1.02] hover:bg-gray-900 cursor-pointer">
                     <Plus className="mr-2 h-4 w-4" />
                     Cadastrar Imóvel
                   </Button>
@@ -691,7 +691,7 @@ export default function OwnerDashboard() {
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="border-slate-600 bg-slate-800">
-                    <div className=" w-full max-w-none md:mx-auto md:w-[80vw] lg:w-[45vw]">
+                    <div className="w-full max-w-none md:mx-auto md:w-[80vw] lg:w-[45vw]">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-slate-100">
                           Editar Perfil do Proprietário
@@ -935,22 +935,24 @@ export default function OwnerDashboard() {
                           <UserRound className="h-9 w-9 text-gray-600/80" />
                         </div>
                       )}
-                      <div className="flex flex-col gap-1 text-sm">
-                        <p className="mb-2 text-slate-300">
-                          Nome:{" "}
+                      <div className="flex flex-row gap-6 text-sm">
+                        <div className="flex flex-col">
+                          <p className=" text-slate-300">Nome: </p>
                           <span className="font-medium text-slate-100">
                             {ownerData.fullName}
                           </span>
-                        </p>
+                        </div>
                         <div className="flex justify-between gap-8">
                           <div className="flex flex-col">
                             <p className="text-slate-300">Contatos:</p>
-                            <span className="mb-2 font-medium text-slate-100">
-                              {ownerData.email}
-                            </span>
-                            <span className="font-medium text-slate-100">
-                              {ownerData.phone || "Não informado"}
-                            </span>
+                            <div className="flex flex-col">
+                              <span className="mb-2 font-medium text-slate-100">
+                                {ownerData.email}
+                              </span>
+                              <span className="font-medium text-slate-100">
+                                {ownerData.phone || "Não informado"}
+                              </span>
+                            </div>
                           </div>
                           {/* <div className="flex flex-col">
                             <p className="mb-1 text-slate-300">Redes:</p>

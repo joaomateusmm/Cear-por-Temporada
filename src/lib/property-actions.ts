@@ -234,6 +234,9 @@ export type PropertyFormData = {
   zipCode: string;
   latitude?: number;
   longitude?: number;
+  googleMapsUrl?: string;
+  googlePlaceId?: string;
+  googleMapsEmbedUrl?: string;
   popularDestination: string;
 
   // Comodidades
@@ -445,6 +448,9 @@ export async function createProperty(data: PropertyFormData) {
       zipCode: data.zipCode,
       latitude: data.latitude?.toString(),
       longitude: data.longitude?.toString(),
+      googleMapsUrl: data.googleMapsUrl,
+      googlePlaceId: data.googlePlaceId,
+      googleMapsEmbedUrl: data.googleMapsEmbedUrl,
       popularDestination: data.popularDestination,
     });
 

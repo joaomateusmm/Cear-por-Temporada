@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import Footer from "@/components/Footer";
+import { GoogleMapsInputTraditional } from "@/components/google-maps-input-traditional";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -142,6 +143,9 @@ const propertyFormSchema = z.object({
   zipCode: z.string().min(8, "CEP deve ter 8 dígitos"),
   latitude: z.number().default(0),
   longitude: z.number().default(0),
+  googleMapsUrl: z.string().optional(),
+  googlePlaceId: z.string().optional(),
+  googleMapsEmbedUrl: z.string().optional(),
   popularDestination: z.string().min(1, "Selecione um destino popular"),
 
   // Comodidades e imagens
@@ -296,6 +300,9 @@ export default function AddPropertyPage() {
       zipCode: "",
       latitude: 0,
       longitude: 0,
+      googleMapsUrl: "",
+      googlePlaceId: "",
+      googleMapsEmbedUrl: "",
       popularDestination: "",
       amenities: [],
       images: [],
@@ -718,6 +725,9 @@ export default function AddPropertyPage() {
         zipCode: values.zipCode,
         latitude: values.latitude,
         longitude: values.longitude,
+        googleMapsUrl: values.googleMapsUrl,
+        googlePlaceId: values.googlePlaceId,
+        googleMapsEmbedUrl: values.googleMapsEmbedUrl,
         popularDestination: values.popularDestination,
         amenities: selectedAmenities,
         images: uploadedImages,
@@ -1022,7 +1032,7 @@ export default function AddPropertyPage() {
               <Link href={`/proprietario/${ownerId}`}>
                 <Button
                   size="sm"
-                  className="border border-blue-400/10 bg-[#182334] text-gray-200 backdrop-blur-sm transition-all duration-200 hover:bg-[#182334] hover:brightness-105"
+                  className="cursor-pointer border border-blue-400/10 bg-[#182334] text-gray-200 backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:bg-[#182334] hover:brightness-105"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Voltar
@@ -1986,6 +1996,54 @@ export default function AddPropertyPage() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-6 p-6">
+                    <FormField
+                      control={form.control}
+                      name="fullAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-300">
+                            Localização Google Maps *
+                          </FormLabel>
+                          <FormDescription className="text-xs text-slate-400">
+                            Adicione a localização do Google Maps, isso ajuda
+                            seus clientes a encontrar o imóvel com mais
+                            facilidade e transmite mais confiança na
+                            localização.
+                          </FormDescription>
+                          <FormControl className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400">
+                            <GoogleMapsInputTraditional
+                              onChange={field.onChange}
+                              onLocationSelect={(location: {
+                                address: string;
+                                lat: number;
+                                lng: number;
+                                placeId: string;
+                                mapsUrl: string;
+                                embedUrl: string;
+                              }) => {
+                                // Atualizar todos os campos relacionados ao Google Maps
+                                form.setValue("latitude", location.lat);
+                                form.setValue("longitude", location.lng);
+                                form.setValue(
+                                  "googleMapsUrl",
+                                  location.mapsUrl,
+                                );
+                                form.setValue(
+                                  "googlePlaceId",
+                                  location.placeId,
+                                );
+                                form.setValue(
+                                  "googleMapsEmbedUrl",
+                                  location.embedUrl,
+                                );
+                              }}
+                              placeholder="Digite o endereço, nome do local ou estabelecimento..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="fullAddress"
