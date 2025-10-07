@@ -326,3 +326,54 @@ export async function bulkToggleOwnerStatus(
     throw error;
   }
 }
+
+// Função para excluir um administrador
+export async function deleteAdminUser(userId: number) {
+  try {
+    const [deletedUser] = await db
+      .delete(usersTable)
+      .where(eq(usersTable.id, userId))
+      .returning({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+      });
+
+    if (!deletedUser) {
+      throw new Error("Administrador não encontrado");
+    }
+
+    return deletedUser;
+  } catch (error) {
+    console.error("Erro ao excluir administrador:", error);
+    throw error;
+  }
+}
+
+// Função para exclusão em massa de administradores
+export async function bulkDeleteAdminUsers(userIds: number[]) {
+  if (!userIds || userIds.length === 0) {
+    throw new Error("Nenhum administrador selecionado para exclusão");
+  }
+
+  try {
+    const deletedUsers = await db
+      .delete(usersTable)
+      .where(
+        sql`${usersTable.id} IN (${sql.join(
+          userIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})`,
+      )
+      .returning({
+        id: usersTable.id,
+        name: usersTable.name,
+        email: usersTable.email,
+      });
+
+    return deletedUsers;
+  } catch (error) {
+    console.error("Erro ao excluir administradores em massa:", error);
+    throw error;
+  }
+}

@@ -30,7 +30,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAllAdminUsers, toggleUserStatus } from "@/lib/admin-actions";
+import {
+  bulkDeleteAdminUsers,
+  deleteAdminUser,
+  getAllAdminUsers,
+  toggleUserStatus,
+} from "@/lib/admin-actions";
 
 import { type AdminUser, createColumns } from "./columns";
 import { DataTable } from "./data-table";
@@ -109,7 +114,7 @@ export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
       description: `Tem certeza que deseja excluir o administrador "${user.name}"? Esta ação não pode ser desfeita.`,
       action: async () => {
         try {
-          // Aqui você implementaria a função de exclusão na lib/admin-actions.ts
+          await deleteAdminUser(userId);
           await loadUsers();
           toast.success("Administrador excluído com sucesso!");
         } catch (error: unknown) {
@@ -134,7 +139,7 @@ export default function AdminAccountsPage({ params }: AdminAccountsPageProps) {
       description: `Tem certeza que deseja excluir ${selectedUsers.length} administrador(es) selecionado(s)? Esta ação não pode ser desfeita.`,
       action: async () => {
         try {
-          // Implementar exclusão em massa
+          await bulkDeleteAdminUsers(selectedUsers);
           setSelectedUsers([]);
           await loadUsers();
           toast.success(

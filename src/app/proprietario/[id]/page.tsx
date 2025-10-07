@@ -642,9 +642,9 @@ export default function OwnerDashboard() {
                                   <DropdownMenuItem asChild>
                                     <Link
                                       href={`/proprietario/${ownerId}/imoveis/${property.id}/editar`}
-                                      className="flex items-center text-slate-300 hover:text-slate-100"
+                                      className="flex items-center text-slate-300 hover:bg-slate-700"
                                     >
-                                      <Edit className="mr-2 h-4 w-4 text-slate-200" />
+                                      <Edit className="mr-2 h-4 w-4 text-slate-200 hover:text-slate-800" />
                                       Editar
                                     </Link>
                                   </DropdownMenuItem>

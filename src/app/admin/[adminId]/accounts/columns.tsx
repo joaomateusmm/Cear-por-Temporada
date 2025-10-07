@@ -43,14 +43,14 @@ function ColumnActions({ user, onStatusChange, onDelete }: ColumnActionsProps) {
       >
         <DropdownMenuItem
           onClick={() => onStatusChange(user.id, !user.isActive)}
-          className="cursor-pointer text-yellow-100 hover:bg-slate-700 hover:text-yellow-300"
+          className="cursor-pointer text-white hover:bg-slate-700 hover:text-white"
         >
           <UserLock className="mr-2 h-4 w-4 text-slate-200" />
           {user.isActive ? "Desativar" : "Ativar"} Administrador
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => onDelete(user.id)}
-          className="cursor-pointer text-red-100 hover:bg-slate-700 hover:text-red-300"
+          className="cursor-pointer text-red-500 hover:bg-slate-700 hover:text-red-500 font-medium"
         >
           <Trash2 className="mr-2 h-4 w-4 text-slate-200" />
           Excluir Administrador

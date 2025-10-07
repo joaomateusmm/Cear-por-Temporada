@@ -188,16 +188,16 @@ export default function CreateAccountPage({ params }: CreateAccountPageProps) {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="flex flex-col gap-3 items-center">
               <Link href={`/admin/${adminId}/accounts`}>
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                <Button className="w-42 bg-blue-600 text-white hover:bg-blue-700">
                   Ver Todas as Contas
                 </Button>
               </Link>
 
               <Button
                 variant="outline"
-                className="w-full border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
+                className="w-42 border-slate-600 bg-slate-700 text-slate-200 hover:bg-slate-600"
                 onClick={() => {
                   setIsSuccess(false);
                   setCreatedUser(null);

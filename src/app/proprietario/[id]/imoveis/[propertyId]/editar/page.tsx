@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import Footer from "@/components/Footer";
+import { GoogleMapsInputTraditional } from "@/components/google-maps-input-traditional";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,6 +148,9 @@ const propertyFormSchema = z.object({
   zipCode: z.string().min(8, "CEP deve ter 8 dígitos"),
   latitude: z.number().default(0),
   longitude: z.number().default(0),
+  googleMapsUrl: z.string().optional(),
+  googlePlaceId: z.string().optional(),
+  googleMapsEmbedUrl: z.string().optional(),
   popularDestination: z.string().min(1, "Selecione uma opção"),
 
   // Comodidades e imagens
@@ -233,6 +237,22 @@ interface Amenity {
   id: number;
   name: string;
   category: string;
+}
+
+interface PropertyLocation {
+  id: number;
+  propertyId: string;
+  fullAddress: string;
+  neighborhood: string;
+  municipality: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  latitude: string | null;
+  longitude: string | null;
+  popularDestination: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface ApartmentRoom {
@@ -335,6 +355,9 @@ export default function EditPropertyPage() {
       zipCode: "",
       latitude: 0,
       longitude: 0,
+      googleMapsUrl: "",
+      googlePlaceId: "",
+      googleMapsEmbedUrl: "",
       popularDestination: "",
       amenities: [],
       images: [],
@@ -592,6 +615,25 @@ export default function EditPropertyPage() {
           form.setValue(
             "longitude",
             parseFloat(propertyData.location.longitude || "0"),
+          );
+          // Preencher dados do Google Maps
+          const locationWithGoogleMaps =
+            propertyData.location as PropertyLocation & {
+              googleMapsUrl?: string;
+              googlePlaceId?: string;
+              googleMapsEmbedUrl?: string;
+            };
+          form.setValue(
+            "googleMapsUrl",
+            locationWithGoogleMaps.googleMapsUrl || "",
+          );
+          form.setValue(
+            "googlePlaceId",
+            locationWithGoogleMaps.googlePlaceId || "",
+          );
+          form.setValue(
+            "googleMapsEmbedUrl",
+            locationWithGoogleMaps.googleMapsEmbedUrl || "",
           );
           form.setValue(
             "popularDestination",
@@ -964,6 +1006,9 @@ export default function EditPropertyPage() {
         zipCode: values.zipCode,
         latitude: values.latitude,
         longitude: values.longitude,
+        googleMapsUrl: values.googleMapsUrl,
+        googlePlaceId: values.googlePlaceId,
+        googleMapsEmbedUrl: values.googleMapsEmbedUrl,
         popularDestination: values.popularDestination,
         amenities: selectedAmenities,
 
@@ -2246,6 +2291,54 @@ export default function EditPropertyPage() {
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-6 p-6">
+                    <FormField
+                      control={form.control}
+                      name="fullAddress"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-slate-300">
+                            Localização Google Maps *
+                          </FormLabel>
+                          <FormDescription className="text-xs text-slate-400">
+                            Adicione a localização do Google Maps, isso ajuda
+                            seus clientes a encontrar o imóvel com mais
+                            facilidade e transmite mais confiança na
+                            localização.
+                          </FormDescription>
+                          <FormControl className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400">
+                            <GoogleMapsInputTraditional
+                              onChange={field.onChange}
+                              onLocationSelect={(location: {
+                                address: string;
+                                lat: number;
+                                lng: number;
+                                placeId: string;
+                                mapsUrl: string;
+                                embedUrl: string;
+                              }) => {
+                                // Atualizar todos os campos relacionados ao Google Maps
+                                form.setValue("latitude", location.lat);
+                                form.setValue("longitude", location.lng);
+                                form.setValue(
+                                  "googleMapsUrl",
+                                  location.mapsUrl,
+                                );
+                                form.setValue(
+                                  "googlePlaceId",
+                                  location.placeId,
+                                );
+                                form.setValue(
+                                  "googleMapsEmbedUrl",
+                                  location.embedUrl,
+                                );
+                              }}
+                              placeholder="Digite o endereço, nome do local ou estabelecimento..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="fullAddress"
