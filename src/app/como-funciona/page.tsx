@@ -48,8 +48,7 @@ export default function ComoFuncionaPage() {
       icon: IdCard,
       details: [
         "Adicione uma foto de perfil",
-        "Inclua suas redes sociais (Instagram, Website)",
-        "Adicione telefone para contato",
+        "Adicione telefone e e-mail para contato",
       ],
     },
     {
@@ -60,7 +59,7 @@ export default function ComoFuncionaPage() {
       details: [
         "Adicione fotos de alta qualidade",
         "Descreva seu imóvel detalhadamente",
-        "Defina preços (diária ou mensal)",
+        "Defina regras, formas de pagamento e muito mais",
         "Configure comodidades e serviços inclusos",
       ],
     },
