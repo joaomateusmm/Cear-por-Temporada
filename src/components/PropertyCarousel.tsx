@@ -48,7 +48,10 @@ interface PropertyCarouselProps {
     | "imoveis-destaque"
     | "casas-de-praia"
     | "flats"
-    | "pousadas";
+    | "pousadas"
+    | "casas-de-praia-destaque"
+    | "flats-destaque"
+    | "pousadas-destaque";
   title?: string;
 }
 

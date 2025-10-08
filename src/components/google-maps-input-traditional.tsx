@@ -231,11 +231,11 @@ export function GoogleMapsInputTraditional({
 
         // Event listener para autocomplete
         autocompleteRef.current.addListener("place_changed", async () => {
-          const place = autocompleteRef.current.getPlace();
+          const place = autocompleteRef.current?.getPlace();
 
           console.log("Place changed event triggered:", place);
 
-          if (!place.geometry || !place.geometry.location) {
+          if (!place || !place.geometry || !place.geometry.location) {
             console.error("Local sem coordenadas:", place);
             toast.error("Local selecionado não possui coordenadas");
             return;

@@ -204,7 +204,7 @@ export type PropertyFormData = {
   parkingSpaces: number;
   areaM2?: number;
   allowsPets: boolean;
-  propertyStyle: string;
+  propertyStyle: string[];
   propertyClasses: string[];
   minimumStay: number;
   maximumStay: number;
@@ -349,7 +349,9 @@ export async function createProperty(data: PropertyFormData) {
         parkingSpaces: data.parkingSpaces,
         areaM2: data.areaM2?.toString(),
         allowsPets: data.allowsPets,
-        propertyStyle: data.propertyStyle,
+        propertyStyle: Array.isArray(data.propertyStyle)
+          ? data.propertyStyle.filter((style) => style.trim() !== "").join(", ")
+          : data.propertyStyle,
         minimumStay: data.minimumStay,
         maximumStay: data.maximumStay,
         checkInTime: data.checkInTime,
@@ -366,17 +368,22 @@ export async function createProperty(data: PropertyFormData) {
     if (data.propertyClasses && data.propertyClasses.length > 0) {
       console.log("propertyClasses recebidas:", data.propertyClasses);
 
-      const propertyClassValues = data.propertyClasses.map((classId) => {
-        const parsedId = parseInt(classId);
-        console.log(`Convertendo classId "${classId}" para ${parsedId}`);
-        return {
-          propertyId,
-          classId: parsedId,
-        };
-      });
+      // Buscar ou criar classes baseadas nos nomes
+      const classIds = await getOrCreatePropertyClassesByNames(
+        data.propertyClasses,
+      );
 
-      console.log("Valores para inserção:", propertyClassValues);
-      await db.insert(propertyPropertyClassesTable).values(propertyClassValues);
+      if (classIds.length > 0) {
+        const propertyClassValues = classIds.map((classId) => ({
+          propertyId,
+          classId,
+        }));
+
+        console.log("Valores para inserção:", propertyClassValues);
+        await db
+          .insert(propertyPropertyClassesTable)
+          .values(propertyClassValues);
+      }
     }
 
     // 3. Criar informações de proximidades
@@ -777,6 +784,23 @@ export async function deleteProperty(propertyId: string) {
 
     // 3. Deletar registros do banco de dados (em ordem para respeitar foreign keys)
 
+    // Primeiro, deletar quartos dos apartamentos (referencia apartamentos)
+    const apartments = await db
+      .select({ id: propertyApartmentsTable.id })
+      .from(propertyApartmentsTable)
+      .where(eq(propertyApartmentsTable.propertyId, propertyId));
+
+    for (const apartment of apartments) {
+      await db
+        .delete(apartmentRoomsTable)
+        .where(eq(apartmentRoomsTable.apartmentId, apartment.id));
+    }
+
+    // Deletar apartamentos
+    await db
+      .delete(propertyApartmentsTable)
+      .where(eq(propertyApartmentsTable.propertyId, propertyId));
+
     // Deletar disponibilidade/calendário
     await db
       .delete(propertyAvailabilityTable)
@@ -792,10 +816,45 @@ export async function deleteProperty(propertyId: string) {
       .delete(propertyAmenitiesTable)
       .where(eq(propertyAmenitiesTable.propertyId, propertyId));
 
+    // Deletar relacionamentos com classes de propriedades
+    await db
+      .delete(propertyPropertyClassesTable)
+      .where(eq(propertyPropertyClassesTable.propertyId, propertyId));
+
     // Deletar imagens (registros do banco)
     await db
       .delete(propertyImagesTable)
       .where(eq(propertyImagesTable.propertyId, propertyId));
+
+    // Deletar proximidades - lugares
+    await db
+      .delete(propertyNearbyPlacesTable)
+      .where(eq(propertyNearbyPlacesTable.propertyId, propertyId));
+
+    // Deletar proximidades - praias
+    await db
+      .delete(propertyNearbyBeachesTable)
+      .where(eq(propertyNearbyBeachesTable.propertyId, propertyId));
+
+    // Deletar proximidades - aeroportos
+    await db
+      .delete(propertyNearbyAirportsTable)
+      .where(eq(propertyNearbyAirportsTable.propertyId, propertyId));
+
+    // Deletar proximidades - restaurantes
+    await db
+      .delete(propertyNearbyRestaurantsTable)
+      .where(eq(propertyNearbyRestaurantsTable.propertyId, propertyId));
+
+    // Deletar regras da casa
+    await db
+      .delete(propertyHouseRulesTable)
+      .where(eq(propertyHouseRulesTable.propertyId, propertyId));
+
+    // Deletar métodos de pagamento
+    await db
+      .delete(propertyPaymentMethodsTable)
+      .where(eq(propertyPaymentMethodsTable.propertyId, propertyId));
 
     // Deletar preços
     await db
@@ -807,8 +866,27 @@ export async function deleteProperty(propertyId: string) {
       .delete(propertyLocationTable)
       .where(eq(propertyLocationTable.propertyId, propertyId));
 
-    // Deletar o imóvel principal
+    // Por último, deletar o imóvel principal
     await db.delete(propertiesTable).where(eq(propertiesTable.id, propertyId));
+
+    // Invalidar cache após exclusão
+    revalidatePath("/");
+    revalidatePath("/categoria/[slug]", "page");
+    revalidateTag("properties");
+    revalidateTag("apartments");
+    revalidateTag("houses");
+
+    // Invalidar cache específico por tipo
+    const propertyTypes = [
+      "Apartamento",
+      "Casa",
+      "Casa de Praia",
+      "Flats",
+      "Pousada",
+    ];
+    propertyTypes.forEach((type) => {
+      revalidateTag(`properties-by-type-${type}`);
+    });
 
     return { success: true, message: "Imóvel excluído com sucesso!" };
   } catch (error) {
@@ -1048,7 +1126,9 @@ export async function updateProperty(
         maximumStay: data.maximumStay,
         checkInTime: data.checkInTime,
         checkOutTime: data.checkOutTime,
-        propertyStyle: data.propertyStyle,
+        propertyStyle: Array.isArray(data.propertyStyle)
+          ? data.propertyStyle.filter((style) => style.trim() !== "").join(", ")
+          : data.propertyStyle,
         status: data.status || "pendente",
         updatedAt: new Date(),
       })
@@ -1169,25 +1249,17 @@ export async function updateProperty(
         .delete(propertyPropertyClassesTable)
         .where(eq(propertyPropertyClassesTable.propertyId, propertyId));
 
-      // Inserir novas classes
-      const classInserts = data.propertyClasses
-        .map((classIdStr) => {
-          const classId = parseInt(classIdStr);
-          if (isNaN(classId)) {
-            console.error(`Invalid classId: ${classIdStr}`);
-            return null;
-          }
-          return {
-            propertyId,
-            classId,
-          };
-        })
-        .filter(
-          (item): item is { propertyId: string; classId: number } =>
-            item !== null,
-        );
+      // Buscar ou criar classes baseadas nos nomes e inserir novas associações
+      const classIds = await getOrCreatePropertyClassesByNames(
+        data.propertyClasses,
+      );
 
-      if (classInserts.length > 0) {
+      if (classIds.length > 0) {
+        const classInserts = classIds.map((classId) => ({
+          propertyId,
+          classId,
+        }));
+
         await db.insert(propertyPropertyClassesTable).values(classInserts);
       }
     }
@@ -1289,6 +1361,53 @@ export async function getPropertyClasses() {
     return filteredClasses;
   } catch (error) {
     console.error("Erro ao buscar classes de imóveis:", error);
+    return [];
+  }
+}
+
+// Função para buscar ou criar classes de imóveis por nome
+async function getOrCreatePropertyClassesByNames(classNames: string[]) {
+  try {
+    const existingClasses = await db
+      .select({
+        id: propertyClassesTable.id,
+        name: propertyClassesTable.name,
+      })
+      .from(propertyClassesTable)
+      .where(eq(propertyClassesTable.isActive, true));
+
+    const classIds: number[] = [];
+
+    for (const className of classNames) {
+      if (!className || className.trim() === "") continue;
+
+      // Buscar classe existente
+      const existingClass = existingClasses.find(
+        (cls) => cls.name === className,
+      );
+
+      if (existingClass) {
+        classIds.push(existingClass.id);
+      } else {
+        // Criar nova classe
+        const [newClass] = await db
+          .insert(propertyClassesTable)
+          .values({
+            name: className,
+            description: `Classe: ${className}`,
+            isActive: true,
+          })
+          .returning({ id: propertyClassesTable.id });
+
+        if (newClass) {
+          classIds.push(newClass.id);
+        }
+      }
+    }
+
+    return classIds;
+  } catch (error) {
+    console.error("Erro ao buscar/criar classes de imóveis:", error);
     return [];
   }
 }

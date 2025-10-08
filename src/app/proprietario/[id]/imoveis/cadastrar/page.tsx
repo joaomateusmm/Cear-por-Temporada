@@ -698,7 +698,7 @@ export default function AddPropertyPage() {
         parkingSpaces: values.parkingSpaces || 0,
         areaM2: 0, // Pode ser definido posteriormente se necessário
         allowsPets: false, // Pode ser definido posteriormente se necessário
-        propertyStyle: values.propertyStyle.join(", "), // Converter array para string
+        propertyStyle: values.propertyStyle,
         propertyClasses: ["1"], // Sempre usar classe "Normal" (ID 1)
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
@@ -1022,7 +1022,7 @@ export default function AddPropertyPage() {
       <div className="relative mt-16 min-h-screen">
         {/* Background Image - Fixed */}
         <div className="fixed inset-0 bg-cover bg-center bg-no-repeat">
-          <div className="absolute inset-0 bg-black"></div>
+          <div className="absolute inset-0 bg-slate-900"></div>
         </div>
 
         {/* Content */}
@@ -1283,7 +1283,7 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem className="md:col-span-2">
                             <FormLabel className="text-slate-300">
-                              Tipos do Imóvel *
+                              Tipo do Imóvel *
                             </FormLabel>
                             <div className="space-y-4">
                               {field.value.map((style, index) => (

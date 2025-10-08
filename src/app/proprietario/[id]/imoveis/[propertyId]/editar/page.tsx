@@ -979,7 +979,7 @@ export default function EditPropertyPage() {
         parkingSpaces: values.parkingSpaces ?? 0,
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
-        propertyStyle: values.propertyStyle.join(", "),
+        propertyStyle: values.propertyStyle,
         propertyClasses: ["1"], // Sempre usar classe "Normal" (ID 1)
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,

@@ -59,6 +59,7 @@ import { getAdminSession } from "@/lib/admin-session";
 import {
   getAmenities,
   getPropertyById,
+  getPropertyClasses,
   type PropertyFormData,
   updateProperty,
 } from "@/lib/property-actions";
@@ -82,6 +83,9 @@ const propertyFormSchema = z.object({
   propertyStyle: z
     .array(z.string())
     .min(1, "Selecione pelo menos um tipo do imóvel"),
+  propertyClasses: z
+    .array(z.string())
+    .min(1, "Selecione pelo menos uma classe"),
   minimumStay: z.number().min(1, "Estadia mínima deve ser pelo menos 1 noite"),
   maximumStay: z.number().min(1, "Duração máxima deve ser pelo menos 1 dia"),
   checkInTime: z.string().optional(),
@@ -294,6 +298,7 @@ export default function EditPropertyPage() {
       areaM2: 0,
       allowsPets: false,
       propertyStyle: [""],
+      propertyClasses: [""],
       minimumStay: 1,
       maximumStay: 365,
       checkInTime: "14:00",
@@ -360,11 +365,13 @@ export default function EditPropertyPage() {
         // Definir dados do admin
         setAdminData(session);
 
-        // Carregar dados necessários
-        const [amenitiesData, propertyData] = await Promise.all([
-          getAmenities(),
-          getPropertyById(propertyId),
-        ]);
+        // Carregar dados necessários incluindo as classes disponíveis
+        const [amenitiesData, propertyData, availableClasses] =
+          await Promise.all([
+            getAmenities(),
+            getPropertyById(propertyId),
+            getPropertyClasses(),
+          ]);
 
         setAmenities(amenitiesData);
 
@@ -395,6 +402,24 @@ export default function EditPropertyPage() {
           "propertyStyle",
           propertyStyleValue ? [propertyStyleValue] : [],
         );
+        // Preencher classes do imóvel - mapear IDs para nomes
+        const propertyClassNames: string[] = [];
+        if (
+          propertyData.classes &&
+          propertyData.classes.length > 0 &&
+          availableClasses.length > 0
+        ) {
+          propertyData.classes.forEach((propertyClass: { classId: number }) => {
+            const matchedClass = availableClasses.find(
+              (availableClass: { id: number; name: string }) =>
+                availableClass.id === propertyClass.classId,
+            );
+            if (matchedClass) {
+              propertyClassNames.push(matchedClass.name);
+            }
+          });
+        }
+        form.setValue("propertyClasses", propertyClassNames);
         form.setValue("minimumStay", propertyData.minimumStay);
         form.setValue("maximumStay", propertyData.maximumStay || 365);
         form.setValue("checkInTime", propertyData.checkInTime || "14:00");
@@ -829,8 +854,8 @@ export default function EditPropertyPage() {
         parkingSpaces: values.parkingSpaces ?? 0,
         areaM2: values.areaM2,
         allowsPets: values.allowsPets,
-        propertyStyle: values.propertyStyle.join(", "),
-        propertyClasses: ["1"], // Sempre usar classe "Normal" (ID 1)
+        propertyStyle: values.propertyStyle,
+        propertyClasses: values.propertyClasses,
         minimumStay: values.minimumStay,
         maximumStay: values.maximumStay,
         checkInTime: values.checkInTime,
@@ -1158,13 +1183,22 @@ export default function EditPropertyPage() {
     "Pousada",
   ];
 
+  const propertyClassOptions = [
+    "Imóvel em Destaque",
+    "Destaque em Casas",
+    "Destaque em Apartamentos",
+    "Destaque em Casas de Praia",
+    "Destaque em Flats",
+    "Destaque em Pousadas",
+  ];
+
   return (
     <>
       <Header />
       <div className="relative mt-16 min-h-screen">
         {/* Background Image - Fixed */}
         <div className="fixed inset-0 bg-cover bg-center bg-no-repeat">
-          <div className="absolute inset-0 bg-black"></div>
+          <div className="absolute inset-0 bg-slate-900"></div>
         </div>
 
         {/* Content */}
@@ -1234,7 +1268,7 @@ export default function EditPropertyPage() {
                         render={({ field }) => (
                           <FormItem className="md:col-span-2">
                             <FormLabel className="text-slate-300">
-                              Tipos do Imóvel *
+                              Tipo do Imóvel *
                             </FormLabel>
                             <div className="space-y-4">
                               {field.value.map((style, index) => (
@@ -1251,7 +1285,7 @@ export default function EditPropertyPage() {
                                       <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
                                         <SelectValue
                                           className="text-slate-300"
-                                          placeholder="Selecione o tipo"
+                                          placeholder="Selecione a classe"
                                         />
                                       </SelectTrigger>
                                     </FormControl>
@@ -1295,6 +1329,88 @@ export default function EditPropertyPage() {
                               >
                                 <Plus className="mr-2 h-4 w-4" />
                                 Adicionar Tipo
+                              </Button>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="propertyClasses"
+                        render={({ field }) => (
+                          <FormItem className="md:col-span-2">
+                            <FormLabel className="text-slate-300">
+                              Classes do Imóvel *
+                            </FormLabel>
+                            <FormDescription className="text-slate-400">
+                              Apenas os admins conseguem determinar as classes
+                              dos imóveis. O imóvel com determinada classe será
+                              exibido em uma seção diferente dos demais.
+                            </FormDescription>
+
+                            <div className="space-y-4">
+                              {field.value.map((propertyClass, index) => (
+                                <div key={index} className="flex gap-2">
+                                  <Select
+                                    value={propertyClass}
+                                    onValueChange={(value) => {
+                                      const newClasses = [...field.value];
+                                      newClasses[index] = value;
+                                      field.onChange(newClasses);
+                                    }}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger className="border-slate-600 bg-slate-700 text-slate-300">
+                                        <SelectValue
+                                          className="text-slate-300"
+                                          placeholder="Selecione a classe"
+                                        />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="border-slate-600 bg-slate-700 text-slate-300">
+                                      {propertyClassOptions.map(
+                                        (classOption) => (
+                                          <SelectItem
+                                            key={classOption}
+                                            value={classOption}
+                                            className="text-slate-100 focus:bg-slate-600 focus:text-slate-100"
+                                          >
+                                            {classOption}
+                                          </SelectItem>
+                                        ),
+                                      )}
+                                    </SelectContent>
+                                  </Select>
+                                  {field.value.length > 1 && (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        const newClasses = field.value.filter(
+                                          (_, i) => i !== index,
+                                        );
+                                        field.onChange(newClasses);
+                                      }}
+                                      className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                    >
+                                      <Trash className="h-4 w-4" />
+                                    </Button>
+                                  )}
+                                </div>
+                              ))}
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => {
+                                  field.onChange([...field.value, ""]);
+                                }}
+                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Adicionar Classe
                               </Button>
                             </div>
                             <FormMessage />

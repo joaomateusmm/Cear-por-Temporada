@@ -325,7 +325,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                 Gerencie todos os imóveis cadastrados na plataforma
               </p>
             </div>
-            <div className="flex justify-end">
+            {/* <div className="flex justify-end">
               <Link href={`/admin/${adminId}/properties/add`}>
                 <Button
                   variant="outline"
@@ -335,7 +335,7 @@ export default function PropertiesPage({ params }: PropertiesPageProps) {
                   Adicionar Imóvel
                 </Button>
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -27,7 +27,10 @@ function PropertySection({
     | "imoveis-destaque"
     | "casas-de-praia"
     | "flats"
-    | "pousadas";
+    | "pousadas"
+    | "casas-de-praia-destaque"
+    | "flats-destaque"
+    | "pousadas-destaque";
 }) {
   // Se não há propriedades, não renderizar a seção
   if (!properties || properties.length === 0) {
@@ -71,6 +74,16 @@ export default async function Home() {
   ).slice(0, 8);
   const featuredApartments = (
     await getPropertiesByClass("Destaque em Apartamentos")
+  ).slice(0, 8);
+  const featuredBeachHouses = (
+    await getPropertiesByClass("Destaque em Casas de Praia")
+  ).slice(0, 8);
+  const featuredFlats = (await getPropertiesByClass("Destaque em Flats")).slice(
+    0,
+    8,
+  );
+  const featuredInns = (
+    await getPropertiesByClass("Destaque em Pousadas")
   ).slice(0, 8);
 
   return (
@@ -173,6 +186,33 @@ export default async function Home() {
           description="Nossos imóveis mais procurados pelos clientes em sua categoria"
           properties={featuredApartments}
           category="apartamentos-destaque"
+        />
+      </section>
+
+      <section className="md:px-52" id="casas-de-praia-destaque">
+        <PropertySection
+          title="Destaque em: Casas de Praia"
+          description="Nossos imóveis mais procurados pelos clientes em sua categoria"
+          properties={featuredBeachHouses}
+          category="casas-de-praia-destaque"
+        />
+      </section>
+
+      <section className="md:px-52" id="flats-destaque">
+        <PropertySection
+          title="Destaque em: Flats"
+          description="Nossos imóveis mais procurados pelos clientes em sua categoria"
+          properties={featuredFlats}
+          category="flats-destaque"
+        />
+      </section>
+
+      <section className="md:px-52" id="pousadas-destaque">
+        <PropertySection
+          title="Destaque em: Pousadas"
+          description="Nossos imóveis mais procurados pelos clientes em sua categoria"
+          properties={featuredInns}
+          category="pousadas-destaque"
         />
       </section>
 
