@@ -1431,6 +1431,16 @@ export default function EditPropertyPage() {
     "Viçosa do Ceará",
   ];
 
+  // Função para traduzir nomes de categorias
+  const getCategoryDisplayName = (category: string): string => {
+    const categoryNames: Record<string, string> = {
+      apartment: "Apartamento",
+      building: "Sobre o Prédio/Casa",
+      common_area: "Diversão e Saúde",
+    };
+    return categoryNames[category] || category;
+  };
+
   // Agrupar comodidades por categoria
   const amenitiesByCategory = amenities.reduce(
     (acc, amenity) => {
@@ -2756,7 +2766,7 @@ export default function EditPropertyPage() {
                         ([category, categoryAmenities]) => (
                           <div key={category}>
                             <h4 className="mb-3 text-lg font-medium text-slate-200">
-                              {category}
+                              {getCategoryDisplayName(category)}
                             </h4>
                             <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
                               {categoryAmenities.map((amenity) => (
