@@ -1,1 +1,0 @@
-ALTER TABLE "property_location" ADD COLUMN "popular_destination" varchar(100) DEFAULT 'Nenhum dos anteriores' NOT NULL;

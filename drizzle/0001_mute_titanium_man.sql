@@ -1,1 +1,0 @@
-ALTER TABLE "properties" ADD COLUMN "property_class" varchar(50) DEFAULT 'Normal' NOT NULL;

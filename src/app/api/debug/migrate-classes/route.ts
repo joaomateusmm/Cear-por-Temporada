@@ -1,5 +1,5 @@
 import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 import { propertyClasses } from "../../../../../drizzle/schema";
 import { db } from "../../../db";
@@ -61,11 +61,7 @@ export async function POST() {
         .where(eq(propertyClasses.name, className));
 
       if (existing.length === 0) {
-        console.log(`➕ Criando classe ausente: "${className}"`);
-        const created = await db
-          .insert(propertyClasses)
-          .values({ name: className })
-          .returning();
+        console.log(`Criando classe ausente: "${className}"`);
 
         results.push({
           old: "N/A",

@@ -1,1 +1,0 @@
-ALTER TABLE "owners" ALTER COLUMN "profile_image" SET DATA TYPE text;

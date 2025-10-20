@@ -1,1 +1,0 @@
--- Empty migration file to fix missing migration issue

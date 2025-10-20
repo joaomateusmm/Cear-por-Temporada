@@ -1,6 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+// import { zodResolver } from "@hookform/resolvers/zod"; // Removido para validação manual
 import {
   ArrowLeft,
   BedDouble,
@@ -97,39 +97,39 @@ const propertyFormSchema = z.object({
   checkInTime: z.string().optional(),
   checkOutTime: z.string().optional(),
 
-  // Proximidades da região
+  // Proximidades da região - OPCIONAL
   nearbyPlaces: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
-    .min(1, "Adicione pelo menos um local próximo"),
+    .default([]),
   nearbyBeaches: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
-    .min(1, "Adicione pelo menos uma praia próxima"),
+    .default([]),
   nearbyAirports: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
-    .min(1, "Adicione pelo menos um aeroporto próximo"),
+    .default([]),
   nearbyRestaurants: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
-    .min(1, "Adicione pelo menos um restaurante próximo"),
+    .default([]),
 
   // Serviços inclusos
   includesKitchenUtensils: z.boolean(),
@@ -313,8 +313,10 @@ export default function EditPropertyPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(propertyFormSchema),
+  const form = useForm<z.infer<typeof propertyFormSchema>>({
+    // Removido zodResolver para permitir validação manual no onSubmit
+    // resolver: zodResolver(propertyFormSchema),
+    mode: "onSubmit",
     defaultValues: {
       ownerName: "",
       ownerPhone: "",
@@ -337,10 +339,10 @@ export default function EditPropertyPage() {
       maximumStay: 365,
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      nearbyPlaces: [{ name: "", distance: "" }],
-      nearbyBeaches: [{ name: "", distance: "" }],
-      nearbyAirports: [{ name: "", distance: "" }],
-      nearbyRestaurants: [{ name: "", distance: "" }],
+      nearbyPlaces: [],
+      nearbyBeaches: [],
+      nearbyAirports: [],
+      nearbyRestaurants: [],
       includesKitchenUtensils: false,
       includesFurniture: false,
       includesElectricity: false,
@@ -953,9 +955,127 @@ export default function EditPropertyPage() {
   };
 
   const onSubmit = async (values: z.infer<typeof propertyFormSchema>) => {
+    console.log("Função onSubmit chamada com valores:", values);
     setIsSubmitting(true);
 
     try {
+      // Validar o formulário manualmente antes de prosseguir
+      const validationResult = propertyFormSchema.safeParse(values);
+
+      if (!validationResult.success) {
+        // Disparar validações visuais do React Hook Form
+        await form.trigger();
+
+        // Se houver erros de validação, não prosseguir e mostrar os erros
+        console.log(
+          "Erros de validação encontrados:",
+          validationResult.error.issues,
+        );
+
+        // Mapear os erros para mostrar toast com informações mais específicas
+        const errorMessages = validationResult.error.issues.map((err) => {
+          const fieldPath = err.path.join(".");
+          return fieldPath;
+        });
+
+        // Remover duplicatas e criar uma lista única
+        const uniqueErrors = [...new Set(errorMessages)];
+
+        // Organizar erros por categoria
+        const categorizedErrors = {
+          proprietario: [] as string[],
+          imovel: [] as string[],
+          localizacao: [] as string[],
+          apartamentos: [] as string[],
+        };
+
+        uniqueErrors.forEach((error) => {
+          if (error.includes("owner")) {
+            categorizedErrors.proprietario.push(error);
+          } else if (
+            [
+              "fullAddress",
+              "neighborhood",
+              "municipality",
+              "city",
+              "state",
+              "zipCode",
+              "popularDestination",
+            ].some((loc) => error.includes(loc))
+          ) {
+            categorizedErrors.localizacao.push(error);
+          } else if (error.includes("apartments")) {
+            categorizedErrors.apartamentos.push(error);
+          } else {
+            categorizedErrors.imovel.push(error);
+          }
+        });
+
+        // Criar uma mensagem organizada por categoria
+        let toastMessage = "❌ Campos obrigatórios não preenchidos:\n\n";
+
+        if (categorizedErrors.proprietario.length > 0) {
+          toastMessage += "👤 PROPRIETÁRIO:\n";
+          toastMessage +=
+            categorizedErrors.proprietario
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        if (categorizedErrors.imovel.length > 0) {
+          toastMessage += "🏠 DADOS DO IMÓVEL:\n";
+          toastMessage +=
+            categorizedErrors.imovel.map((field) => `• ${field}`).join("\n") +
+            "\n\n";
+        }
+
+        if (categorizedErrors.localizacao.length > 0) {
+          toastMessage += "🗺️ LOCALIZAÇÃO:\n";
+          toastMessage +=
+            categorizedErrors.localizacao
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        if (categorizedErrors.apartamentos.length > 0) {
+          toastMessage += "🏢 APARTAMENTOS:\n";
+          toastMessage +=
+            categorizedErrors.apartamentos
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        // Mostrar um único toast com todos os erros organizados
+        toast.error(toastMessage.trim(), {
+          duration: 10000,
+          style: {
+            minWidth: "400px",
+            maxWidth: "500px",
+            whiteSpace: "pre-line",
+            fontSize: "14px",
+            lineHeight: "1.4",
+          },
+        });
+
+        // Tentar rolar para o primeiro campo com erro
+        setTimeout(() => {
+          const firstErrorElement =
+            document.querySelector('[data-invalid="true"]') ||
+            document.querySelector(".text-red-500") ||
+            document.querySelector('[aria-invalid="true"]');
+
+          if (firstErrorElement) {
+            firstErrorElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }, 100);
+
+        setIsSubmitting(false);
+        return;
+      }
+
       // Converter os dados do formulário para o formato esperado
       const propertyData: PropertyFormData = {
         ownerId: params.id as string,
@@ -986,11 +1106,31 @@ export default function EditPropertyPage() {
         checkInTime: values.checkInTime,
         checkOutTime: values.checkOutTime,
 
-        // Proximidades da região
-        nearbyPlaces: values.nearbyPlaces,
-        nearbyBeaches: values.nearbyBeaches,
-        nearbyAirports: values.nearbyAirports,
-        nearbyRestaurants: values.nearbyRestaurants,
+        // Proximidades da região - Filtrar itens vazios
+        nearbyPlaces: values.nearbyPlaces
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyBeaches: values.nearbyBeaches
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyAirports: values.nearbyAirports
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyRestaurants: values.nearbyRestaurants
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
 
         includesKitchenUtensils: values.includesKitchenUtensils,
         includesFurniture: values.includesFurniture,

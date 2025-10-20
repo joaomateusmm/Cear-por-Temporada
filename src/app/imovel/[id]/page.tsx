@@ -400,6 +400,7 @@ export default function PropertyPage() {
     if (name.includes("cozinha")) return Coffee;
     if (name.includes("geladeira") || name.includes("refrigerador"))
       return Refrigerator;
+    if (name.includes("frigobar")) return Refrigerator;
     if (name.includes("microondas")) return Microwave;
     if (name.includes("máquina") || name.includes("lavar")) return Shirt;
     if (name.includes("secadora")) return Wind;
@@ -1864,38 +1865,38 @@ export default function PropertyPage() {
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="text-center">
                           <Button
-                          onClick={() => {
-                            // CORRIGIDO: Sempre usar coordenadas atualizadas para garantir precisão
-                            let mapsUrl = "";
+                            onClick={() => {
+                              // CORRIGIDO: Sempre usar coordenadas atualizadas para garantir precisão
+                              let mapsUrl = "";
 
-                            if (
-                              property.location?.latitude &&
-                              property.location?.longitude
-                            ) {
-                              // Usar coordenadas (sempre atualizadas) como prioridade
-                              mapsUrl = `https://www.google.com/maps?q=${property.location.latitude},${property.location.longitude}`;
-                            } else if (property.location?.googleMapsUrl) {
-                              // Fallback para googleMapsUrl apenas se não houver coordenadas
-                              mapsUrl = property.location.googleMapsUrl;
-                            } else if (property.location?.fullAddress) {
-                              // Fallback para busca por endereço
-                              mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(property.location.fullAddress)}`;
-                            } else {
-                              // Último fallback - busca genérica
-                              mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(property.title)}`;
-                            }
+                              if (
+                                property.location?.latitude &&
+                                property.location?.longitude
+                              ) {
+                                // Usar coordenadas (sempre atualizadas) como prioridade
+                                mapsUrl = `https://www.google.com/maps?q=${property.location.latitude},${property.location.longitude}`;
+                              } else if (property.location?.googleMapsUrl) {
+                                // Fallback para googleMapsUrl apenas se não houver coordenadas
+                                mapsUrl = property.location.googleMapsUrl;
+                              } else if (property.location?.fullAddress) {
+                                // Fallback para busca por endereço
+                                mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(property.location.fullAddress)}`;
+                              } else {
+                                // Último fallback - busca genérica
+                                mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(property.title)}`;
+                              }
 
-                            console.log(
-                              "🗺️ Abrindo Google Maps com URL:",
-                              mapsUrl,
-                            );
-                            window.open(mapsUrl, "_blank");
-                          }}
-                          className="cursor-pointer rounded-lg border border-white/20 bg-slate-800 px-6 py-5 font-semibold text-white shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:bg-slate-800 hover:shadow-2xl"
-                        >
-                          <MapPin className="mr-2 h-4 w-4" />
-                          Ver no Google Maps
-                        </Button>
+                              console.log(
+                                "🗺️ Abrindo Google Maps com URL:",
+                                mapsUrl,
+                              );
+                              window.open(mapsUrl, "_blank");
+                            }}
+                            className="cursor-pointer rounded-lg border border-white/20 bg-slate-800 px-6 py-5 font-semibold text-white shadow-xl backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:bg-slate-800 hover:shadow-2xl"
+                          >
+                            <MapPin className="mr-2 h-4 w-4" />
+                            Ver no Google Maps
+                          </Button>
                         </div>
                       </div>
                     </div>
