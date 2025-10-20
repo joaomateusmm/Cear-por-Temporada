@@ -343,7 +343,7 @@ export default function OwnerAuth() {
 
                       <Button
                         type="submit"
-                        className="text-md mt-6 w-full rounded-full bg-yellow-400 py-6 font-bold text-slate-900 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
+                        className="text-md mt-6 w-full rounded-full bg-blue-500 py-6 font-bold text-slate-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
                         disabled={isLoginLoading}
                       >
                         {isLoginLoading ? (
@@ -487,7 +487,7 @@ export default function OwnerAuth() {
 
                       <Button
                         type="submit"
-                        className="mt-6 w-full rounded-full bg-yellow-400 py-6 font-bold text-slate-900 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
+                        className="text-md mt-6 w-full rounded-full bg-blue-500 py-6 font-bold text-slate-100 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
                         disabled={isRegisterLoading}
                       >
                         {isRegisterLoading ? (
