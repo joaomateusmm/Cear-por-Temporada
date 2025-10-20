@@ -1,6 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
+// import { zodResolver } from "@hookform/resolvers/zod"; // Removido para validação manual
 import {
   ArrowLeft,
   BedDouble,
@@ -92,36 +92,36 @@ const propertyFormSchema = z.object({
   checkInTime: z.string().optional(),
   checkOutTime: z.string().optional(),
 
-  // Proximidades da região
+  // Proximidades da região - OPCIONAL
   nearbyPlaces: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
     .default([]),
   nearbyBeaches: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
     .default([]),
   nearbyAirports: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
     .default([]),
   nearbyRestaurants: z
     .array(
       z.object({
-        name: z.string().min(1, "Nome é obrigatório"),
-        distance: z.string().min(1, "Distância é obrigatória"),
+        name: z.string().optional(),
+        distance: z.string().optional(),
       }),
     )
     .default([]),
@@ -262,8 +262,10 @@ export default function AddPropertyPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm({
-    resolver: zodResolver(propertyFormSchema),
+  const form = useForm<z.infer<typeof propertyFormSchema>>({
+    // Removido zodResolver para permitir validação manual no onSubmit
+    // resolver: zodResolver(propertyFormSchema),
+    mode: "onSubmit",
     defaultValues: {
       ownerName: "",
       ownerPhone: "",
@@ -734,10 +736,10 @@ export default function AddPropertyPage() {
         });
 
         // Criar uma mensagem organizada por categoria
-        let toastMessage = "❌ Campos obrigatórios não preenchidos:\n\n";
+        let toastMessage = "Campos obrigatórios não preenchidos:\n\n";
 
         if (categorizedErrors.proprietario.length > 0) {
-          toastMessage += "👤 PROPRIETÁRIO:\n";
+          toastMessage += "PROPRIETÁRIO:\n";
           toastMessage +=
             categorizedErrors.proprietario
               .map((field) => `• ${field}`)
@@ -745,14 +747,14 @@ export default function AddPropertyPage() {
         }
 
         if (categorizedErrors.imovel.length > 0) {
-          toastMessage += "🏠 DADOS DO IMÓVEL:\n";
+          toastMessage += "DADOS DO IMÓVEL:\n";
           toastMessage +=
             categorizedErrors.imovel.map((field) => `• ${field}`).join("\n") +
             "\n\n";
         }
 
         if (categorizedErrors.proximidades.length > 0) {
-          toastMessage += "📍 PROXIMIDADES:\n";
+          toastMessage += "PROXIMIDADES:\n";
           toastMessage +=
             categorizedErrors.proximidades
               .map((field) => `• ${field}`)
@@ -760,7 +762,7 @@ export default function AddPropertyPage() {
         }
 
         if (categorizedErrors.localizacao.length > 0) {
-          toastMessage += "🗺️ LOCALIZAÇÃO:\n";
+          toastMessage += "LOCALIZAÇÃO:\n";
           toastMessage +=
             categorizedErrors.localizacao
               .map((field) => `• ${field}`)
@@ -768,7 +770,7 @@ export default function AddPropertyPage() {
         }
 
         if (categorizedErrors.apartamentos.length > 0) {
-          toastMessage += "🏢 APARTAMENTOS:\n";
+          toastMessage += "APARTAMENTOS:\n";
           toastMessage +=
             categorizedErrors.apartamentos
               .map((field) => `• ${field}`)
@@ -836,11 +838,31 @@ export default function AddPropertyPage() {
         checkInTime: values.checkInTime,
         checkOutTime: values.checkOutTime,
 
-        // Proximidades da região
-        nearbyPlaces: values.nearbyPlaces,
-        nearbyBeaches: values.nearbyBeaches,
-        nearbyAirports: values.nearbyAirports,
-        nearbyRestaurants: values.nearbyRestaurants,
+        // Proximidades da região - Filtrar itens vazios
+        nearbyPlaces: values.nearbyPlaces
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyBeaches: values.nearbyBeaches
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyAirports: values.nearbyAirports
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
+        nearbyRestaurants: values.nearbyRestaurants
+          .filter((item) => item.name && item.distance)
+          .map((item) => ({
+            name: item.name!,
+            distance: item.distance!,
+          })),
 
         includesKitchenUtensils: values.includesKitchenUtensils,
         includesFurniture: values.includesFurniture,
@@ -898,7 +920,7 @@ export default function AddPropertyPage() {
 
       const result = await createProperty(propertyData);
 
-      console.log("Resultado da criação:", result);
+      console.log("Resultado da criação:", result); 
 
       if (result.success) {
         toast.success("Imóvel cadastrado com sucesso!");
@@ -3211,6 +3233,7 @@ export default function AddPropertyPage() {
                                             largeBeds: 0,
                                             extraLargeBeds: 0,
                                             singleBeds: 0,
+                                            sofaBeds: 0,
                                           });
                                           field.onChange(newApartments);
                                         }}
