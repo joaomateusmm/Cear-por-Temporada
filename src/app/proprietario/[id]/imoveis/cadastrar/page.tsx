@@ -675,6 +675,137 @@ export default function AddPropertyPage() {
     setIsSubmitting(true);
 
     try {
+      // Validar o formulário manualmente antes de prosseguir
+      const validationResult = propertyFormSchema.safeParse(values);
+
+      if (!validationResult.success) {
+        // Disparar validações visuais do React Hook Form
+        await form.trigger();
+
+        // Se houver erros de validação, não prosseguir e mostrar os erros
+        console.log(
+          "Erros de validação encontrados:",
+          validationResult.error.issues,
+        );
+
+        // Mapear os erros para mostrar toast com informações mais específicas
+        const errorMessages = validationResult.error.issues.map((err) => {
+          const fieldPath = err.path.join(".");
+          return getFieldDisplayName(fieldPath);
+        });
+
+        // Remover duplicatas e criar uma lista única
+        const uniqueErrors = [...new Set(errorMessages)];
+
+        // Organizar erros por categoria
+        const categorizedErrors = {
+          proprietario: [] as string[],
+          imovel: [] as string[],
+          proximidades: [] as string[],
+          localizacao: [] as string[],
+          apartamentos: [] as string[],
+        };
+
+        uniqueErrors.forEach((error) => {
+          if (error.includes("Proprietário")) {
+            categorizedErrors.proprietario.push(error);
+          } else if (error.includes("Próximo") || error.includes("Próxima")) {
+            categorizedErrors.proximidades.push(error);
+          } else if (
+            [
+              "Endereço Completo",
+              "Bairro",
+              "Município",
+              "Cidade",
+              "Estado",
+              "CEP",
+              "Destino Popular",
+            ].some((loc) => error.includes(loc))
+          ) {
+            categorizedErrors.localizacao.push(error);
+          } else if (
+            error.includes("Apartamento") ||
+            error.includes("Quartos")
+          ) {
+            categorizedErrors.apartamentos.push(error);
+          } else {
+            categorizedErrors.imovel.push(error);
+          }
+        });
+
+        // Criar uma mensagem organizada por categoria
+        let toastMessage = "❌ Campos obrigatórios não preenchidos:\n\n";
+
+        if (categorizedErrors.proprietario.length > 0) {
+          toastMessage += "👤 PROPRIETÁRIO:\n";
+          toastMessage +=
+            categorizedErrors.proprietario
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        if (categorizedErrors.imovel.length > 0) {
+          toastMessage += "🏠 DADOS DO IMÓVEL:\n";
+          toastMessage +=
+            categorizedErrors.imovel.map((field) => `• ${field}`).join("\n") +
+            "\n\n";
+        }
+
+        if (categorizedErrors.proximidades.length > 0) {
+          toastMessage += "📍 PROXIMIDADES:\n";
+          toastMessage +=
+            categorizedErrors.proximidades
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        if (categorizedErrors.localizacao.length > 0) {
+          toastMessage += "🗺️ LOCALIZAÇÃO:\n";
+          toastMessage +=
+            categorizedErrors.localizacao
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        if (categorizedErrors.apartamentos.length > 0) {
+          toastMessage += "🏢 APARTAMENTOS:\n";
+          toastMessage +=
+            categorizedErrors.apartamentos
+              .map((field) => `• ${field}`)
+              .join("\n") + "\n\n";
+        }
+
+        // Mostrar um único toast com todos os erros organizados
+        toast.error(toastMessage.trim(), {
+          duration: 10000, // Toast fica mais tempo visível
+          style: {
+            minWidth: "400px",
+            maxWidth: "500px",
+            whiteSpace: "pre-line", // Permite quebras de linha
+            fontSize: "14px",
+            lineHeight: "1.4",
+          },
+        });
+
+        // Tentar rolar para o primeiro campo com erro
+        setTimeout(() => {
+          const firstErrorElement =
+            document.querySelector('[data-invalid="true"]') ||
+            document.querySelector(".text-red-500") ||
+            document.querySelector('[aria-invalid="true"]');
+
+          if (firstErrorElement) {
+            firstErrorElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          }
+        }, 100);
+
+        setIsSubmitting(false);
+        return;
+      }
+
       // Converter os dados do formulário para o formato esperado
       const propertyData: PropertyFormData = {
         ownerId: params.id as string, // Adicionar o ID do proprietário
@@ -781,6 +912,112 @@ export default function AddPropertyPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Função auxiliar para converter nomes de campos em nomes mais amigáveis
+  const getFieldDisplayName = (fieldPath: string): string => {
+    const fieldNames: Record<string, string> = {
+      // Seção Proprietário
+      ownerName: "Nome do Proprietário",
+      ownerPhone: "Telefone do Proprietário",
+      ownerEmail: "Email do Proprietário",
+      ownerInstagram: "Instagram do Proprietário",
+      ownerWebsite: "Website do Proprietário",
+
+      // Dados básicos do imóvel
+      title: "Título do Imóvel",
+      shortDescription: "Descrição Curta",
+      fullDescription: "Descrição Completa",
+      aboutBuilding: "Sobre o Prédio/Condomínio",
+      maxGuests: "Número Máximo de Hóspedes",
+      parkingSpaces: "Vagas de Estacionamento",
+      propertyStyle: "Tipo do Imóvel",
+      minimumStay: "Estadia Mínima",
+      maximumStay: "Estadia Máxima",
+      checkInTime: "Horário de Check-in",
+      checkOutTime: "Horário de Check-out",
+
+      // Proximidades da região
+      nearbyPlaces: "Locais Próximos",
+      nearbyBeaches: "Praias Próximas",
+      nearbyAirports: "Aeroportos Próximos",
+      nearbyRestaurants: "Restaurantes Próximos",
+
+      // Localização
+      fullAddress: "Endereço Completo",
+      neighborhood: "Bairro",
+      municipality: "Município",
+      city: "Cidade",
+      state: "Estado",
+      zipCode: "CEP",
+      latitude: "Latitude",
+      longitude: "Longitude",
+      googleMapsUrl: "URL do Google Maps",
+      googlePlaceId: "ID do Local no Google",
+      googleMapsEmbedUrl: "URL de Incorporação do Google Maps",
+      popularDestination: "Destino Popular",
+
+      // Apartamentos e quartos
+      apartments: "Tipos de Apartamentos",
+
+      // Comodidades e imagens
+      amenities: "Comodidades",
+      images: "Imagens do Imóvel",
+    };
+
+    // Para campos aninhados (como arrays), extrair o nome base
+    const basePath = fieldPath.split(".")[0];
+
+    // Verificar se é um campo aninhado de apartamento
+    if (fieldPath.includes("apartments.") && fieldPath.includes(".name")) {
+      return "Nome do Apartamento";
+    }
+    if (fieldPath.includes("apartments.") && fieldPath.includes(".rooms")) {
+      return "Quartos do Apartamento";
+    }
+
+    // Verificar se é um campo aninhado de proximidades
+    if (fieldPath.includes("nearbyPlaces.") && fieldPath.includes(".name")) {
+      return "Nome do Local Próximo";
+    }
+    if (
+      fieldPath.includes("nearbyPlaces.") &&
+      fieldPath.includes(".distance")
+    ) {
+      return "Distância do Local Próximo";
+    }
+    if (fieldPath.includes("nearbyBeaches.") && fieldPath.includes(".name")) {
+      return "Nome da Praia Próxima";
+    }
+    if (
+      fieldPath.includes("nearbyBeaches.") &&
+      fieldPath.includes(".distance")
+    ) {
+      return "Distância da Praia Próxima";
+    }
+    if (fieldPath.includes("nearbyAirports.") && fieldPath.includes(".name")) {
+      return "Nome do Aeroporto Próximo";
+    }
+    if (
+      fieldPath.includes("nearbyAirports.") &&
+      fieldPath.includes(".distance")
+    ) {
+      return "Distância do Aeroporto Próximo";
+    }
+    if (
+      fieldPath.includes("nearbyRestaurants.") &&
+      fieldPath.includes(".name")
+    ) {
+      return "Nome do Restaurante Próximo";
+    }
+    if (
+      fieldPath.includes("nearbyRestaurants.") &&
+      fieldPath.includes(".distance")
+    ) {
+      return "Distância do Restaurante Próximo";
+    }
+
+    return fieldNames[basePath] || fieldPath;
   };
 
   if (!ownerData) {
@@ -3532,8 +3769,8 @@ export default function AddPropertyPage() {
                 <div className="flex justify-center pt-8">
                   <Button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="transform rounded-lg bg-[#182334] px-12 py-6 text-lg font-semibold text-white shadow-xl transition-all duration-500 hover:scale-[1.02] hover:bg-[#182334] hover:shadow-2xl disabled:transform-none disabled:opacity-50"
+                    disabled={false} // Sempre permite clicar - validação será feita no onSubmit
+                    className="transform cursor-pointer rounded-lg bg-[#182334] px-12 py-6 text-lg font-semibold text-white shadow-xl transition-all duration-500 hover:scale-[1.02] hover:bg-[#182334] hover:shadow-2xl"
                   >
                     {isSubmitting ? (
                       <Loader className="mr-2 h-4 w-4 animate-spin" />
