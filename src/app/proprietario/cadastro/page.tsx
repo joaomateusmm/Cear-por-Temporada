@@ -246,7 +246,7 @@ export default function OwnerAuth() {
         <div className="hidden flex-1 lg:block"></div>
 
         {/* Lado Direito - Card do Formulário */}
-        <div className="mr-32 flex w-full flex-col lg:w-[30%] lg:max-w-md">
+        <div className="mr-42 flex w-full flex-col lg:w-[26%] lg:max-w-md">
           <h1 className="mb-6 text-center text-5xl leading-tight font-bold text-white xl:text-6xl">
             Tem um imóvel para alugar?
           </h1>
@@ -259,16 +259,16 @@ export default function OwnerAuth() {
             {/* Título do Card */}
 
             <Tabs defaultValue="login" className="w-full">
-              <TabsList className="mb-6 grid w-full grid-cols-2 bg-slate-100 shadow-sm">
+              <TabsList className="mx-auto mb-6 grid w-[50%] grid-cols-2 bg-slate-100 shadow-sm">
                 <TabsTrigger
                   value="login"
-                  className="text-slate-600 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-slate-900"
+                  className="mr-2 text-slate-600 transition-all duration-300 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-slate-900"
                 >
                   Entrar
                 </TabsTrigger>
                 <TabsTrigger
                   value="register"
-                  className="text-slate-600 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-slate-900"
+                  className="text-slate-600 transition-all duration-300 hover:bg-white data-[state=active]:bg-white data-[state=active]:text-slate-900"
                 >
                   Criar Conta
                 </TabsTrigger>
