@@ -9,13 +9,6 @@ import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -67,6 +60,14 @@ export default function OwnerAuth() {
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState("");
+
+  // Selecionar imagem de background aleatoriamente
+  useEffect(() => {
+    const images = ["/bg-2.jpg", "/bg-3.jpg", "/bg-4.jpg", "/bg-5.jpg"];
+    const randomImage = images[Math.floor(Math.random() * images.length)];
+    setBackgroundImage(randomImage);
+  }, []);
 
   // Verificar se o proprietário já está logado
   useEffect(() => {
@@ -226,38 +227,56 @@ export default function OwnerAuth() {
   }
 
   return (
-    <>
-      <div className="flex min-h-screen items-center justify-center bg-slate-900 p-4">
-        <div className="flex flex-col items-center">
-          <Tabs defaultValue="login">
-            <TabsList className="mb-1 border border-slate-700 bg-slate-800">
-              <TabsTrigger
-                value="login"
-                className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-slate-100"
-              >
-                Entrar
-              </TabsTrigger>
-              <TabsTrigger
-                value="register"
-                className="text-slate-300 data-[state=active]:bg-slate-700 data-[state=active]:text-slate-100"
-              >
-                Cadastrar
-              </TabsTrigger>
-            </TabsList>
+    <div
+      className="relative flex min-h-screen items-center justify-center p-4"
+      style={{
+        backgroundImage: backgroundImage ? `url(${backgroundImage})` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      {/* Overlay semi-transparente */}
+      <div className="absolute inset-0 bg-gradient-to-r from-green-400/0 via-yellow-300/0 to-black/50"></div>
+      <div className="absolute inset-0 bg-black/10"></div>
 
-            {/* Tab de Login */}
-            <TabsContent value="login">
-              <Card className="w-[70vw] border-slate-700 bg-slate-800 md:w-[380px]">
-                <CardHeader className="space-y-2 text-start">
-                  <CardTitle className="text-slate-100">
-                    Área do Proprietário
-                  </CardTitle>
-                  <CardDescription className="text-slate-400">
-                    Faça login para acessar sua área de gerenciamento de
-                    imóveis.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+      {/* Container principal */}
+      <div className="relative z-10 flex w-full items-center justify-between px-8">
+        {/* Lado Esquerdo - Título */}
+        <div className="hidden flex-1 lg:block"></div>
+
+        {/* Lado Direito - Card do Formulário */}
+        <div className="mr-32 flex w-full flex-col lg:w-[30%] lg:max-w-md">
+          <h1 className="mb-6 text-center text-5xl leading-tight font-bold text-white xl:text-6xl">
+            Tem um imóvel para alugar?
+          </h1>
+          {/* Título mobile */}
+          <h1 className="mb-6 text-center text-4xl leading-tight font-bold text-white lg:hidden">
+            Tem um imóvel para alugar?
+          </h1>
+
+          <div className="rounded-2xl bg-white p-8 shadow-2xl">
+            {/* Título do Card */}
+
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="mb-6 grid w-full grid-cols-2 bg-slate-100 shadow-sm">
+                <TabsTrigger
+                  value="login"
+                  className="text-slate-600 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-slate-900"
+                >
+                  Entrar
+                </TabsTrigger>
+                <TabsTrigger
+                  value="register"
+                  className="text-slate-600 transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-slate-900"
+                >
+                  Criar Conta
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Tab de Login */}
+              <TabsContent value="login">
+                <div className="space-y-4">
                   <Form {...loginForm}>
                     <form
                       onSubmit={loginForm.handleSubmit(onLoginSubmit)}
@@ -268,14 +287,14 @@ export default function OwnerAuth() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Email
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
                                 placeholder="Digite seu email..."
-                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                 {...field}
                                 disabled={isLoginLoading}
                               />
@@ -290,7 +309,7 @@ export default function OwnerAuth() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Senha
                             </FormLabel>
                             <FormControl>
@@ -298,13 +317,13 @@ export default function OwnerAuth() {
                                 <Input
                                   type={showLoginPassword ? "text" : "password"}
                                   placeholder="••••••••"
-                                  className="border-slate-600 bg-slate-700 pr-10 text-slate-100 placeholder:text-slate-400"
+                                  className="border-slate-300 bg-white pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                   {...field}
                                   disabled={isLoginLoading}
                                 />
                                 <button
                                   type="button"
-                                  className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                                  className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                                   onClick={() =>
                                     setShowLoginPassword(!showLoginPassword)
                                   }
@@ -324,7 +343,7 @@ export default function OwnerAuth() {
 
                       <Button
                         type="submit"
-                        className="mt-4 w-full bg-gray-900 py-5 duration-500 hover:scale-[1.02] hover:bg-gray-900"
+                        className="text-md mt-6 w-full rounded-full bg-yellow-400 py-6 font-bold text-slate-900 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
                         disabled={isLoginLoading}
                       >
                         {isLoginLoading ? (
@@ -343,28 +362,17 @@ export default function OwnerAuth() {
                   <div className="mt-6 text-center">
                     <Link
                       href="/"
-                      className="text-sm text-slate-500 hover:text-slate-400"
+                      className="text-sm text-slate-600 hover:text-slate-900"
                     >
                       ← Voltar ao site
                     </Link>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                </div>
+              </TabsContent>
 
-            {/* Tab de Cadastro */}
-            <TabsContent value="register">
-              <Card className="w-[70vw] border-slate-700 bg-slate-800 md:w-[380px]">
-                <CardHeader className="space-y-2 text-center">
-                  <CardTitle className="text-slate-100">
-                    Área do Proprietário
-                  </CardTitle>
-                  <CardDescription className="text-slate-400">
-                    Crie sua conta para gerenciar seus imóveis no Ceará por
-                    Temporada.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
+              {/* Tab de Cadastro */}
+              <TabsContent value="register">
+                <div className="space-y-4">
                   <Form {...registerForm}>
                     <form
                       onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
@@ -375,14 +383,14 @@ export default function OwnerAuth() {
                         name="fullName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Nome Completo
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="text"
                                 placeholder="Digite seu nome completo..."
-                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                 {...field}
                                 disabled={isRegisterLoading}
                               />
@@ -397,14 +405,14 @@ export default function OwnerAuth() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Email
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="email"
                                 placeholder="Digite seu email..."
-                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                 {...field}
                                 disabled={isRegisterLoading}
                               />
@@ -419,14 +427,14 @@ export default function OwnerAuth() {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Telefone (opcional)
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="tel"
                                 placeholder="Digite seu telefone..."
-                                className="border-slate-600 bg-slate-700 text-slate-100 placeholder:text-slate-400"
+                                className="border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                 {...field}
                                 disabled={isRegisterLoading}
                               />
@@ -441,7 +449,7 @@ export default function OwnerAuth() {
                         name="password"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-slate-200">
+                            <FormLabel className="text-slate-700">
                               Senha
                             </FormLabel>
                             <FormControl>
@@ -451,13 +459,13 @@ export default function OwnerAuth() {
                                     showRegisterPassword ? "text" : "password"
                                   }
                                   placeholder="Digite sua senha..."
-                                  className="border-slate-600 bg-slate-700 pr-10 text-slate-100 placeholder:text-slate-400"
+                                  className="border-slate-300 bg-white pr-10 text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500"
                                   {...field}
                                   disabled={isRegisterLoading}
                                 />
                                 <button
                                   type="button"
-                                  className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-300"
+                                  className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                                   onClick={() =>
                                     setShowRegisterPassword(
                                       !showRegisterPassword,
@@ -479,7 +487,7 @@ export default function OwnerAuth() {
 
                       <Button
                         type="submit"
-                        className="mt-4 w-full bg-gray-900 py-5 duration-500 hover:scale-[1.02] hover:bg-gray-900"
+                        className="mt-6 w-full rounded-full bg-yellow-400 py-6 font-bold text-slate-900 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-yellow-500 hover:shadow-xl"
                         disabled={isRegisterLoading}
                       >
                         {isRegisterLoading ? (
@@ -488,7 +496,7 @@ export default function OwnerAuth() {
                             Criando conta...
                           </>
                         ) : (
-                          <>Criar Conta</>
+                          <>Cadastrar Imóvel</>
                         )}
                       </Button>
                     </form>
@@ -498,17 +506,17 @@ export default function OwnerAuth() {
                   <div className="mt-6 text-center">
                     <Link
                       href="/"
-                      className="text-sm text-slate-500 hover:text-slate-400"
+                      className="text-sm text-slate-600 hover:text-slate-900"
                     >
                       ← Voltar ao site
                     </Link>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
