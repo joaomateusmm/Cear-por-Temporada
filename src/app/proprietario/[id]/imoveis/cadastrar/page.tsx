@@ -100,7 +100,7 @@ const propertyFormSchema = z.object({
         distance: z.string().min(1, "Distância é obrigatória"),
       }),
     )
-    .min(1, "Adicione pelo menos um local próximo"),
+    .default([]),
   nearbyBeaches: z
     .array(
       z.object({
@@ -108,7 +108,7 @@ const propertyFormSchema = z.object({
         distance: z.string().min(1, "Distância é obrigatória"),
       }),
     )
-    .min(1, "Adicione pelo menos uma praia próxima"),
+    .default([]),
   nearbyAirports: z
     .array(
       z.object({
@@ -116,7 +116,7 @@ const propertyFormSchema = z.object({
         distance: z.string().min(1, "Distância é obrigatória"),
       }),
     )
-    .min(1, "Adicione pelo menos um aeroporto próximo"),
+    .default([]),
   nearbyRestaurants: z
     .array(
       z.object({
@@ -124,7 +124,7 @@ const propertyFormSchema = z.object({
         distance: z.string().min(1, "Distância é obrigatória"),
       }),
     )
-    .min(1, "Adicione pelo menos um restaurante próximo"),
+    .default([]),
 
   // Serviços inclusos
   includesKitchenUtensils: z.boolean(),
@@ -282,10 +282,10 @@ export default function AddPropertyPage() {
       maximumStay: 365,
       checkInTime: "14:00",
       checkOutTime: "11:00",
-      nearbyPlaces: [{ name: "", distance: "" }],
-      nearbyBeaches: [{ name: "", distance: "" }],
-      nearbyAirports: [{ name: "", distance: "" }],
-      nearbyRestaurants: [{ name: "", distance: "" }],
+      nearbyPlaces: [],
+      nearbyBeaches: [],
+      nearbyAirports: [],
+      nearbyRestaurants: [],
       includesKitchenUtensils: false,
       includesFurniture: false,
       includesElectricity: false,
@@ -1759,8 +1759,9 @@ export default function AddPropertyPage() {
                     </CardTitle>
                     <span className="text-sm text-gray-200">
                       Configure os locais próximos ao imóvel para cada
-                      categoria. É obrigatório adicionar pelo menos um local em
-                      cada seção.
+                      categoria. Estes campos são opcionais, mas podem ajudar a
+                      atrair mais interessados ao destacar a localização
+                      privilegiada do seu imóvel.
                     </span>
                   </CardHeader>
                   <CardContent className="space-y-8 p-6">
@@ -1775,68 +1776,94 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="space-y-3">
-                              {field.value.map((place, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do local (ex: Centro da cidade)"
-                                      value={place.name}
-                                      onChange={(e) => {
-                                        const newPlaces = [...field.value];
-                                        newPlaces[index].name = e.target.value;
-                                        field.onChange(newPlaces);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-300"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 2,5 km)"
-                                      value={place.distance}
-                                      onChange={(e) => {
-                                        const newPlaces = [...field.value];
-                                        newPlaces[index].distance =
-                                          e.target.value;
-                                        field.onChange(newPlaces);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-300"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newPlaces = field.value.filter(
-                                            (_, i) => i !== index,
-                                          );
-                                          field.onChange(newPlaces);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                                      >
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
+                              {!field.value || field.value.length === 0 ? (
+                                <div className="py-6 text-center">
+                                  <p className="mb-3 text-slate-400">
+                                    Nenhum local próximo adicionado
+                                  </p>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Primeiro Local
+                                  </Button>
                                 </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Local
-                              </Button>
+                              ) : (
+                                <>
+                                  {field.value.map((place, index) => (
+                                    <div
+                                      key={index}
+                                      className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                    >
+                                      <div className="md:col-span-2">
+                                        <Input
+                                          placeholder="Nome do local (ex: Centro da cidade)"
+                                          value={place.name}
+                                          onChange={(e) => {
+                                            const newPlaces = [
+                                              ...(field.value || []),
+                                            ];
+                                            newPlaces[index].name =
+                                              e.target.value;
+                                            field.onChange(newPlaces);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300"
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          placeholder="Distância (ex: 2,5 km)"
+                                          value={place.distance}
+                                          onChange={(e) => {
+                                            const newPlaces = [
+                                              ...(field.value || []),
+                                            ];
+                                            newPlaces[index].distance =
+                                              e.target.value;
+                                            field.onChange(newPlaces);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          onClick={() => {
+                                            const newPlaces = (
+                                              field.value || []
+                                            ).filter((_, i) => i !== index);
+                                            field.onChange(newPlaces);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        ...(field.value || []),
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Local
+                                  </Button>
+                                </>
+                              )}
                             </div>
                             <FormMessage />
                           </FormItem>
@@ -1856,68 +1883,94 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="space-y-3">
-                              {field.value.map((beach, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome da praia (ex: Praia de Iracema)"
-                                      value={beach.name}
-                                      onChange={(e) => {
-                                        const newBeaches = [...field.value];
-                                        newBeaches[index].name = e.target.value;
-                                        field.onChange(newBeaches);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 2,1 km)"
-                                      value={beach.distance}
-                                      onChange={(e) => {
-                                        const newBeaches = [...field.value];
-                                        newBeaches[index].distance =
-                                          e.target.value;
-                                        field.onChange(newBeaches);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newBeaches = field.value.filter(
-                                            (_, i) => i !== index,
-                                          );
-                                          field.onChange(newBeaches);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                                      >
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
+                              {!field.value || field.value.length === 0 ? (
+                                <div className="py-6 text-center">
+                                  <p className="mb-3 text-slate-400">
+                                    Nenhuma praia próxima adicionada
+                                  </p>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Primeira Praia
+                                  </Button>
                                 </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Praia
-                              </Button>
+                              ) : (
+                                <>
+                                  {field.value.map((beach, index) => (
+                                    <div
+                                      key={index}
+                                      className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                    >
+                                      <div className="md:col-span-2">
+                                        <Input
+                                          placeholder="Nome da praia (ex: Praia de Iracema)"
+                                          value={beach.name}
+                                          onChange={(e) => {
+                                            const newBeaches = [
+                                              ...(field.value || []),
+                                            ];
+                                            newBeaches[index].name =
+                                              e.target.value;
+                                            field.onChange(newBeaches);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          placeholder="Distância (ex: 2,1 km)"
+                                          value={beach.distance}
+                                          onChange={(e) => {
+                                            const newBeaches = [
+                                              ...(field.value || []),
+                                            ];
+                                            newBeaches[index].distance =
+                                              e.target.value;
+                                            field.onChange(newBeaches);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          onClick={() => {
+                                            const newBeaches = (
+                                              field.value || []
+                                            ).filter((_, i) => i !== index);
+                                            field.onChange(newBeaches);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        ...(field.value || []),
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Praia
+                                  </Button>
+                                </>
+                              )}
                             </div>
                             <FormMessage />
                           </FormItem>
@@ -1937,70 +1990,94 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="space-y-3">
-                              {field.value.map((airport, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do aeroporto (ex: Aeroporto Internacional Pinto Martins)"
-                                      value={airport.name}
-                                      onChange={(e) => {
-                                        const newAirports = [...field.value];
-                                        newAirports[index].name =
-                                          e.target.value;
-                                        field.onChange(newAirports);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 15 km)"
-                                      value={airport.distance}
-                                      onChange={(e) => {
-                                        const newAirports = [...field.value];
-                                        newAirports[index].distance =
-                                          e.target.value;
-                                        field.onChange(newAirports);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newAirports =
-                                            field.value.filter(
-                                              (_, i) => i !== index,
-                                            );
-                                          field.onChange(newAirports);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                                      >
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
+                              {!field.value || field.value.length === 0 ? (
+                                <div className="py-6 text-center">
+                                  <p className="mb-3 text-slate-400">
+                                    Nenhum aeroporto próximo adicionado
+                                  </p>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Primeiro Aeroporto
+                                  </Button>
                                 </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Aeroporto
-                              </Button>
+                              ) : (
+                                <>
+                                  {field.value.map((airport, index) => (
+                                    <div
+                                      key={index}
+                                      className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                    >
+                                      <div className="md:col-span-2">
+                                        <Input
+                                          placeholder="Nome do aeroporto (ex: Aeroporto Internacional Pinto Martins)"
+                                          value={airport.name}
+                                          onChange={(e) => {
+                                            const newAirports = [
+                                              ...(field.value || []),
+                                            ];
+                                            newAirports[index].name =
+                                              e.target.value;
+                                            field.onChange(newAirports);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          placeholder="Distância (ex: 15 km)"
+                                          value={airport.distance}
+                                          onChange={(e) => {
+                                            const newAirports = [
+                                              ...(field.value || []),
+                                            ];
+                                            newAirports[index].distance =
+                                              e.target.value;
+                                            field.onChange(newAirports);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          onClick={() => {
+                                            const newAirports = (
+                                              field.value || []
+                                            ).filter((_, i) => i !== index);
+                                            field.onChange(newAirports);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        ...(field.value || []),
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Aeroporto
+                                  </Button>
+                                </>
+                              )}
                             </div>
                             <FormMessage />
                           </FormItem>
@@ -2020,70 +2097,94 @@ export default function AddPropertyPage() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="space-y-3">
-                              {field.value.map((restaurant, index) => (
-                                <div
-                                  key={index}
-                                  className="grid grid-cols-1 gap-3 md:grid-cols-3"
-                                >
-                                  <div className="md:col-span-2">
-                                    <Input
-                                      placeholder="Nome do restaurante (ex: Restaurante Vila Azul)"
-                                      value={restaurant.name}
-                                      onChange={(e) => {
-                                        const newRestaurants = [...field.value];
-                                        newRestaurants[index].name =
-                                          e.target.value;
-                                        field.onChange(newRestaurants);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Input
-                                      placeholder="Distância (ex: 650 m)"
-                                      value={restaurant.distance}
-                                      onChange={(e) => {
-                                        const newRestaurants = [...field.value];
-                                        newRestaurants[index].distance =
-                                          e.target.value;
-                                        field.onChange(newRestaurants);
-                                      }}
-                                      className="border-slate-600 bg-slate-700 text-slate-100"
-                                    />
-                                    {field.value.length > 1 && (
-                                      <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="icon"
-                                        onClick={() => {
-                                          const newRestaurants =
-                                            field.value.filter(
-                                              (_, i) => i !== index,
-                                            );
-                                          field.onChange(newRestaurants);
-                                        }}
-                                        className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                                      >
-                                        <Trash className="h-4 w-4" />
-                                      </Button>
-                                    )}
-                                  </div>
+                              {!field.value || field.value.length === 0 ? (
+                                <div className="py-6 text-center">
+                                  <p className="mb-3 text-slate-400">
+                                    Nenhum restaurante próximo adicionado
+                                  </p>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Primeiro Restaurante
+                                  </Button>
                                 </div>
-                              ))}
-                              <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => {
-                                  field.onChange([
-                                    ...field.value,
-                                    { name: "", distance: "" },
-                                  ]);
-                                }}
-                                className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Adicionar Restaurante
-                              </Button>
+                              ) : (
+                                <>
+                                  {field.value.map((restaurant, index) => (
+                                    <div
+                                      key={index}
+                                      className="grid grid-cols-1 gap-3 md:grid-cols-3"
+                                    >
+                                      <div className="md:col-span-2">
+                                        <Input
+                                          placeholder="Nome do restaurante (ex: Restaurante Vila Azul)"
+                                          value={restaurant.name}
+                                          onChange={(e) => {
+                                            const newRestaurants = [
+                                              ...(field.value || []),
+                                            ];
+                                            newRestaurants[index].name =
+                                              e.target.value;
+                                            field.onChange(newRestaurants);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Input
+                                          placeholder="Distância (ex: 650 m)"
+                                          value={restaurant.distance}
+                                          onChange={(e) => {
+                                            const newRestaurants = [
+                                              ...(field.value || []),
+                                            ];
+                                            newRestaurants[index].distance =
+                                              e.target.value;
+                                            field.onChange(newRestaurants);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-100"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          onClick={() => {
+                                            const newRestaurants = (
+                                              field.value || []
+                                            ).filter((_, i) => i !== index);
+                                            field.onChange(newRestaurants);
+                                          }}
+                                          className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                        >
+                                          <Trash className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => {
+                                      field.onChange([
+                                        ...(field.value || []),
+                                        { name: "", distance: "" },
+                                      ]);
+                                    }}
+                                    className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-slate-300"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" />
+                                    Adicionar Restaurante
+                                  </Button>
+                                </>
+                              )}
                             </div>
                             <FormMessage />
                           </FormItem>
