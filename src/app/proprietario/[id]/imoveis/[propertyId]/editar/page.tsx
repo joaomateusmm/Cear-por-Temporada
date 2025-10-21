@@ -85,7 +85,7 @@ const propertyFormSchema = z.object({
   aboutBuilding: z.string().optional(),
   maxGuests: z.number().min(1, "Deve aceitar pelo menos 1 hóspede"),
   bedrooms: z.number().min(0, "Número de quartos inválido"),
-  bathrooms: z.number().min(1, "Deve ter pelo menos 1 banheiro"),
+  bathrooms: z.number().min(0).optional().default(0), // Campo não usado no formulário, apenas para compatibilidade
   parkingSpaces: z.number().min(0, "Número de vagas inválido").default(0),
   areaM2: z.number().default(0),
   allowsPets: z.boolean(),
@@ -330,7 +330,7 @@ export default function EditPropertyPage() {
       aboutBuilding: "",
       maxGuests: 1,
       bedrooms: 1,
-      bathrooms: 1,
+      bathrooms: 0,
       parkingSpaces: 0,
       areaM2: 0,
       allowsPets: false,

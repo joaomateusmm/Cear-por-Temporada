@@ -8,11 +8,9 @@ import {
   IdCard,
   MessageCircle,
   Settings,
-  Smartphone,
   Upload,
-  UserPlus,
-  Zap,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import Footer from "@/components/Footer";
@@ -28,54 +26,6 @@ import {
 } from "@/components/ui/card";
 
 export default function ComoFuncionaPage() {
-  const steps = [
-    {
-      id: 1,
-      title: "Crie sua conta",
-      description: "Cadastre-se gratuitamente na plataforma",
-      icon: UserPlus,
-      details: [
-        "Acesse a área do proprietário",
-        "Preencha seus dados pessoais",
-        "Confirme seu email",
-        "Crie uma senha segura",
-      ],
-    },
-    {
-      id: 2,
-      title: "Complete seu perfil",
-      description: "Adicione informações que serão vistas pelos hóspedes",
-      icon: IdCard,
-      details: [
-        "Adicione uma foto de perfil",
-        "Adicione telefone e e-mail para contato",
-      ],
-    },
-    {
-      id: 3,
-      title: "Cadastre seu primeiro imóvel",
-      description: "Crie um anúncio completo e atrativo",
-      icon: Home,
-      details: [
-        "Adicione fotos de alta qualidade",
-        "Descreva seu imóvel detalhadamente",
-        "Defina regras, formas de pagamento e muito mais",
-        "Configure comodidades e serviços inclusos",
-      ],
-    },
-    {
-      id: 4,
-      title: "Após isso?",
-      description: "Acompanhe e edite seus anúncios no dashboard",
-      icon: Settings,
-      details: [
-        "Visualize métricas dos seus imóveis",
-        "Edite informações quando necessário",
-        "Acompanhe o status de aprovação",
-      ],
-    },
-  ];
-
   const benefits = [
     {
       icon: Zap,
@@ -128,50 +78,206 @@ export default function ComoFuncionaPage() {
         </div>
       </div>
 
-      {/* Processo Passo a Passo */}
-      <div className="py-16 md:mx-52">
-        <div className="container mx-auto px-4 md:px-60">
-          <div className="space-y-8">
-            {steps.map((step) => (
-              <Card
-                key={step.id}
-                className="overflow-hidden border-gray-200 shadow-sm transition-all duration-300 hover:shadow-xl"
-              >
-                <CardContent className="p-0">
-                  <div className="flex flex-col md:flex-row">
-                    <div className="mx-6 rounded-2xl bg-gray-800 p-8 text-white md:ml-6 md:w-1/3">
-                      <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
-                        <div className="flex h-18 w-18 items-center justify-center rounded-full bg-white/20">
-                          <step.icon className="h-8 w-8" />
-                        </div>
-                        <div>
-                          <div className="text-md font-medium text-gray-200">
-                            Passo {step.id}
-                          </div>
-                          <h3 className="text-xl font-bold">{step.title}</h3>
-                        </div>
-                      </div>
+      {/* Seção: Por que escolher a SJ Imóveis */}
+      <div className="bg-white py-16">
+        <div className="container mx-auto px-4 md:px-20">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            {/* Imagem */}
+            <div className="relative">
+              <div className="overflow-hidden rounded-3xl shadow-2xl">
+                <Image
+                  src="/bg-3.jpg"
+                  alt="Imóvel de exemplo"
+                  width={600}
+                  height={400}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Conteúdo */}
+            <div>
+              <h2 className="mb-6 text-3xl font-bold text-blue-900 md:text-4xl">
+                Por que escolher a SJ Imóveis?
+              </h2>
+              <div className="space-y-6">
+                {[
+                  {
+                    icon: FileText,
+                    title: "Gestão Completa",
+                    description:
+                      "Cuidamos do aluguel e encargos como condomínio, IPTU e Taxa de Luz.",
+                    color: "bg-yellow-400",
+                  },
+                  {
+                    icon: CheckCircle,
+                    title: "Análise de crédito",
+                    description:
+                      "Para encontrar o inquilino ideal e garantir as menores taxas de inadimplência do mercado.",
+                    color: "bg-yellow-400",
+                  },
+                  {
+                    icon: Settings,
+                    title: "Setor de Embalagem",
+                    description:
+                      "Acompanho o estado de imóveis vagos e sugere melhorias para alugar mais rápido.",
+                    color: "bg-yellow-400",
+                  },
+                  {
+                    icon: MessageCircle,
+                    title: "Ampla Divulgação",
+                    description:
+                      "Presença nos maiores portais imobiliários e destaque no site da SJ.",
+                    color: "bg-yellow-400",
+                  },
+                  {
+                    icon: IdCard,
+                    title: "Assessoria Jurídica",
+                    description:
+                      "Com a Escritório Samir Jerissáti OAB 011-CE, referência em Direito Imobiliário.",
+                    color: "bg-yellow-400",
+                  },
+                ].map((item, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <div
+                      className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg ${item.color}`}
+                    >
+                      <item.icon className="h-6 w-6 text-blue-900" />
                     </div>
-                    <div className="flex-1 p-8">
-                      <h4 className="mb-4 text-lg font-semibold text-gray-900">
-                        O que você precisa fazer:
-                      </h4>
-                      <ul className="space-y-3">
-                        {step.details.map((detail, detailIndex) => (
-                          <li
-                            key={detailIndex}
-                            className="flex items-start gap-3"
-                          >
-                            <CheckCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
-                            <span className="text-gray-700">{detail}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div>
+                      <h3 className="mb-1 font-bold text-blue-900">
+                        {item.title}:
+                      </h3>
+                      <p className="text-gray-700">{item.description}</p>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Seção de Resultados */}
+      <div className="bg-yellow-400 py-16">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-blue-900 md:text-4xl">
+            Resultados de quem é especialista em alugar mais!
+          </h2>
+          <p className="mb-12 text-blue-900">
+            Desde 1982, somos a maior administradora de imóveis do Ceará,
+            ajudando proprietários a alugar com rapidez e segurança por meio de
+            uma gestão completa, prática e sem burocracia.
+          </p>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            {[
+              {
+                number: "+40",
+                label: "ANOS",
+                subtitle: "de expertise no mercado imobiliário.",
+              },
+              {
+                number: "+8k",
+                label: "IMÓVEIS",
+                subtitle: "administrados no Ceará.",
+              },
+              {
+                number: "30",
+                label: "DIAS",
+                subtitle: "ou menos para alugar seu imóvel.",
+              },
+            ].map((stat, index) => (
+              <Card
+                key={index}
+                className="border-0 bg-white shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <CardContent className="p-8">
+                  <div className="text-5xl font-bold text-blue-900">
+                    {stat.number}
+                  </div>
+                  <div className="mb-2 text-2xl font-bold text-blue-900">
+                    {stat.label}
+                  </div>
+                  <p className="text-gray-700">{stat.subtitle}</p>
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          <div className="mt-12">
+            <Link href="/proprietario/cadastro">
+              <Button
+                size="lg"
+                className="bg-blue-900 text-lg font-bold hover:bg-blue-800"
+              >
+                Fale com nossos consultores
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Processo Passo a Passo */}
+      <div className="bg-gray-50 py-16">
+        <div className="container mx-auto px-4 md:px-20">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-blue-900 md:text-4xl">
+              Cadastro rápido e sem burocracias
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+            {[
+              {
+                step: "1",
+                title: "Cadastro do Imóvel",
+                icon: Home,
+              },
+              {
+                step: "2",
+                title: "Avaliação",
+                icon: CheckCircle,
+              },
+              {
+                step: "3",
+                title: "Assinatura de documentos",
+                icon: FileText,
+              },
+              {
+                step: "4",
+                title: "Vistoria",
+                icon: Settings,
+              },
+            ].map((item, index) => (
+              <Card
+                key={index}
+                className="border-0 bg-white text-center shadow-lg transition-all duration-300 hover:scale-105"
+              >
+                <CardContent className="p-8">
+                  <div className="mb-4 flex justify-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                      <item.icon className="h-8 w-8 text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-yellow-400 text-xl font-bold text-blue-900">
+                    {item.step}
+                  </div>
+                  <h3 className="font-bold text-blue-900">{item.title}</h3>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <Link href="/proprietario/cadastro">
+              <Button
+                size="lg"
+                className="bg-blue-600 text-lg font-bold hover:bg-blue-700"
+              >
+                Cadastre seu imóvel
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
