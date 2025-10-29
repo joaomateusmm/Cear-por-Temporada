@@ -54,8 +54,8 @@ export default function Header() {
               : "-translate-y-full opacity-0"
           }`}
         >
-          <div className="mx-4 flex h-16 items-center justify-between scroll-smooth md:mx-60">
-            <div className="flex items-center gap-3">
+          <div className="mx-4 flex h-16 items-center justify-between scroll-smooth">
+            <div className="mr-6 flex items-center gap-3">
               <Link href="/" className="cursor-pointer">
                 <Image
                   src="/logo-alternativa.svg"
@@ -236,7 +236,7 @@ export default function Header() {
             isVisible ? "translate-y-0" : "-translate-y-16"
           }`}
         >
-          <div className="relative mx-4 flex h-16 items-center justify-between md:mx-60">
+          <div className="relative mx-4 flex h-16 items-center justify-between">
             <div
               className={`flex flex-shrink-0 items-center gap-3 transition-all duration-300 ${
                 isVisible
